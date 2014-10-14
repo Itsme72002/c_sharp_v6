@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/TransactionReportingService" elementFormDefault="qualified" targetNamespace="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/TransactionReportingService" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://sas.cert.ipcommerce.com:9002/?xsd=xsd3" namespace="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" />
+  <xs:import schemaLocation="https://sas.cert.ipcommerce.com:9002/?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Ipc.SAS.DAL" />
+  <xs:import schemaLocation="https://sas.cert.ipcommerce.com:9002/?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.DataContracts" />
+  <xs:import schemaLocation="https://sas.cert.ipcommerce.com:9002/?xsd=xsd6" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="https://sas.cert.ipcommerce.com:9002/?xsd=xsd7" namespace="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.Business" />
+  <xs:complexType name="GetTransactionsRequest">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" name="Credentials" nillable="true" type="q1:Credentials" />
+      <xs:element name="Query" nillable="true" type="tns:Query" />
+      <xs:element minOccurs="0" name="QueryNearline" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetTransactionsRequest" nillable="true" type="tns:GetTransactionsRequest" />
+  <xs:complexType name="Query">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="TxnGuid" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="StartTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="EndTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="ServiceClass" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TxnClass" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TxnType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IppfSocketId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IppfMerchantId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IppfServiceId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PTLSVersion" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SocketSer" nillable="true" type="xs:string" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Ipc.SAS.DAL" minOccurs="0" name="OverallTestResult" nillable="true" type="q2:TxnRuleResultType" />
+      <xs:element minOccurs="0" name="Amt" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ApprovalCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MerchProfileId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ResubmittedFromTxnGuid" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsDurable" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Query" nillable="true" type="tns:Query" />
+  <xs:complexType name="GetTransactionsResponse">
+    <xs:sequence>
+      <xs:element name="IsSuccess" type="xs:boolean" />
+      <xs:element name="Message" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Transactions" nillable="true" type="tns:ArrayOfTransaction" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetTransactionsResponse" nillable="true" type="tns:GetTransactionsResponse" />
+  <xs:complexType name="ArrayOfTransaction">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Transaction" nillable="true" type="tns:Transaction" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTransaction" nillable="true" type="tns:ArrayOfTransaction" />
+  <xs:complexType name="Transaction">
+    <xs:sequence>
+      <xs:element name="Request" nillable="true" type="xs:string" />
+      <xs:element name="Response" nillable="true" type="xs:string" />
+      <xs:element name="SecondaryResponse" nillable="true" type="xs:string" />
+      <xs:element name="Results" nillable="true" type="tns:ArrayOfTransactionResults" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Transaction" nillable="true" type="tns:Transaction" />
+  <xs:complexType name="ArrayOfTransactionResults">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TransactionResults" nillable="true" type="tns:TransactionResults" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTransactionResults" nillable="true" type="tns:ArrayOfTransactionResults" />
+  <xs:complexType name="TransactionResults">
+    <xs:sequence>
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/Ipc.SAS.DAL" name="OverallResult" type="q3:TxnRuleResultType" />
+      <xs:element name="DateOfTest" type="xs:dateTime" />
+      <xs:element name="PTLSStatusCode" nillable="true" type="xs:string" />
+      <xs:element name="ServiceStatusCode" nillable="true" type="xs:string" />
+      <xs:element name="FulfillingHost" nillable="true" type="xs:string" />
+      <xs:element name="MethodResults" nillable="true" type="tns:ArrayOfMethodResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TransactionResults" nillable="true" type="tns:TransactionResults" />
+  <xs:complexType name="ArrayOfMethodResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MethodResult" nillable="true" type="tns:MethodResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMethodResult" nillable="true" type="tns:ArrayOfMethodResult" />
+  <xs:complexType name="MethodResult">
+    <xs:sequence>
+      <xs:element name="MethodExecuted" nillable="true" type="xs:string" />
+      <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.DataContracts" name="Messages" nillable="true" type="q4:ArrayOfCertMessage" />
+      <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/Ipc.SAS.DAL" name="MethodPassFail" type="q5:TxnRuleResultType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MethodResult" nillable="true" type="tns:MethodResult" />
+  <xs:complexType name="GetTransactionsByTxnGuidRequest">
+    <xs:sequence>
+      <xs:element xmlns:q6="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" name="Credentials" nillable="true" type="q6:Credentials" />
+      <xs:element xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/Arrays" name="TxnGuids" nillable="true" type="q7:ArrayOfstring" />
+      <xs:element minOccurs="0" name="QueryNearline" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetTransactionsByTxnGuidRequest" nillable="true" type="tns:GetTransactionsByTxnGuidRequest" />
+  <xs:complexType name="GetTransactionsByTxnGuidResponse">
+    <xs:sequence>
+      <xs:element name="IsSuccess" type="xs:boolean" />
+      <xs:element name="Message" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Transactions" nillable="true" type="tns:ArrayOfTransaction" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetTransactionsByTxnGuidResponse" nillable="true" type="tns:GetTransactionsByTxnGuidResponse" />
+  <xs:complexType name="GetTransactionSummariesRequest">
+    <xs:sequence>
+      <xs:element xmlns:q8="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" name="Credentials" nillable="true" type="q8:Credentials" />
+      <xs:element name="Query" nillable="true" type="tns:Query" />
+      <xs:element minOccurs="0" name="QueryNearline" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetTransactionSummariesRequest" nillable="true" type="tns:GetTransactionSummariesRequest" />
+  <xs:complexType name="GetTransactionSummariesResponse">
+    <xs:sequence>
+      <xs:element name="IsSuccess" type="xs:boolean" />
+      <xs:element name="Message" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TransactionSummaries" nillable="true" type="tns:ArrayOfQuery" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetTransactionSummariesResponse" nillable="true" type="tns:GetTransactionSummariesResponse" />
+  <xs:complexType name="ArrayOfQuery">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Query" nillable="true" type="tns:Query" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfQuery" nillable="true" type="tns:ArrayOfQuery" />
+  <xs:complexType name="GetMetricsReportRequest">
+    <xs:sequence>
+      <xs:element xmlns:q9="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" name="Credentials" nillable="true" type="q9:Credentials" />
+      <xs:element name="StartDate" nillable="true" type="xs:dateTime" />
+      <xs:element name="EndDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="QueryNearline" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetMetricsReportRequest" nillable="true" type="tns:GetMetricsReportRequest" />
+  <xs:complexType name="GetMetricsReportResponse">
+    <xs:sequence>
+      <xs:element name="IsSuccess" type="xs:boolean" />
+      <xs:element name="Message" nillable="true" type="xs:string" />
+      <xs:element name="Metrics" nillable="true" type="tns:MetricsReport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetMetricsReportResponse" nillable="true" type="tns:GetMetricsReportResponse" />
+  <xs:complexType name="MetricsReport">
+    <xs:sequence>
+      <xs:element name="StartDate" nillable="true" type="xs:dateTime" />
+      <xs:element name="EndDate" nillable="true" type="xs:dateTime" />
+      <xs:element name="IsNewline" type="xs:boolean" />
+      <xs:element name="TxnCountsByPTLSVersion" nillable="true" type="tns:ArrayOfTxnCountByPTLSVersion" />
+      <xs:element name="TxnCountsByWeekOfYear" nillable="true" type="tns:ArrayOfTxnCountByWeek" />
+      <xs:element name="TxnCountsByServiceClass" nillable="true" type="tns:ArrayOfTxnCountByServiceClass" />
+      <xs:element name="TxnCountsByTxnClassType" nillable="true" type="tns:ArrayOfTxnCountByTxnClassType" />
+      <xs:element name="TxnCountsByDayOfYear" nillable="true" type="tns:ArrayOfTxnCountByDay" />
+      <xs:element name="TxnCountsByDayOfWeek" nillable="true" type="tns:ArrayOfTxnCountByDayOfWeek" />
+      <xs:element name="TxnCountsByHourOfDay" nillable="true" type="tns:ArrayOfTxnCountByHourOfDay" />
+      <xs:element name="TxnCountsByServiceClassSocketID" nillable="true" type="tns:ArrayOfTxnCountByServiceClassSocketID" />
+      <xs:element name="SocketSerCountsByWeek" nillable="true" type="tns:ArrayOfSocketSerCountByWeek" />
+      <xs:element name="TotalSocketSers" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MetricsReport" nillable="true" type="tns:MetricsReport" />
+  <xs:complexType name="ArrayOfTxnCountByPTLSVersion">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByPTLSVersion" nillable="true" type="tns:TxnCountByPTLSVersion" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByPTLSVersion" nillable="true" type="tns:ArrayOfTxnCountByPTLSVersion" />
+  <xs:complexType name="TxnCountByPTLSVersion">
+    <xs:sequence>
+      <xs:element name="PTLSVersion" nillable="true" type="xs:string" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByPTLSVersion" nillable="true" type="tns:TxnCountByPTLSVersion" />
+  <xs:complexType name="ArrayOfTxnCountByWeek">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByWeek" nillable="true" type="tns:TxnCountByWeek" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByWeek" nillable="true" type="tns:ArrayOfTxnCountByWeek" />
+  <xs:complexType name="TxnCountByWeek">
+    <xs:sequence>
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="WeekOfYear" type="xs:int" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByWeek" nillable="true" type="tns:TxnCountByWeek" />
+  <xs:complexType name="ArrayOfTxnCountByServiceClass">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByServiceClass" nillable="true" type="tns:TxnCountByServiceClass" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByServiceClass" nillable="true" type="tns:ArrayOfTxnCountByServiceClass" />
+  <xs:complexType name="TxnCountByServiceClass">
+    <xs:sequence>
+      <xs:element name="ServiceClass" nillable="true" type="xs:string" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByServiceClass" nillable="true" type="tns:TxnCountByServiceClass" />
+  <xs:complexType name="ArrayOfTxnCountByTxnClassType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByTxnClassType" nillable="true" type="tns:TxnCountByTxnClassType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByTxnClassType" nillable="true" type="tns:ArrayOfTxnCountByTxnClassType" />
+  <xs:complexType name="TxnCountByTxnClassType">
+    <xs:sequence>
+      <xs:element name="TxnClass" nillable="true" type="xs:string" />
+      <xs:element name="TxnType" nillable="true" type="xs:string" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByTxnClassType" nillable="true" type="tns:TxnCountByTxnClassType" />
+  <xs:complexType name="ArrayOfTxnCountByDay">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByDay" nillable="true" type="tns:TxnCountByDay" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByDay" nillable="true" type="tns:ArrayOfTxnCountByDay" />
+  <xs:complexType name="TxnCountByDay">
+    <xs:sequence>
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="DayOfYear" type="xs:int" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByDay" nillable="true" type="tns:TxnCountByDay" />
+  <xs:complexType name="ArrayOfTxnCountByDayOfWeek">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByDayOfWeek" nillable="true" type="tns:TxnCountByDayOfWeek" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByDayOfWeek" nillable="true" type="tns:ArrayOfTxnCountByDayOfWeek" />
+  <xs:complexType name="TxnCountByDayOfWeek">
+    <xs:sequence>
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="WeekOfYear" type="xs:int" />
+      <xs:element name="DayOfWeek" nillable="true" type="xs:string" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByDayOfWeek" nillable="true" type="tns:TxnCountByDayOfWeek" />
+  <xs:complexType name="ArrayOfTxnCountByHourOfDay">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByHourOfDay" nillable="true" type="tns:TxnCountByHourOfDay" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByHourOfDay" nillable="true" type="tns:ArrayOfTxnCountByHourOfDay" />
+  <xs:complexType name="TxnCountByHourOfDay">
+    <xs:sequence>
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="DayOfYear" type="xs:int" />
+      <xs:element name="HourOfDay" type="xs:int" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByHourOfDay" nillable="true" type="tns:TxnCountByHourOfDay" />
+  <xs:complexType name="ArrayOfTxnCountByServiceClassSocketID">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TxnCountByServiceClassSocketID" nillable="true" type="tns:TxnCountByServiceClassSocketID" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTxnCountByServiceClassSocketID" nillable="true" type="tns:ArrayOfTxnCountByServiceClassSocketID" />
+  <xs:complexType name="TxnCountByServiceClassSocketID">
+    <xs:sequence>
+      <xs:element name="ServiceClass" nillable="true" type="xs:string" />
+      <xs:element name="IPPFSocketID" nillable="true" type="xs:string" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TxnCountByServiceClassSocketID" nillable="true" type="tns:TxnCountByServiceClassSocketID" />
+  <xs:complexType name="ArrayOfSocketSerCountByWeek">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SocketSerCountByWeek" nillable="true" type="tns:SocketSerCountByWeek" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSocketSerCountByWeek" nillable="true" type="tns:ArrayOfSocketSerCountByWeek" />
+  <xs:complexType name="SocketSerCountByWeek">
+    <xs:sequence>
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="WeekOfYear" type="xs:int" />
+      <xs:element name="SocketSerCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SocketSerCountByWeek" nillable="true" type="tns:SocketSerCountByWeek" />
+  <xs:complexType name="GetMerchantRollupReportRequest">
+    <xs:sequence>
+      <xs:element xmlns:q10="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" name="Credentials" nillable="true" type="q10:Credentials" />
+      <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.Business" name="ReportingRollupType" type="q11:ReportingRollupType" />
+      <xs:element name="StartDate" nillable="true" type="xs:dateTime" />
+      <xs:element name="EndDate" nillable="true" type="xs:dateTime" />
+      <xs:element name="PortfolioId" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetMerchantRollupReportRequest" nillable="true" type="tns:GetMerchantRollupReportRequest" />
+  <xs:complexType name="GetMerchantRollupReportResponse">
+    <xs:sequence>
+      <xs:element name="IsSuccess" type="xs:boolean" />
+      <xs:element name="Message" nillable="true" type="xs:string" />
+      <xs:element name="RollupReport" nillable="true" type="tns:RollupReport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetMerchantRollupReportResponse" nillable="true" type="tns:GetMerchantRollupReportResponse" />
+  <xs:complexType name="RollupReport">
+    <xs:sequence>
+      <xs:element name="StartDate" nillable="true" type="xs:dateTime" />
+      <xs:element name="EndDate" nillable="true" type="xs:dateTime" />
+      <xs:element name="MerchantRollupReports" nillable="true" type="tns:ArrayOfMerchantRollupReport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RollupReport" nillable="true" type="tns:RollupReport" />
+  <xs:complexType name="ArrayOfMerchantRollupReport">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MerchantRollupReport" nillable="true" type="tns:MerchantRollupReport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMerchantRollupReport" nillable="true" type="tns:ArrayOfMerchantRollupReport" />
+  <xs:complexType name="MerchantRollupReport">
+    <xs:sequence>
+      <xs:element name="IPPFMerchantName" nillable="true" type="xs:string" />
+      <xs:element name="IPPFMerchantID" nillable="true" type="xs:string" />
+      <xs:element name="IPPFSocketID" nillable="true" type="xs:string" />
+      <xs:element name="MerchProfileID" nillable="true" type="xs:string" />
+      <xs:element name="TxnCount" type="xs:int" />
+      <xs:element name="FirstTxnTime" type="xs:dateTime" />
+      <xs:element name="LastTxnTime" type="xs:dateTime" />
+      <xs:element name="TxnCountsByWeekOfYear" nillable="true" type="tns:ArrayOfTxnCountByWeek" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MerchantRollupReport" nillable="true" type="tns:MerchantRollupReport" />
+  <xs:complexType name="GetMerchantDetailsReportRequest">
+    <xs:sequence>
+      <xs:element xmlns:q12="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" name="Credentials" nillable="true" type="q12:Credentials" />
+      <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.Business" name="ReportingDetailsType" type="q13:ReportingDetailsType" />
+      <xs:element name="DetailKey" nillable="true" type="xs:string" />
+      <xs:element name="PortfolioId" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetMerchantDetailsReportRequest" nillable="true" type="tns:GetMerchantDetailsReportRequest" />
+  <xs:complexType name="GetMerchantDetailsReportResponse">
+    <xs:sequence>
+      <xs:element name="IsSuccess" type="xs:boolean" />
+      <xs:element name="Message" nillable="true" type="xs:string" />
+      <xs:element name="DetailsReport" nillable="true" type="tns:DetailsReport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetMerchantDetailsReportResponse" nillable="true" type="tns:GetMerchantDetailsReportResponse" />
+  <xs:complexType name="DetailsReport">
+    <xs:sequence>
+      <xs:element name="MerchantDetailsSummary" nillable="true" type="tns:ArrayOfMerchantDetailsSummary" />
+      <xs:element name="MerchantDetailsByHours" nillable="true" type="tns:ArrayOfMerchantDetailsByHour" />
+      <xs:element name="MerchantDetailsByDays" nillable="true" type="tns:ArrayOfMerchantDetailsByDay" />
+      <xs:element name="MerchantDetailsByWeeks" nillable="true" type="tns:ArrayOfMerchantDetailsByWeek" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DetailsReport" nillable="true" type="tns:DetailsReport" />
+  <xs:complexType name="ArrayOfMerchantDetailsSummary">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MerchantDetailsSummary" nillable="true" type="tns:MerchantDetailsSummary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMerchantDetailsSummary" nillable="true" type="tns:ArrayOfMerchantDetailsSummary" />
+  <xs:complexType name="MerchantDetailsSummary">
+    <xs:sequence>
+      <xs:element name="IPPFSocketID" nillable="true" type="xs:string" />
+      <xs:element name="TxnCount" type="xs:int" />
+      <xs:element name="FirstTransactionTime" nillable="true" type="xs:dateTime" />
+      <xs:element name="LastTransactionTime" nillable="true" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MerchantDetailsSummary" nillable="true" type="tns:MerchantDetailsSummary" />
+  <xs:complexType name="ArrayOfMerchantDetailsByHour">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MerchantDetailsByHour" nillable="true" type="tns:MerchantDetailsByHour" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMerchantDetailsByHour" nillable="true" type="tns:ArrayOfMerchantDetailsByHour" />
+  <xs:complexType name="MerchantDetailsByHour">
+    <xs:sequence>
+      <xs:element name="IPPFSocketID" nillable="true" type="xs:string" />
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="DayOfYear" type="xs:int" />
+      <xs:element name="HourOfDay" type="xs:int" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MerchantDetailsByHour" nillable="true" type="tns:MerchantDetailsByHour" />
+  <xs:complexType name="ArrayOfMerchantDetailsByDay">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MerchantDetailsByDay" nillable="true" type="tns:MerchantDetailsByDay" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMerchantDetailsByDay" nillable="true" type="tns:ArrayOfMerchantDetailsByDay" />
+  <xs:complexType name="MerchantDetailsByDay">
+    <xs:sequence>
+      <xs:element name="IPPFSocketID" nillable="true" type="xs:string" />
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="DayOfYear" type="xs:int" />
+      <xs:element name="TxnCount" type="xs:int" />
+      <xs:element name="ServiceClass" nillable="true" type="xs:string" />
+      <xs:element name="FailureCount" type="xs:int" />
+      <xs:element name="SuccessCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MerchantDetailsByDay" nillable="true" type="tns:MerchantDetailsByDay" />
+  <xs:complexType name="ArrayOfMerchantDetailsByWeek">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MerchantDetailsByWeek" nillable="true" type="tns:MerchantDetailsByWeek" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMerchantDetailsByWeek" nillable="true" type="tns:ArrayOfMerchantDetailsByWeek" />
+  <xs:complexType name="MerchantDetailsByWeek">
+    <xs:sequence>
+      <xs:element name="IPPFSocketID" nillable="true" type="xs:string" />
+      <xs:element name="Year" type="xs:int" />
+      <xs:element name="WeekOfYear" type="xs:int" />
+      <xs:element name="TxnCount" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MerchantDetailsByWeek" nillable="true" type="tns:MerchantDetailsByWeek" />
+  <xs:complexType name="SetDurabilityByTxnGuidRequest">
+    <xs:sequence>
+      <xs:element xmlns:q14="http://schemas.ipcommerce.com/Entity/PTLS/SAS/v1.17/SandboxConfigurationService" name="Credentials" nillable="true" type="q14:Credentials" />
+      <xs:element xmlns:q15="http://schemas.microsoft.com/2003/10/Serialization/Arrays" name="TxnGuids" nillable="true" type="q15:ArrayOfstring" />
+      <xs:element name="IsDurable" type="xs:boolean" />
+      <xs:element minOccurs="0" name="QueryNearline" nillable="true" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SetDurabilityByTxnGuidRequest" nillable="true" type="tns:SetDurabilityByTxnGuidRequest" />
+  <xs:complexType name="SetDurabilityByTxnGuidResponse">
+    <xs:sequence>
+      <xs:element name="IsSuccess" type="xs:boolean" />
+      <xs:element name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SetDurabilityByTxnGuidResponse" nillable="true" type="tns:SetDurabilityByTxnGuidResponse" />
+</xs:schema>

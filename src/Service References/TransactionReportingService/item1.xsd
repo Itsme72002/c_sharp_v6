@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.DataContracts" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.DataContracts" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="ArrayOfCertMessage">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CertMessage" nillable="true" type="tns:CertMessage" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCertMessage" nillable="true" type="tns:ArrayOfCertMessage" />
+  <xs:complexType name="CertMessage">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Severity" type="tns:SeverityType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CertMessage" nillable="true" type="tns:CertMessage" />
+  <xs:simpleType name="SeverityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="UNKNOWN" />
+      <xs:enumeration value="INFO" />
+      <xs:enumeration value="WARNING" />
+      <xs:enumeration value="ERROR" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="SeverityType" nillable="true" type="tns:SeverityType" />
+</xs:schema>

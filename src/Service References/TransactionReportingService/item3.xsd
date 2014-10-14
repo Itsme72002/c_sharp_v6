@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.Business" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Ipc.SAS.TransactionReporting.Business" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="ReportingRollupType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SWC_ACTIVITY" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ReportingRollupType" nillable="true" type="tns:ReportingRollupType" />
+  <xs:simpleType name="ReportingDetailsType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SWC_TREND" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ReportingDetailsType" nillable="true" type="tns:ReportingDetailsType" />
+</xs:schema>

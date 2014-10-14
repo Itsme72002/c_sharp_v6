@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="https://reporting.elementexpress.com" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="https://reporting.elementexpress.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="https://reporting.elementexpress.com">
+      <s:element name="TransactionQuery">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="credentials" type="tns:Credentials" />
+            <s:element minOccurs="1" maxOccurs="1" name="application" type="tns:Application" />
+            <s:element minOccurs="1" maxOccurs="1" name="parameters" type="tns:Parameters" />
+            <s:element minOccurs="0" maxOccurs="1" name="extendedParameters" type="tns:ArrayOfExtendedParameters" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Credentials">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="AccountID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AccountToken" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="AcceptorID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="NewAccountToken" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Application">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationVersion" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Parameters">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TerminalID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApprovalNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApprovedAmount" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExpressTransactionDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExpressTransactionTime" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="HostBatchID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="HostItemID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="HostReversalQueueID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="OriginalAuthorizedAmount" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ReferenceNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ShiftID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SourceTransactionID" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="TerminalType" type="tns:TerminalType" />
+          <s:element minOccurs="0" maxOccurs="1" name="TrackingID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionAmount" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionStatus" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionStatusCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="XID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SourceIPAddress" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExternalInterface" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="LogTraceLevel" type="tns:LogTraceLevel" />
+          <s:element minOccurs="0" maxOccurs="1" name="LogTraceLevelName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MachineName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SourceObject" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ProcessID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ThreadID" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ReverseOrder" type="tns:BooleanType" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionDateTimeBegin" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionDateTimeEnd" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionSetupID" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="TerminalType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Unknown" />
+          <s:enumeration value="PointOfSale" />
+          <s:enumeration value="ECommerce" />
+          <s:enumeration value="MOTO" />
+          <s:enumeration value="FuelPump" />
+          <s:enumeration value="ATM" />
+          <s:enumeration value="Voice" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="LogTraceLevel">
+        <s:list>
+          <s:simpleType>
+            <s:restriction base="s:string">
+              <s:enumeration value="None" />
+              <s:enumeration value="Fatal" />
+              <s:enumeration value="Error" />
+              <s:enumeration value="Warning" />
+              <s:enumeration value="Information" />
+              <s:enumeration value="Trace" />
+              <s:enumeration value="Debug" />
+              <s:enumeration value="All" />
+            </s:restriction>
+          </s:simpleType>
+        </s:list>
+      </s:simpleType>
+      <s:simpleType name="BooleanType">
+        <s:restriction base="s:string">
+          <s:enumeration value="False" />
+          <s:enumeration value="True" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfExtendedParameters">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ExtendedParameters" type="tns:ExtendedParameters" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ExtendedParameters">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Key" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ExpressResponse" abstract="true">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ExpressResponseCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExpressResponseMessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExpressTransactionDate" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExpressTransactionTime" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExpressTransactionTimezone" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExtendedParameters" type="tns:ArrayOfExtendedParameters" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Response">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:ExpressResponse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ReportingData" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ReportingID" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="TransactionQueryResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="response" type="tns:Response" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="TransactionQuerySoapIn">
+    <wsdl:part name="parameters" element="tns:TransactionQuery" />
+  </wsdl:message>
+  <wsdl:message name="TransactionQuerySoapOut">
+    <wsdl:part name="parameters" element="tns:TransactionQueryResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ExpressSoap">
+    <wsdl:operation name="TransactionQuery">
+      <wsdl:input message="tns:TransactionQuerySoapIn" />
+      <wsdl:output message="tns:TransactionQuerySoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ExpressSoap" type="tns:ExpressSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="TransactionQuery">
+      <soap:operation soapAction="https://reporting.elementexpress.com/TransactionQuery" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ExpressSoap12" type="tns:ExpressSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="TransactionQuery">
+      <soap12:operation soapAction="https://reporting.elementexpress.com/TransactionQuery" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Express">
+    <wsdl:port name="ExpressSoap" binding="tns:ExpressSoap">
+      <soap:address location="https://certreporting.elementexpress.com/express.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ExpressSoap12" binding="tns:ExpressSoap12">
+      <soap12:address location="https://certreporting.elementexpress.com/express.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
