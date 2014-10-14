@@ -1,6 +1,6 @@
 ﻿namespace CertSuiteTool
 {
-    partial class TestPWS
+    partial class Send_Transactions
     {
         /// <summary>
         /// Required designer variable.
@@ -1033,7 +1033,7 @@
             this.ClientSize = new System.Drawing.Size(815, 685);
             this.Controls.Add(this.TbControl);
             this.Name = "TestPWS";
-            this.Text = "PWS 6.0.7 Sample Application";
+            this.Text = "cSharp 6.0.7 Sample Application";
             this.TbControl.ResumeLayout(false);
             this.TbTransactionData.ResumeLayout(false);
             this.TbTransactionData.PerformLayout();

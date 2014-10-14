@@ -16,7 +16,7 @@ namespace CertSuiteTool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TestPWS());
+            Application.Run(new Send_Transactions());
         }
     }
 }

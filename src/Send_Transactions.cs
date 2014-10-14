@@ -27,7 +27,7 @@ namespace CertSuiteTool
      * Note : for VB.NET customers you should add the switch /language:VB to command lines above
      * 
     */
-    public partial class TestPWS : Form
+    public partial class Send_Transactions : Form
     {
         //Web Service Clients
         //PaymentWebServices.PaymentPortTypeClient PWSClient = new PaymentWebServices.PaymentPortTypeClient();
@@ -47,7 +47,7 @@ namespace CertSuiteTool
         //The following are used to switch the URI for posting data
         private static object svcInfoChannelLock = new object();
         
-        public TestPWS()
+        public Send_Transactions()
         {
             InitializeComponent();
 
