@@ -40,8 +40,8 @@ namespace CertSuiteTool
         //http://stackoverflow.com/questions/11263640/net-client-authentication-and-soap-credential-headers-for-a-cxf-web-service
 
         private string _PWSEndpointAddress = "https://ws-cert.vantiv.com/merchant/payments-cert/v6"; //Options "https://ws-cert.vantiv.com/merchant/payments-cert/v6", "https://ws-stage.infoftps.com:4443/merchant/payments-test/v6"
-        private string _UserName = "s.MID2.PAY.WS.NP"; //s.MID2.PAY.WS.NP
-        private string _Password = "drUdR9fR";//drUdR9fR
+        private string _UserName = "s.MID5.PAY.WS.NP";
+        private string _Password = "Tu2u2AHU";
         private string _ApiKey = "";//API key provided by Apigee when creating a new application.
 
         //The following are used to switch the URI for posting data
