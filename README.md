@@ -1,6 +1,6 @@
 Vantiv-Developer-Portal and Vantiv-Payment-Web-Services
 =======================================================
-*** IMPORTANT You will need to create a project at http://vantiv.devportal.apigee.com/ in order to get access to the sandbox and test your code
+*** IMPORTANT You will need to create a project at https://apideveloper.vantiv.com/ in order to get access to the sandbox and test your code
 
 Integration Guidelines available here: Coming
 Online developers guide: Coming
