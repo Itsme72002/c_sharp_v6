@@ -1,20 +1,45 @@
-﻿using System;
+﻿/*
+Copyright (c) 2014 Vantiv, Inc. - All Rights Reserved.
+
+Sample Code is for reference only and is solely intended to be used for educational purposes and is provided “AS IS” and “AS AVAILABLE” and without 
+warranty. It is the responsibility of the developer to  develop and write its own code before successfully certifying their solution.  
+
+This sample may not, in whole or in part, be copied, photocopied, reproduced, translated, or reduced to any electronic medium or machine-readable 
+form without prior consent, in writing, from Vantiv, Inc.
+
+Use, duplication or disclosure by the U.S. Government is subject to restrictions set forth in an executed license agreement and in subparagraph (c)(1) 
+of the Commercial Computer Software-Restricted Rights Clause at FAR 52.227-19; subparagraph (c)(1)(ii) of the Rights in Technical Data and Computer 
+Software clause at DFARS 252.227-7013, subparagraph (d) of the Commercial Computer Software--Licensing clause at NASA FAR supplement 16-52.227-86; 
+or their equivalent.
+
+Information in this sample code is subject to change without notice and does not represent a commitment on the part of Vantiv, Inc.  In addition to 
+the foregoing, the Sample Code is subject to the terms and conditions set forth in the Vantiv Terms and Conditions of Use (http://www.apideveloper.vantiv.com) 
+and the Vantiv Privacy Notice (http://www.vantiv.com/Privacy-Notice).  
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Configuration;
 using System.ServiceModel;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 using System.IO;
-using System.Net;
 using Common;
 using System.Web.Services.Protocols;
 using System.Web.Services;
+using System.Reflection;
+using CertSuiteTool_VDP;
+using CertSuiteTool.Helper_Class;
+using System.Net;
+using System.Timers;
 
 namespace CertSuiteTool
 {
@@ -31,18 +56,26 @@ namespace CertSuiteTool
     {
         //Web Service Clients
         //PaymentWebServices.PaymentPortTypeClient PWSClient = new PaymentWebServices.PaymentPortTypeClient();
-        PaymentPortTypeClient PWSClient = new PaymentPortTypeClient();
-
+        public PaymentPortTypeClient PWSClient = new PaymentPortTypeClient();
+        TransactionRequestType CurrentTransactionRequestTypeObject;
+        
         ////Endpoint addresses
         //http://msdn.microsoft.com/en-us/library/77hkfhh8(VS.71).aspx //SOAP Headers
         //http://msdn.microsoft.com/en-us/library/ms819938.aspx
         //http://msdn.microsoft.com/en-us/library/vstudio/9z52by6a(v=vs.100).aspx
         //http://stackoverflow.com/questions/11263640/net-client-authentication-and-soap-credential-headers-for-a-cxf-web-service
 
-        private string _PWSEndpointAddress = "https://ws-cert.vantiv.com/merchant/payments-cert/v6"; //Options "https://ws-cert.vantiv.com/merchant/payments-cert/v6", "https://ws-stage.infoftps.com:4443/merchant/payments-test/v6"
-        private string _UserName = "s.MID5.PAY.WS.NP";
-        private string _Password = "Tu2u2AHU";
-        private string _ApiKey = "";//API key provided by Apigee when creating a new application.
+        /*Apigee Endpoint URL By transaciton type*/
+
+        private string _VDPEndpointAddress = ConfigurationSettings.AppSettings["VDP_EndpointAddress"];//drUdR9fR
+        private string _VDPLicenseId = ConfigurationSettings.AppSettings["VDP_LicenseId"];//drUdR9fR
+        private string _PWSEndpointAddress = ConfigurationSettings.AppSettings["PWS_EndpointAddress"]; //Options "https://ws-cert.vantiv.com/merchant/payments-cert/v6", "https://ws-stage.infoftps.com:4443/merchant/payments-stage/v6"
+        private string _PWSUserName = ConfigurationSettings.AppSettings["PWS_VDP_UserName"]; //s.MID2.PAY.WS.NP
+        private string _PWSPassword = ConfigurationSettings.AppSettings["PWS_VDP_Password"];//drUdR9fR
+
+        private bool _fromLoading;
+
+        private static System.Timers.Timer aTimer;
 
         //The following are used to switch the URI for posting data
         private static object svcInfoChannelLock = new object();
@@ -50,15 +83,47 @@ namespace CertSuiteTool
         public Send_Transactions()
         {
             InitializeComponent();
+            _fromLoading = true;
+            try
+            {
+                new VDP_Helper(this);//Used for clients integrating to Vantiv Developer Portal (VDP)
+                new PWS_Helper(this);//Used for clients integrating to Payments Web Services (PWS)
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            //PicVantiLogo
+            PicVantiLogo.Image = ImageFromBase64String(@"iVBORw0KGgoAAAANSUhEUgAAA5IAAAB/CAYAAACdQ/3TAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAADKGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS41LWMwMjEgNzkuMTU1NzcyLCAyMDE0LzAxLzEzLTE5OjQ0OjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxNCAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoyQ0Q0REY4RTE1Q0IxMUU0OENFNUZBODlGN0UyQjYyRCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoyQ0Q0REY4RjE1Q0IxMUU0OENFNUZBODlGN0UyQjYyRCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjJDRDRERjhDMTVDQjExRTQ4Q0U1RkE4OUY3RTJCNjJEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjJDRDRERjhEMTVDQjExRTQ4Q0U1RkE4OUY3RTJCNjJEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpS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");
+            txtDisclaimer.Text = "Copyright (c) 2014 Vantiv, Inc. - All Rights Reserved."
+                                + "Sample Code is for reference only and is solely intended to be used for educational purposes and is provided “AS IS” and “AS AVAILABLE” and without "
+                                + "warranty. It is the responsibility of the developer to  develop and write its own code before successfully certifying their solution. "
+                                + "\r\n\r\n"
+                                + "This sample may not, in whole or in part, be copied, photocopied, reproduced, translated, or reduced to any electronic medium or machine-readable "
+                                + "form without prior consent, in writing, from Vantiv, Inc."
+                                + "\r\n\r\n"
+                                + "Use, duplication or disclosure by the U.S. Government is subject to restrictions set forth in an executed license agreement and in subparagraph (c)(1) "
+                                + "of the Commercial Computer Software-Restricted Rights Clause at FAR 52.227-19; subparagraph (c)(1)(ii) of the Rights in Technical Data and Computer "
+                                + "Software clause at DFARS 252.227-7013, subparagraph (d) of the Commercial Computer Software--Licensing clause at NASA FAR supplement 16-52.227-86; "
+                                + "or their equivalent."
+                                 + "\r\n\r\n"
+                                + "Information in this sample code is subject to change without notice and does not represent a commitment on the part of Vantiv, Inc.  In addition to "
+                                + "the foregoing, the Sample Code is subject to the terms and conditions set forth in the Vantiv Terms and Conditions of Use (http://www.apideveloper.vantiv.com) "
+                                + "and the Vantiv Privacy Notice (http://www.vantiv.com/Privacy-Notice).";
 
             //Set Defaults
-            CboPaymentInstrument.Text = "";
-            CboTerminalDetail.Text = "";//set defult
+            CboCreditType.Items.Add("CardKeyed");
+            CboCreditType.Items.Add("CardSwiped");
             CboCreditType.Text = "";
+
+            CboTerminalDetail.Items.Add("Terminal");
+            CboTerminalDetail.Items.Add("Software");
+            CboTerminalDetail.Items.Add("Mobile");
+            CboTerminalDetail.Text = "";
+
             GrpKeyedData.Enabled = true;
             GrpTrackData.Enabled = false;
 
-            //Setup Card Types CboCardTypes
             CboTransactionType.Sorted = true;
             CboTransactionType.DataSource = Enum.GetValues(typeof(TransactionTypeType));
             try { CboTransactionType.SelectedIndex = -1; }
@@ -77,11 +142,6 @@ namespace CertSuiteTool
             CboTrackChoice.Sorted = true;
             CboTrackChoice.DataSource = Enum.GetValues(typeof(ItemChoiceType));
             try { CboTrackChoice.SelectedItem = ItemChoiceType.Track2; }
-            catch { }
-
-            CboCancelType.Sorted = true;
-            CboCancelType.DataSource = Enum.GetValues(typeof(CancelTransactionType));
-            try { CboCancelType.SelectedIndex = -1; }
             catch { }
 
             CboReversalReason.Sorted = true;
@@ -114,20 +174,54 @@ namespace CertSuiteTool
             try { CboStateType.SelectedItem = StateCodeType.OH; }
             catch { }
             
+            CboTerminalEnvironmentalCode.Sorted = true;
+            CboTerminalEnvironmentalCode.DataSource = Enum.GetValues(typeof(TerminalClassificationType));
+            try { CboTerminalEnvironmentalCode.SelectedIndex = -1; }
+            catch { }
+
+            CboCardInputCode.Sorted = true;
+            CboCardInputCode.DataSource = Enum.GetValues(typeof(CardInputCode));
+            try { CboCardInputCode.SelectedIndex = -1; }
+            catch { }
+
+            CboEntryMode.Sorted = true;
+            CboEntryMode.DataSource = Enum.GetValues(typeof(EntryModeType));
+            try { CboEntryMode.SelectedIndex = -1; }
+            catch { }
+
+            CboBalanceInquiry.Sorted = true;
+            CboBalanceInquiry.Items.Add(true);
+            CboBalanceInquiry.Items.Add(false);
+
+            CboHostAdjustment.Sorted = true;
+            CboHostAdjustment.Items.Add(true);
+            CboHostAdjustment.Items.Add(false);
+
+            CboPinEntry.Sorted = true;
+            CboPinEntry.DataSource = Enum.GetValues(typeof(PinEntryType));
+            try { CboPinEntry.SelectedIndex = -1; }
+            catch { }
+            
+            //Only for PWS
+
+            CboCardReaderType.Sorted = true;
+            CboCardReaderType.DataSource = Enum.GetValues(typeof(CardReaderType));
+            try { CboCardReaderType.SelectedIndex = -1; }
+            catch { }
 
             #region 
             //Format [MID] : [TID] : [Description]
-            CboTestMerchantAccounts.Items.Add("4445000865113 : 002 : Tandem");
-            CboTestMerchantAccounts.Items.Add("4445000868901 : 001 : RAFT (aka IBM)");
-            CboTestMerchantAccounts.Items.Add("4445012495101 : 001 : RAFT (MID / TID returns a token)");
+            CboTestMerchantAccounts.Items.Add("4445012916098 : 001 : Tandem with tokenization");
+            CboTestMerchantAccounts.Items.Add("4445012916106 : 001 : Tandem without tokenization");
             #endregion Test Merchant Accounts
 
-            CboSendTransaction.Items.Add(new item("Authorize", "Authorize"));
-            CboSendTransaction.Items.Add(new item("Capture", "Capture"));
-            CboSendTransaction.Items.Add(new item("Purchase", "Purchase"));
+            CboSendTransaction.Items.Add(new item("Authorize", "Authorize"));// (Authorization) (AVSOnly 0.00)
+            CboSendTransaction.Items.Add(new item("Capture", "Capture"));// (AuthorizationCompletion)
+            CboSendTransaction.Items.Add(new item("Purchase", "Purchase"));// (Sale) (Voice Auth)
             CboSendTransaction.Items.Add(new item("Adjust", "Adjust"));
-            CboSendTransaction.Items.Add(new item("Refund", "Refund"));
+            CboSendTransaction.Items.Add(new item("Refund", "Refund"));//(Return)
             CboSendTransaction.Items.Add(new item("Cancel", "Cancel"));
+            CboSendTransaction.Items.Add(new item("Void (VDP only)", "Void"));
             CboSendTransaction.Items.Add(new item("Close Batch", "CloseBatch"));
             CboSendTransaction.Items.Add(new item("Tokenize", "Tokenize"));
             CboSendTransaction.Items.Add(new item("Activate", "Activate"));
@@ -147,12 +241,19 @@ namespace CertSuiteTool
              * svcutil.exe PWS\payments.wsdl /config:app.config /mergeConfig
             */
 
-            //Setup Endpoint addresses 
+            //Setup Endpoint addresses and login for VDP
+            TxtLicenseKeyAPIKey.Text = _VDPLicenseId;
+            txtVDPBaseEndpointURL.Text = _VDPEndpointAddress;
+
+            //Setup Endpoint addresses and login for PWS
+            txtPWSBaseEndpointURL.Text = _PWSEndpointAddress;
+            TxtUserName.Text = _PWSUserName;
+            TxtPassword.Text = _PWSPassword;
             lock (svcInfoChannelLock)
             {
                 PWSClient.Endpoint.Address = new EndpointAddress(_PWSEndpointAddress);
-                PWSClient.ClientCredentials.UserName.UserName = _UserName;
-                PWSClient.ClientCredentials.UserName.Password = _Password;
+                PWSClient.ClientCredentials.UserName.UserName = _PWSUserName;
+                PWSClient.ClientCredentials.UserName.Password = _PWSPassword;
                 PWSClient.Open();
             }
 
@@ -162,6 +263,8 @@ namespace CertSuiteTool
             #endregion setup endpoints
 
             DisableFields();
+
+            _fromLoading = false;
         }
 
         #region Form Events
@@ -182,7 +285,7 @@ namespace CertSuiteTool
                     foreach (object itemChecked in ChkLstTransactionsProcessed.CheckedItems)
                     {
                         //((TransactionResponseType)(_response))
-                        if (((ResponseDetails)(itemChecked)).Response.GetType().ToString() != "AuthorizeResponse")
+                        if (((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize")
                         {
                             MessageBox.Show("All selected messages must be of type Authorize");
                             Cursor = Cursors.Default;
@@ -206,7 +309,7 @@ namespace CertSuiteTool
                     foreach (object itemChecked in ChkLstTransactionsProcessed.CheckedItems)
                     {
                         //((TransactionResponseType)(_response))
-                        if (((ResponseDetails)(itemChecked)).Response.GetType().ToString() != "PurchaseResponse")
+                        if (((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase")
                         {
                             MessageBox.Show("All selected messages must be of type Purchase");
                             Cursor = Cursors.Default;
@@ -228,7 +331,7 @@ namespace CertSuiteTool
                     foreach (object itemChecked in ChkLstTransactionsProcessed.CheckedItems)
                     {
                         //((TransactionResponseType)(_response))
-                        if (((ResponseDetails)(itemChecked)).Response.GetType().ToString() != "AuthorizeResponse")
+                        if (((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize")
                         {
                             MessageBox.Show("All selected messages must be of type Authorize");
                             Cursor = Cursors.Default;
@@ -239,20 +342,53 @@ namespace CertSuiteTool
                     //Now process each Authorize message selected
                     foreach (ResponseDetails _RD in txnsToProcess)
                     {
-                        Refund(_RD);
+                        Refund();
                     }
                 }
                 if (test == "Cancel")
                 {
-                    //First verify if all transactions selected are "Authorize" transactions
+                    //First verify if all transactions selected can be Canceled
+                        //Credit transaction(s) : adjust, authorize, capture, purchase, refund
+                        //Debit transaction(s) : purchase, refund, purchase_cashback
+                        //Gift transaction(s) : activate, authorize, capture, close, purchase, refund, reload, unload
                     List<ResponseDetails> txnsToProcess = new List<ResponseDetails>();
                     foreach (object itemChecked in ChkLstTransactionsProcessed.CheckedItems)
                     {
-                        if (ChkLstTransactionsProcessed.CheckedItems.Count < 1) { MessageBox.Show("Please select 'Authorize' transaction(s) to process"); return; }
-                        //((TransactionResponseType)(_response))
-                        if (((ResponseDetails)(itemChecked)).Response.GetType().ToString() != "AuthorizeResponse")
+                        if (ChkLstTransactionsProcessed.CheckedItems.Count < 1) { MessageBox.Show("Please select transactions to cancel"); return; }
+                     
+                        //Credit
+                        if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Credit" &&
+                            (((ResponseDetails)(itemChecked)).TxnRequestType != "Adjust"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Capture"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"))
                         {
-                            MessageBox.Show("All selected messages must be of type Authorize");
+                            MessageBox.Show("Invalid message type for Credit - cancel");
+                            Cursor = Cursors.Default;
+                            return;
+                        }
+                        //Debit
+                        if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Debit" &&
+                            (((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"))
+                        {
+                            MessageBox.Show("Invalid message type for Debit - cancel");
+                            Cursor = Cursors.Default;
+                            return;
+                        }
+                        //Gift
+                        if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Gift" &&
+                            (((ResponseDetails)(itemChecked)).TxnRequestType != "Activate"
+                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize"
+                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Capture"
+                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Close"
+                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"
+                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Reload"
+                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Unload"))
+                        {
+                            MessageBox.Show("Invalid message type for Gift - cancel");
                             Cursor = Cursors.Default;
                             return;
                         }
@@ -262,6 +398,57 @@ namespace CertSuiteTool
                     foreach (ResponseDetails _RD in txnsToProcess)
                     {
                         Cancel(_RD);
+                    }
+                }
+                if (test == "Void")
+                {
+                    List<ResponseDetails> txnsToProcess = new List<ResponseDetails>();
+                    foreach (object itemChecked in ChkLstTransactionsProcessed.CheckedItems)
+                    {
+                        if (ChkLstTransactionsProcessed.CheckedItems.Count < 1) { MessageBox.Show("Please select transactions to void"); return; }
+
+                        //Credit
+                        if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Credit" &&
+                            (((ResponseDetails)(itemChecked)).TxnRequestType != "Adjust"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Capture"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"))
+                        {
+                            MessageBox.Show("Invalid message type for Credit - void");
+                            Cursor = Cursors.Default;
+                            return;
+                        }
+                        //Debit
+                        if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Debit" &&
+                            (((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"))
+                        {
+                            MessageBox.Show("Invalid message type for Debit - void");
+                            Cursor = Cursors.Default;
+                            return;
+                        }
+                        //Gift
+                        if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Gift" &&
+                            (((ResponseDetails)(itemChecked)).TxnRequestType != "Activate"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Capture"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Close"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Reload"
+                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Unload"))
+                        {
+                            MessageBox.Show("Invalid message type for Gift - void");
+                            Cursor = Cursors.Default;
+                            return;
+                        }
+                        txnsToProcess.Add(((ResponseDetails)(itemChecked)));
+                    }
+                    //Now process each Authorize message selected
+                    foreach (ResponseDetails _RD in txnsToProcess)
+                    {
+                        Void(_RD);
                     }
                 }
                 if (test == "CloseBatch")
@@ -286,6 +473,15 @@ namespace CertSuiteTool
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+
+                DialogResult Result;
+                Result = MessageBox.Show("Unable to process the transaction. Add Request to list of transactions?", "Add to Transaction List", MessageBoxButtons.YesNo);
+                if (Result == DialogResult.Yes)
+                {
+                    ResponseDetails rd = new ResponseDetails(CboPWSorVDP.Text, null, null, CboPaymentInstrument.Text, CboSendTransaction.Text, null, null);
+                    //ResponseDetails rd = new ResponseDetails(CboPWSorVDP.Text, null, null, null, null, CurrentTransactionRequestTypeObject, null, CboPaymentInstrument.Text, CboSendTransaction.Text);
+                    ChkLstTransactionsProcessed.Items.Add(rd);
+                }
             }
         }
 
@@ -294,31 +490,210 @@ namespace CertSuiteTool
             ChkLstTransactionsProcessed.Items.Clear();
         }
 
-        private void CboTransactionType_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmdGo_Click(object sender, EventArgs e)
         {
-            try 
+            if (CboPWSorVDP.Text.Length > 0)
+                TbControl.SelectedTab = TbMerchantData;
+            else
             {
-                DisableFields();
-                if (CboTransactionType.Text == "ecommerce" | CboTransactionType.Text == "moto")
+                MessageBox.Show("Please select a integration method");
+                CboPWSorVDP.Focus();
+            }
+        }
+
+        private void CmdSendTransactions_Click(object sender, EventArgs e)
+        {
+            if (TxtMID.Text.Length < 1 | TxtTID.Text.Length < 1)
+            { 
+                MessageBox.Show("Please either enter a Merchant Id and Terminal Id or select an account from the drop down");
+                return;
+            }
+            TbControl.SelectedTab = TbTransactionData;
+        }
+
+        private void CmdExampleTestVal_Click(object sender, EventArgs e)
+        {
+            //In general the industry preference for processing transactions is Track2 followed by Track1 followed by Keyed
+            if (CboCardType.Text == "visa")
+            {
+                if (CboTrackChoice.Text == "Track2")
                 {
-                    CboPaymentInstrument.Enabled = true;
-                    CboTerminalDetail.Enabled = true;
-                    CboCreditType.Enabled = true;
-                    GrpKeyedData.Enabled = true;
-                    CboCreditType.Text = "CardKeyed";
-                    CboPartialApprovalCode.SelectedItem = PartialIndicatorType.not_supported;
+                    TxtTrackData.Text = "4445222299990007=17121010000023700000";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
                 }
-                else if (CboTransactionType.Text == "present")
+                else if (CboTrackChoice.Text == "Track1")
                 {
-                    CboPaymentInstrument.Enabled = true;
-                    CboTerminalDetail.Enabled = true;
-                    CboCreditType.Enabled = true;
-                    GrpTrackData.Enabled = true;
-                    CboCreditType.Text = "CardSwiped";
-                    CboPartialApprovalCode.SelectedItem = PartialIndicatorType.supported;
+                    TxtTrackData.Text = "B4445222299990007^TESTCARD/TEST^171210100000000000237000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
                 }
             }
+            else if (CboCardType.Text == "masterCard")
+            {
+                if (CboTrackChoice.Text == "Track2")
+                {
+                    TxtTrackData.Text = "5444009999222205=14121010000071700";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
+                }
+                else if (CboTrackChoice.Text == "Track1")
+                {
+                    TxtTrackData.Text = "B5444009999222205^TEST-VOID/TEST^141210100000000000000071700";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
+                }
+            }
+            else if (CboCardType.Text == "amex")
+            {
+                if (CboTrackChoice.Text == "Track2")
+                {
+                    TxtTrackData.Text = "341111597242000=17121010000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
+                }
+                else if (CboTrackChoice.Text == "Track1")
+                {
+                    TxtTrackData.Text = "B341111597242000^ISO/AMEX TEST             ^1712101000000000000000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
+                }
+            }
+            else if (CboCardType.Text == "discover")
+            {
+                if (CboTrackChoice.Text == "Track2")
+                {
+                    TxtTrackData.Text = "6011000990911111=19121010000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
+                }
+                else if (CboTrackChoice.Text == "Track1")
+                {
+                    TxtTrackData.Text = "B6011000990911111^TESTCARD/DISCOVER^1912101000000000000000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
+                }
+            }
+        }
+
+        private void ChkEncryptedData_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ChkEncryptedData.Checked)
+                TxtKeySerialNumber.Enabled = true;
+            else
+                TxtKeySerialNumber.Enabled = false;
+        }
+
+        private void ChkLstTransactionsProcessed_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!ChkOnClickDisplayTxnMessage.Checked)
+                return;
+
+            ResponseDetails rd = ((ResponseDetails)(ChkLstTransactionsProcessed.SelectedItem));
+            if (rd.PWS_TxnSummary != null && rd.PWS_TxnSummary.Response != null)
+                MessageBox.Show(PWS_Helper.ExtractDetailsFromResponse(rd));
+            if (rd.VDP_TxnSummary != null && rd.VDP_TxnSummary.XMLResponse != null)
+                MessageBox.Show("REQUEST\r\n" + rd.VDP_TxnSummary.JsonRequest + "\r\n\r\nRESPONSE\r\n" + rd.VDP_TxnSummary.JsonResponse);
+
+        }
+
+        private void ChkUseToken_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ChkUseToken.Checked)
+            {
+                DialogResult Result;
+                Result = MessageBox.Show("When using a token 'Token Requested' should be false, the PAN should not be set and the transaction should be a keyed transaction. Adjust settings to match?", "Adjust Settings", MessageBoxButtons.OKCancel);
+                if (Result == DialogResult.OK)
+                {
+                    TxtPrimaryAccountNumber.Text = "";
+                    ChkTokenRequested.Checked = false;
+                    CboCreditType.SelectedItem = "CardKeyed";
+                }
+            }
+        }
+
+        private void ChkExtractTokenFromResponse_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ChkExtractTokenFromResponse.Checked)
+            {
+                if (ChkLstTransactionsProcessed.CheckedItems.Count == 1)
+                {
+                    MessageBox.Show("Need code example here 1-5-2015");
+                    //TxtTokenId.Text = trt.TokenizationResult.tokenType.tokenId;
+                    //TxtTokenValue.Text = trt.TokenizationResult.tokenType.tokenValue;
+                }
+                else
+                {
+                    MessageBox.Show("Please select only one transaction use use token data");
+                }
+            }
+        }
+
+        private void CboTransactionType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_fromLoading)
+                return;
+
+            try
+            {
+                DisableFields();
+                if ((MarketCode)CboTransactionType.SelectedItem == MarketCode.ecommerce | (MarketCode)CboTransactionType.SelectedItem == MarketCode.moto)
+                {
+                    CboPaymentInstrument.Enabled = true;
+                    CboTerminalDetail.Enabled = true;
+                    GrpKeyedData.Enabled = true;
+                    CboCreditType.Enabled = true;
+
+                    CboCreditType.Text = "CardKeyed";
+                    CboCreditType.BackColor = Color.FromArgb(252, 209, 5);
+
+                    CboPartialApprovalCode.SelectedItem = PartialIndicatorType.not_supported;
+                    CboPartialApprovalCode.BackColor = Color.FromArgb(252, 209, 5);
+                }
+                else if ((MarketCode)CboTransactionType.SelectedItem == MarketCode.present)
+                {
+                    CboPaymentInstrument.Enabled = true; 
+                    CboTerminalDetail.Enabled = true;
+                    GrpTrackData.Enabled = true;
+                    CboCreditType.Enabled = true;
+                    
+                    CboCreditType.BackColor = Color.FromArgb(252, 209, 5);
+                    CboCreditType.Text = "CardSwiped";
+
+                    CboPartialApprovalCode.SelectedItem = PartialIndicatorType.supported;
+                    CboPartialApprovalCode.BackColor = Color.FromArgb(252, 209, 5);
+                }
+                else
+                {
+                    MessageBox.Show("Sample of Common values have not been defined");
+                }
+
+                StarteTimer();
+            }
             catch { }
+        }
+
+        private void StarteTimer()
+        {
+            TmrHighlightChangedFields.Interval = 5000;
+            TmrHighlightChangedFields.Start();
+            TmrHighlightChangedFields.Enabled = true;
+            TmrHighlightChangedFields.Tick += new EventHandler(OnTimedEvent);
+        }
+
+        private void OnTimedEvent(Object myObject, EventArgs myEventArgs)
+        {
+            TmrHighlightChangedFields.Stop();
+            try
+            {
+                //SystemColors.WindowText;
+                CboCreditType.BackColor = Color.FromArgb(255, 255, 255);
+                CboPartialApprovalCode.BackColor = Color.FromArgb(255, 255, 255);
+                CboTerminalEnvironmentalCode.BackColor = Color.FromArgb(255, 255, 255);
+                CboCardInputCode.BackColor = Color.FromArgb(255, 255, 255);
+                CboEntryMode.BackColor = Color.FromArgb(255, 255, 255);
+                CboBalanceInquiry.BackColor = Color.FromArgb(255, 255, 255);
+                CboHostAdjustment.BackColor = Color.FromArgb(255, 255, 255);
+                CboPinEntry.BackColor = Color.FromArgb(255, 255, 255);
+                CboCardReaderType.BackColor = Color.FromArgb(255, 255, 255);                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+         
         }
 
         private void CboPaymentInstrument_SelectedIndexChanged(object sender, EventArgs e)
@@ -345,16 +720,83 @@ namespace CertSuiteTool
             catch { }
         }
 
-        private void ChkEncryptedData_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ChkEncryptedData.Checked)
-                TxtKeySerialNumber.Enabled = true;
-            else
-                TxtKeySerialNumber.Enabled = false;
-        }
-
         private void CboCreditType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (_fromLoading)
+                return;
+            DialogResult Result;
+            Result = MessageBox.Show("Adjust Terminal Settings to Match?", "Adjust Terminal", MessageBoxButtons.OKCancel);
+            if (Result == DialogResult.OK)
+            {
+                try 
+                {
+                    if (CboCreditType.Text == "CardKeyed")
+                    {//Set Terminal settings to common values for Keyed
+                        CboTerminalEnvironmentalCode.SelectedItem = TerminalClassificationType.unattended_self_service;
+                        CboTerminalEnvironmentalCode.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboCardInputCode.SelectedItem = CardInputCode.ManualKeyed;
+                        CboCardInputCode.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboEntryMode.SelectedItem = EntryModeType.manual;
+                        CboEntryMode.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboBalanceInquiry.SelectedItem = false;
+                        CboBalanceInquiry.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboHostAdjustment.SelectedItem = false;
+                        CboHostAdjustment.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboPinEntry.SelectedItem = PinEntryType.none;
+                        CboPinEntry.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboCardReaderType.SelectedItem = CardReaderType.not_specified;
+                        CboCardReaderType.BackColor = Color.FromArgb(252, 209, 5);
+
+                        if(TxtPrimaryAccountNumber.Text.Length > 9)
+                            CardTypeLookup(TxtPrimaryAccountNumber.Text);
+
+                        //Set up common values based on keyed versus swiped
+                        TxtCardSecurityCode.Text = "111";
+                        ChkSetAddressInformation.Checked = true;
+                    }
+                    else if (CboCreditType.Text == "CardSwiped")
+                    {//Set Terminal settings to common values for Swiped
+                        CboTerminalEnvironmentalCode.SelectedItem = TerminalClassificationType.unattended_self_service;
+                        CboTerminalEnvironmentalCode.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboCardInputCode.SelectedItem = CardInputCode.MagstripeRead;
+                        CboCardInputCode.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboEntryMode.SelectedItem = EntryModeType.track2;
+                        CboEntryMode.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboBalanceInquiry.SelectedItem = false;
+                        CboBalanceInquiry.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboHostAdjustment.SelectedItem = false;
+                        CboHostAdjustment.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboPinEntry.SelectedItem = PinEntryType.none;
+                        CboPinEntry.BackColor = Color.FromArgb(252, 209, 5);
+
+                        CboCardReaderType.SelectedItem = CardReaderType.magstripe;
+                        CboCardReaderType.BackColor = Color.FromArgb(252, 209, 5);
+
+                        //Verify that the cardtype matches the track data.
+                        string pan = ExtractPANFromTrack(TxtTrackData.Text);
+                        if (pan.Length > 9)
+                            CardTypeLookup(pan);
+
+                        //Set up common values based on keyed versus swiped
+                        TxtCardSecurityCode.Text = "";
+                        ChkSetAddressInformation.Checked = false;
+                    }
+                    StarteTimer();
+                }
+                catch { }
+            }
+            
             if (CboCreditType.Text == "CardKeyed")
             {
                 GrpKeyedData.Enabled = true;
@@ -365,8 +807,24 @@ namespace CertSuiteTool
                 GrpKeyedData.Enabled = false;
                 GrpTrackData.Enabled = true;
             }
+        }
 
-
+        private void CboTerminalDetail_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (CboTerminalDetail.Text == "Mobile")
+                {
+                    TxtLongitude.Enabled = true;
+                    TxtLatitude.Enabled = true;
+                }
+                else
+                {
+                    TxtLongitude.Enabled = false;
+                    TxtLatitude.Enabled = false;
+                }
+            }
+            catch { }
         }
 
         private void CboTestMerchantAccounts_SelectedIndexChanged(object sender, EventArgs e)
@@ -393,13 +851,35 @@ namespace CertSuiteTool
                 GrpCancel.Visible = false;
         }
 
-        private void ChkLstTransactionsProcessed_SelectedIndexChanged(object sender, EventArgs e)
+        private void CboTrackChoice_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!ChkOnClickDisplayTxnMessage.Checked)
-                return;
+            if (CboTrackChoice.Text == "Track2")
+            {
+                CboEntryMode.SelectedItem = EntryModeType.track2;
+                CboEntryMode.BackColor = Color.FromArgb(252, 209, 5);
+            }
+            if (CboTrackChoice.Text == "Track1")
+            {
+                CboEntryMode.SelectedItem = EntryModeType.track1;
+                CboEntryMode.BackColor = Color.FromArgb(252, 209, 5);
+            }
+            StarteTimer();
+        }
 
-            ResponseDetails rd = ((ResponseDetails)(ChkLstTransactionsProcessed.SelectedItem));
-            MessageBox.Show(ExtractDetailsFromResponse(rd.Response));
+        private void CboPWSorVDP_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //TxtAPIKey.Enabled = false;
+            //TxtUserName.Enabled = false;
+            //TxtPassword.Enabled = false;
+            grp_VDP.Enabled = false;
+            Grp_PWS.Enabled = false;
+
+            if (CboPWSorVDP.Text == "VDP")
+                grp_VDP.Enabled = true;
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                Grp_PWS.Enabled = true;
+            }
         }
 
         private void TxtPrimaryAccountNumber_TextChanged(object sender, EventArgs e)
@@ -443,165 +923,32 @@ namespace CertSuiteTool
             GrpGift.Enabled = false;
         }
 
-        private string ExtractDetailsFromResponse(Object _response)
+        public CancelTransactionType CancelTransactionTypeFromRequest(string _TxnRequestType)
         {
-            string transactionInformation = "";
-            TransactionResponseType trt = (TransactionResponseType)_response;
-            try
-            {
-                if (trt.AddressVerificationResult != null)
-                    transactionInformation += "AVS Verification Result\r\n -Code: " + trt.AddressVerificationResult.Code + " Type: " + trt.AddressVerificationResult.Type + "\r\n";
+            CancelTransactionType ctt = new CancelTransactionType();
+            if (_TxnRequestType == "AuthorizeRequest" | _TxnRequestType == "Authorize")
+                return CancelTransactionType.authorize;
+            if (_TxnRequestType == "CaptureRequest" | _TxnRequestType == "Capture")
+                return CancelTransactionType.capture;
+            if (_TxnRequestType == "PurchaseRequest" | _TxnRequestType == "Purchase" | _TxnRequestType == "Sale")
+                return CancelTransactionType.purchase;
+            //if (_TxnRequestType == "PurchaseRequest")
+            //    return CancelTransactionType.purchase_cashback;
+            if (_TxnRequestType == "AdjustRequest" | _TxnRequestType == "Adjust")
+                return CancelTransactionType.adjust;
+            if (_TxnRequestType == "RefundRequest" | _TxnRequestType == "Refund")
+                return CancelTransactionType.refund;
+            if (_TxnRequestType == "ActivateRequest" | _TxnRequestType == "Activate")
+                return CancelTransactionType.activate;
+            if (_TxnRequestType == "UnloadRequest" | _TxnRequestType == "Unload")
+                return CancelTransactionType.unload;
+            if (_TxnRequestType == "ReloadRequest" | _TxnRequestType == "Reload")
+                return CancelTransactionType.reload;
+            if (_TxnRequestType == "CloseRequest" | _TxnRequestType == "Close")
+                return CancelTransactionType.close;
 
-                if (trt.Balance != null)
-                    transactionInformation += "Balance\r\n " 
-                        + " - Authorized: " 
-                        + trt.Balance.Authorized.Value + " " 
-                        + trt.Balance.Authorized.currency + "\r\n"
-                        + " - Available Balance: " 
-                        + trt.Balance.AvailableBalance.Value + ""
-                        + trt.Balance.AvailableBalance.currency + "\r\n"
-                        + " - Beginning Balance: "
-                        + trt.Balance.BeginningBalance.Value + ""
-                        + trt.Balance.BeginningBalance.currency + "\r\n"
-                        + " - Cash: "
-                        + trt.Balance.Cash.Value + ""
-                        + trt.Balance.Cash.currency + "\r\n"
-                        + " - Ending Balance: "
-                        + trt.Balance.EndingBalance.Value + ""
-                        + trt.Balance.EndingBalance.currency + "\r\n"
-                        + " - Pre Authorized: "
-                        + trt.Balance.PreAuthorized.Value + ""
-                        + trt.Balance.PreAuthorized.currency + "\r\n"
-                        ;
-                if (trt.BatchNumber != null)
-                    transactionInformation += "BatchNumber: " + trt.BatchNumber + "\r\n";
-                if(trt.CardCategory != null)
-                    transactionInformation += "CardCategory: " + trt.CardCategory + "\r\n";
-                if (trt.CardSecurityCodeResult != null)
-                    transactionInformation += "Card Security Code Result\r\n -Code: " + trt.CardSecurityCodeResult.Code + " Type: " + trt.CardSecurityCodeResult.Type + "\r\n";
-                if (trt.DemoMode != null)
-                    transactionInformation += "Demo Mode: " + trt.DemoMode + "\r\n";
-                if (trt.Items != null && trt.Items.Count() > 0)
-                {
-                    transactionInformation += "Items\r\n";
-                    if (((TransactionResponseType)(_response)).Items.Count() > 0)
-                    {
-                        int idx = 0;
-                        while (idx < ((TransactionResponseType)(_response)).Items.Count())
-                        {
-                            transactionInformation += " -" + trt.ItemsElementName[idx] + ": " + trt.Items[idx] + "\r\n";
-                            idx++;
-                        }
-                    }
-                }
-                if (trt.JulianDay != null)
-                    transactionInformation += "Julian Day: " + trt.JulianDay + "\r\n";
-                if (trt.keyValuePair != null && trt.keyValuePair.Count() > 0)
-                {
-                    transactionInformation += "Key Value Pair\r\n";
-                    foreach (KeyValuePair kvp in trt.keyValuePair)
-                    {
-                        transactionInformation += " -Key: " + kvp.key + " Value: " + kvp.Value; 
-                    }
-                }
-                if (trt.merchantrefid != null)
-                    transactionInformation += "merchantrefid: " + trt.merchantrefid + "\r\n";
-                if (trt.NetworkResponseCode != null)
-                    transactionInformation += "Network Response Code: " + trt.NetworkResponseCode + "\r\n";
-                if (trt.PaymentServiceResults.Item != null)
-                {
-                    if (trt.PaymentServiceResults.Item.ToString() == "VisaResultsType")
-                    { 
-                        VisaResultsType vrt = (VisaResultsType)(trt.PaymentServiceResults.Item);
-                        transactionInformation += "VisaResultsType\r\n";
-                        transactionInformation += " -AuthorizationCharacteristicsIndicator: " + vrt.AuthorizationCharacteristicsIndicator + "\r\n";
-                        transactionInformation += " -CardLevelResultsCode: " + vrt.CardLevelResultsCode + "\r\n";
-                        transactionInformation += " -CAVVCode: " + vrt.CAVVCode + "\r\n";
-                        transactionInformation += " -Ps2000Qualification: " + vrt.Ps2000Qualification + "\r\n";
-                        transactionInformation += " -RequestedPaymentServices: " + vrt.RequestedPaymentServices + "\r\n";
-                        transactionInformation += " -TransactionId: " + vrt.TransactionId + "\r\n";
-                        transactionInformation += " -ValidationCode: " + vrt.ValidationCode + "\r\n";
-                        transactionInformation += " -VisaMultipleClearingSequenceCount: " + vrt.VisaMultipleClearingSequenceCount + "\r\n";
-                        transactionInformation += " -VisaMultipleClearingSequenceNumber: " + vrt.VisaMultipleClearingSequenceNumber + "\r\n";
-                    }
-                    if (trt.PaymentServiceResults.Item.ToString() == "MasterCardResultsType")
-                    {
-                        MasterCardResultsType mcrt = (MasterCardResultsType)(trt.PaymentServiceResults.Item);
-                        transactionInformation += "MasterCardResultsType\r\n";
-                        transactionInformation += " -AuthorizationCharacteristicsIndicator: " + mcrt.AuthorizationCharacteristicsIndicator + "\r\n";
-                        transactionInformation += " -BanknetDate: " + mcrt.BanknetDate + "\r\n";
-                        transactionInformation += " -BanknetErrorCode: " + mcrt.BanknetErrorCode + "\r\n";
-                        transactionInformation += " -BanknetReference: " + mcrt.BanknetReference + "\r\n";
-                        transactionInformation += " -Category: " + mcrt.Category + "\r\n";
-                        transactionInformation += " -CvcValidity: " + mcrt.CvcValidity + "\r\n";
-                        transactionInformation += " -TransactionId: " + mcrt.TransactionId + "\r\n";
-                        transactionInformation += " -ValidationCode: " + mcrt.ValidationCode + "\r\n";
-                    }
-                    if (trt.PaymentServiceResults.Item.ToString() == "AmericanExpressResultsType")
-                    {
-                        AmericanExpressResultsType aert = (AmericanExpressResultsType)(trt.PaymentServiceResults.Item);
-                        transactionInformation += "AmericanExpressResultsType\r\n";
-                        transactionInformation += " -AmexTransactionId: " + aert.AmexTransactionId + "\r\n";
-                        transactionInformation += " -AuthorizationCharacteristicsIndicator: " + aert.AuthorizationCharacteristicsIndicator + "\r\n";
-                        if (aert.POSDataCodes.Count() > 0)
-                        {
-                            transactionInformation += " -POSDataCodes: ";
-                            foreach (char c in aert.POSDataCodes)
-                            {
-                                transactionInformation += c.ToString() + " | ";
-                            }
-                            transactionInformation += "\r\n";
-                        }
-                        transactionInformation += " -TransactionId: " + aert.TransactionId + "\r\n";
-                        transactionInformation += " -ValidationCode: " + aert.ValidationCode + "\r\n";
-                    }
-                    if (trt.PaymentServiceResults.Item.ToString() == "DiscoverCardResultsType")
-                    {
-                        DiscoverCardResultsType dcrt = (DiscoverCardResultsType)(trt.PaymentServiceResults.Item);
-                        transactionInformation += "DiscoverCardResultsType\r\n";
-                        transactionInformation += " -AuthorizationCharacteristicsIndicator: " + dcrt.AuthorizationCharacteristicsIndicator + "\r\n";
-                        transactionInformation += " -NetworkReferenceId: " + dcrt.NetworkReferenceId + "\r\n";
-                        transactionInformation += " -PINCapability: " + dcrt.PINCapability + "\r\n";
-                        transactionInformation += " -POSData: " + dcrt.POSData + "\r\n";
-                        transactionInformation += " -POSEntryMode: " + dcrt.POSEntryMode + "\r\n";
-                        transactionInformation += " -ProcessingCode: " + dcrt.ProcessingCode + "\r\n";
-                        transactionInformation += " -ResponseCode: " + dcrt.ResponseCode + "\r\n";
-                        transactionInformation += " -SystemTraceAuditNumber: " + dcrt.SystemTraceAuditNumber + "\r\n";
-                        transactionInformation += " -TrackIIStatus: " + dcrt.TrackIIStatus + "\r\n";
-                        transactionInformation += " -TransactionId: " + dcrt.TransactionId + "\r\n";
-                        transactionInformation += " -ValidationCode: " + dcrt.ValidationCode + "\r\n";
-                    }
-                }
-                if (trt.ReferenceNumber != null)
-                    transactionInformation += "Reference Number: " + trt.ReferenceNumber + "\r\n";
-                if (trt.reportgroup != null)
-                    transactionInformation += "reportgroup: " + trt.reportgroup + "\r\n";
-                if (trt.RequestId != null)
-                    transactionInformation += "RequestId: " + trt.RequestId + "\r\n";
-                if (trt.systemtraceid != null)
-                    transactionInformation += "systemtraceid: " + trt.systemtraceid + "\r\n";
-                if (trt.TokenizationResult != null)
-                {
-                    transactionInformation += "Tokenization Result\r\n";
-                    transactionInformation += " -successful: " + trt.TokenizationResult.successful 
-                                                + " tokenId: " + trt.TokenizationResult.tokenType.tokenId
-                                                + " tokenValue: " + trt.TokenizationResult.tokenType.tokenValue;
-                }
-                if (trt.TransactionStatus != null)
-                    transactionInformation += "Transaction Status: " + trt.TransactionStatus + "\r\n";
-                if (trt.TransactionTimestamp != null)
-                    transactionInformation += "Transaction Timestamp: " + trt.TransactionTimestamp + "\r\n";
-                if (trt.TransmissionTimestamp != null)
-                    transactionInformation += "Transmission Timestamp (UTC): " + trt.TransmissionTimestamp + "\r\n";
-                if (trt.WorkingKey != null)
-                    transactionInformation += "Working Key: " + trt.WorkingKey + "\r\n";
-                
-            }
-            catch
-            {}
-
-            return transactionInformation;
-            
+            MessageBox.Show("Unable to lookup CancelTransactionType. Setting to default of Authorize");
+            return CancelTransactionType.authorize;
         }
 
         public void CardTypeLookup(string strPAN)
@@ -640,730 +987,33 @@ namespace CertSuiteTool
             }
         }
 
+        public string ExtractPANFromTrack(string strTrack)
+        {//Sentinels should be removed as well as seperators
+            string pan = "";
+            try 
+            {
+                if(strTrack.Substring(0,1) == "B")
+                {//Track 1 Data
+                    pan = strTrack.Substring(1, strTrack.IndexOf("^") - 1);
+                }
+                else
+                {//Track 2 Data
+                    pan = strTrack.Substring(0, strTrack.IndexOf("="));
+                }
+            }
+            catch { }
+            return pan;
+        }
+
+        public Image ImageFromBase64String(string base64)
+        {
+            MemoryStream memory = new MemoryStream(Convert.FromBase64String(base64));
+            Image result = Image.FromStream(memory);
+            memory.Close();
+            return result;
+        }
+
         #endregion Page Methods
-
-        #region PWS Objects
-
-        private MerchantType merchantType()
-        {
-            /*
-             * As mentioned above, there are 3 sections to a request. This section describes the Merchant details section, its optional 
-             * and mandatory values, and selectable values. Merchant Detail has 2 sections, the merchant detail and terminal detail. Terminal 
-             * detail has 3 options: Software, Mobile, and Terminal. The differences and details will be discussed later in this section. 
-             * See example 3 for a sample merchant detail.  The merchant detail information will also be delivered as part of the merchant 
-             * boarding process.  The merchant or developer will receive a VAR sheet, which will contain all the necessary merchant credentials 
-             * (chain, merchant ID, terminal ID, etc) necessary to configure the merchant details section of the header.
-             */
-            MerchantType mt = new MerchantType();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                //Merchant Detail Section
-                mt.CashierNumber = Convert.ToInt32(TxtCashierNumber.Text); //8 digit numeric value to represent the cashier entering the transaction	Optional
-                if(TxtCashierNumber.Text.Length > 0)
-                    mt.CashierNumberSpecified = true;
-                mt.ChainCode = TxtChainCode.Text; //NOTE: *DB* I believe documentation is incorrect (ChainNumber) : 5 character alphanumeric value to represent the company’s chain where the transaction was entered. If provided on the VAR sheet the value provided should be used	Conditional, use if provided
-                mt.ClerkNumber = Convert.ToInt32(TxtClerkNumber.Text);//3 digit value to represent the clerk entering the transaction	Mandatory
-                if (TxtClerkNumber.Text.Length > 0) 
-                    mt.ClerkNumberSpecified = true;
-                mt.DivisionNumber = TxtDivisionNumber.Text; //3 character alphanumeric value to represent the company’s division where the transaction was entered. The default value is “001”	Optional,use if Division level reporting is required 
-                mt.LaneNumber = TxtLaneNumber.Text; //3 character alpha numeric value to represent which lane that the transaction was entered.  Used for multi threading of transactions.	Conditional, should be 2 digit number, 0-99.  Used for multi threading transactions in host capture environment
-                mt.MerchantId = TxtMID.Text;//"4445000865113"; //Identifying ID set up during the boarding process. It can be up to 36 digits.  Also known as MID or merchant account.	Mandatory
-                mt.MerchantName = TxtMerchantName.Text; //15 character string value used to send the name of the bill payment acquiring merchant in order for customer to see the merchant name in debit statement.	Conditional-used for PIN-less Debit transactions
-                mt.NetworkRouting = TxtNetworkRouting.Text; //2 character value used to send the transaction to the proper credit network	Mandatory
-                mt.StoreNumber = TxtStoreNumber.Text; //8 character alphanumeric value to represent the company’s store number where the transaction was entered. The default value is “00000001”	Optional
-                
-                //Terminal Detail Section (3 options)
-                if (CboTerminalDetail.Text == "Terminal")//Options "Terminal", "Software", "Mobile"
-                    mt.Terminal = terminalField();
-                else if (CboTerminalDetail.Text == "Software")
-                    mt.Software = softwareField();
-                else if (CboTerminalDetail.Text == "Mobile")
-                    mt.Mobile = mobileDeviceType();
-               
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-            
-            return mt;
-        }
-
-        //Set one of the following
-        #region Terminal Detail
-        //Terminal Section
-        /*
-         * The terminal section sends the device details to Vantiv, and has a choice of three options: Software, Mobile, or 
-         * Terminal. All 3 options have the same basic values, but some have additional optional values. 
-         * Choose Software if the request is coming from an application, either installed payment application or thin client. 
-         * Choose Mobile if the request is coming from a smart phone or tablet device. 
-         * Choose Terminal if the request is coming from a terminal device. All terminal details use the following values:
-         */
-        private PaymentDeviceType terminalField()
-        {
-            PaymentDeviceType pdt = new PaymentDeviceType();
-
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                pdt.BalanceInquiry = false; //Boolean value (true, false) to determine if balance inquiry fields will be returned. The default value is false.	Optional – Must be set to true for card present transactions so that prepaid cards can be supported.  We recommend leaving as false for card not present transactions.
-                pdt.CardReader = CardReaderType.magstripe; //An optional value to identify the type of card reader used in the transaction. Optional – Defaults must be changed to reflect actual entry method and point of entry environment.  If not updated may cause interchange qualification impact.
-                pdt.Classification = TerminalClassificationType.unspecified; //Identifies the type of device used in the transaction. Should be changed from the default values to reflect true entry method and point of entry environment.  Not updating from the default may have interchange qualification impact.  Optional – Defaults must be changed to reflect actual entry method and point of entry environment.  If not updated, may cause interchange qualification impact.
-                pdt.EntryMode = EntryModeType.manual; //Required value to identify the type of terminal entry used in the transaction. Your choices are: Mandatory – Value must reflect entry method and point of entry environment.  If not updated, may cause interchange qualification impact.
-                pdt.HostAdjustment = true; //Boolean value (true, false) to determine if adjust transaction will be allowed for a batch. The default value is false.	Optional – if need to adjust a transaction amount (ex. Add tip, add level 2 data) set to true.  Flag setting should be consistent across all transaction types for a given application. Note – Setting HostAdjustment to true will disable batch auto close functionality.  The host will not auto close a batch if HostAdjust is set to true.
-                pdt.IPv4Address = "192.0.2.235"; //The IPv4Address of the calling transaction. The format is 4 sets of up to 3 digits separated by “.”. An example would be “127.0.0.0”. Either IPv4Address or IPv6Address may be entered.	Optional
-                //pdt.IPv6Address = ""; //The IPv6Adresss of t he calling transaction. It consists of eight groups of four hexadecimal digits separated by colons, for example 2001:0db8:85a3:0042:0000:8a2e:0370:7334. Either IPv4Address or IPv6Address may be entered.	Optional
-                pdt.PinEntry = PinEntryType.none; //An optional value to identify the type of pin entry used by this terminal. Optional – Defaults must be changed to reflect actual entry method and point of entry environment. Mandatory for PIN Debit Transactions, should always be set to “supported” 
-                pdt.SequenceNumber = "123"; //6 digit value to identify this transaction. The default is 0, but if used, it should be unique for each transaction within a 24 hour period. We recommend using a counter or hour, minute, second (hhmmss), using military time.	Mandatory, also called STAN (System Audit Trace Number)
-                pdt.TerminalID = Convert.ToInt16(TxtTID.Text); //3 digit value that identifies the terminal used. The terminal ID will be provided on the VAR sheet.  Also known as the TID	Mandatory
-            
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            } 
-            
-            return pdt;
-        }
-        //or
-        private PaymentDeviceType softwareField()
-        {
-            PaymentDeviceType pdt = new PaymentDeviceType();
-
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                pdt.BalanceInquiry = false; //Boolean value (true, false) to determine if balance inquiry fields will be returned. The default value is false.	Optional – Must be set to true for card present transactions so that prepaid cards can be supported.  We recommend leaving as false for card not present transactions.
-                pdt.CardReader = CardReaderType.magstripe; //An optional value to identify the type of card reader used in the transaction. Optional – Defaults must be changed to reflect actual entry method and point of entry environment.  If not updated may cause interchange qualification impact.
-                pdt.Classification = TerminalClassificationType.electronic_cash_register; //Identifies the type of device used in the transaction. Should be changed from the default values to reflect true entry method and point of entry environment.  Not updating from the default may have interchange qualification impact.  Optional – Defaults must be changed to reflect actual entry method and point of entry environment.  If not updated, may cause interchange qualification impact.
-                pdt.EntryMode = EntryModeType.manual; //Required value to identify the type of terminal entry used in the transaction. Your choices are: Mandatory – Value must reflect entry method and point of entry environment.  If not updated, may cause interchange qualification impact.
-                //pdt.HostAdjustment = true; //Boolean value (true, false) to determine if adjust transaction will be allowed for a batch. The default value is false.	Optional – if need to adjust a transaction amount (ex. Add tip, add level 2 data) set to true.  Flag setting should be consistent across all transaction types for a given application. Note – Setting HostAdjustment to true will disable batch auto close functionality.  The host will not auto close a batch if HostAdjust is set to true.
-                pdt.IPv4Address = "192.0.2.235";
-                //pdt.IPv6Address = ""; //The IPv6Adresss of t he calling transaction. It consists of eight groups of four hexadecimal digits separated by colons, for example 2001:0db8:85a3:0042:0000:8a2e:0370:7334. Either IPv4Address or IPv6Address may be entered.	Optional
-                pdt.PinEntry = PinEntryType.unknown;
-                pdt.SequenceNumber = "123456";
-                pdt.TerminalID = Convert.ToInt16(TxtTID.Text);
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return pdt;
-        }
-        //or
-        private MobileDeviceType mobileDeviceType()
-        {
-            MobileDeviceType mdt = new MobileDeviceType();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                //Similar to Terminal
-                mdt.BalanceInquiry = false; //Boolean value (true, false) to determine if balance inquiry fields will be returned. The default value is false.	Optional – Must be set to true for card present transactions so that prepaid cards can be supported.  We recommend leaving as false for card not present transactions.
-                mdt.CardReader = CardReaderType.unknown; //An optional value to identify the type of card reader used in the transaction. Optional – Defaults must be changed to reflect actual entry method and point of entry environment.  If not updated may cause interchange qualification impact.
-                mdt.Classification = TerminalClassificationType.unspecified; //Identifies the type of device used in the transaction. Should be changed from the default values to reflect true entry method and point of entry environment.  Not updating from the default may have interchange qualification impact.  Optional – Defaults must be changed to reflect actual entry method and point of entry environment.  If not updated, may cause interchange qualification impact.
-                mdt.EntryMode = EntryModeType.unknown; //Required value to identify the type of terminal entry used in the transaction. Your choices are: Mandatory – Value must reflect entry method and point of entry environment.  If not updated, may cause interchange qualification impact.
-                mdt.HostAdjustment = true; //Boolean value (true, false) to determine if adjust transaction will be allowed for a batch. The default value is false.	Optional – if need to adjust a transaction amount (ex. Add tip, add level 2 data) set to true.  Flag setting should be consistent across all transaction types for a given application. Note – Setting HostAdjustment to true will disable batch auto close functionality.  The host will not auto close a batch if HostAdjust is set to true.
-                mdt.IPv4Address = "192.0.2.235"; //The IPv4Address of the calling transaction. The format is 4 sets of up to 3 digits separated by “.”. An example would be “127.0.0.0”. Either IPv4Address or IPv6Address may be entered.	Optional
-                //mdt.IPv6Address = ""; //The IPv6Adresss of t he calling transaction. It consists of eight groups of four hexadecimal digits separated by colons, for example 2001:0db8:85a3:0042:0000:8a2e:0370:7334. Either IPv4Address or IPv6Address may be entered.	Optional
-                mdt.Location = new GeolocationType();
-                mdt.Location.Longitude = 39.5425970M;
-                mdt.Location.Latitude = -104.8592690M;
-                mdt.PinEntry = PinEntryType.unknown; //An optional value to identify the type of pin entry used by this terminal. Optional – Defaults must be changed to reflect actual entry method and point of entry environment. Mandatory for PIN Debit Transactions, should always be set to “supported” 
-                mdt.SequenceNumber = "123"; //6 digit value to identify this transaction. The default is 0, but if used, it should be unique for each transaction within a 24 hour period. We recommend using a counter or hour, minute, second (hhmmss), using military time.	Mandatory, also called STAN (System Audit Trace Number)
-                mdt.TerminalID = Convert.ToInt16(TxtTID.Text); //3 digit value that identifies the terminal used. The terminal ID will be provided on the VAR sheet.  Also known as the TID	Mandatory
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-            
-            return mdt;
-        }
-        #endregion Terminal Detail
-
-        //Payment Instruments Credit, Debit, Gift
-        #region Payment Instruments
-
-        private CreditInstrumentType creditInstrumentType()
-        {
-            CreditInstrumentType cit = new CreditInstrumentType();
-            cit.CardholderAddress = addressType();
-            
-            if(CboCreditType.Text == "CardKeyed")
-            {
-                cit.CardKeyed = creditOrDebitCardKeyedType();
-            }
-            else if (CboCreditType.Text == "CardSwiped")
-            {
-                cit.CardSwiped = cardSwipedType();                
-            }
-
-            cit.CardType = (CreditCardNetworkType)CboCardType.SelectedItem;
-            cit.PartialApprovalCode = (PartialIndicatorType)CboPartialApprovalCode.SelectedItem;//Definition: Type of partial approval to return. If not_supported is selected, partial approvals will fail. Partial approvals must be supported by any application conducting card present transactions, per Visa and MasterCard regulations. We recommend not supporting partial approvals in applications conducted in Card Not Present environments, as split tender scenarios become complicated.
-            cit.PartialApprovalCodeSpecified = true;
-
-            return cit;
-        }
-
-        private DebitInstrumentType debitInstrumentType()
-        {
-            DebitInstrumentType dit = new DebitInstrumentType();
-
-            dit.AccountType = (AccountType)CboAccountType.SelectedItem;//Optional for PIN debit balance inquiry action. If left out, the financial institutions default will be populated.
-            dit.AccountTypeSpecified = true;
-            dit.BenefitTransactionNumber = "1234";
-            dit.CardholderAddress = addressType();
-
-            if (CboCreditType.Text == "CardKeyed")
-            {
-                dit.CardKeyed = creditOrDebitCardKeyedType();
-            }
-            else if (CboCreditType.Text == "CardSwiped")
-            {
-                dit.CardSwiped = cardSwipedType();
-            }
-
-            dit.PartialApprovalCode = (PartialIndicatorType)CboPartialApprovalCode.SelectedItem;//Definition: Type of partial approval to return. If not_supported is selected, partial approvals will fail. Partial approvals must be supported by any application conducting card present transactions, per Visa and MasterCard regulations. We recommend not supporting partial approvals in applications conducted in Card Not Present environments, as split tender scenarios become complicated.
-            dit.PartialApprovalCodeSpecified = true;
-            dit.PinData = new EncryptedData();//Mandatory for PIN Debit Transactions
-            dit.PinData.encryptiontype = EncryptionType.DUKPT;//DUKPT (default), Voltage
-            dit.PinData.key = "";//The key used to encrypt the PIN data. This field is not sent as part of the request if the encryption-type is Voltage. Voltage Encryption Transfer data (Encrypted Symmetric Key). This field is not sent as part of the request if the encryption-type is DUKPT.
-            dit.PinData.Value = "";
-            dit.VoucherNumber = "";
-
-            return dit;
-        }
-
-        private GiftInstrumentType giftInstrumentType()
-        {
-            GiftInstrumentType git = new GiftInstrumentType();
-
-            if (CboCreditType.Text == "CardKeyed")
-            {
-                git.CardKeyed = new GiftCardKeyedType();
-                git.CardKeyed.EncryptedPrimaryAccountNumber = new EncryptedData();
-                //git.CardKeyed.EncryptedPrimaryAccountNumber.encryptiontype = EncryptionType.DUKPT;
-                //git.CardKeyed.EncryptedPrimaryAccountNumber.key = "";
-                //git.CardKeyed.EncryptedPrimaryAccountNumber.Value = "";
-                git.CardKeyed.ExpirationDate = TxtExpirationDate.Text;
-                git.CardKeyed.GiftCardPin = TxtGiftCardPin.Text;
-                git.CardKeyed.PrimaryAccountNumber = TxtPrimaryAccountNumber.Text;
-                git.CardKeyed.CardSecurityCode = TxtCardSecurityCode.Text;
-                //git.CardKeyed.Token = new TokenType();
-                //git.CardKeyed.Token.tokenId = "";
-                //git.CardKeyed.Token.tokenValue = "";
-                
-            }
-            else if (CboCreditType.Text == "CardSwiped")
-            {
-                git.CardSwiped = new GiftCardSwipedType();
-                git.CardSwiped.GiftCardPin = TxtGiftCardPin.Text;
-                //git.CardSwiped.Item
-                //git.CardSwiped.ItemElementName = "";
-                git.CardSwiped.CardSecurityCode = TxtCardSecurityCode.Text;
-            }
-            
-            return git;
-        }
-
-        private VirtualGiftInstrumentType virtualGiftInstrumentType()
-        {
-            VirtualGiftInstrumentType vgt = new VirtualGiftInstrumentType();
-            vgt.PrimaryAccountNumberLength = 2;
-            vgt.VirtualGiftCardBIN = "";
-            return vgt;
-        }
- 
-        #region objects used by instrument types
-        
-        private AddressType addressType()
-        {
-            AddressType at = new AddressType();//Used for Address Verification service to verify the owner of the card to reduce the risk of fraudulent transactions (for Credit and Debit Cards)
-            if (ChkSetAddressInformation.Checked)
-            {
-                at.AddressLine = TxtAddressLine.Text;
-                at.City = TxtCity.Text;
-                at.CountryCode = (ISO3166CountryCodeType)CboCountryCode.SelectedItem;
-                at.CountryCodeSpecified = true;
-                at.PostalCode = TxtPostalCode.Text;
-                at.State = (StateCodeType)CboStateType.SelectedItem;
-                at.StateSpecified = true;
-            }
-            else 
-            {
-                at = null;
-            }
-            return at;
-        }
-
-        private CreditOrDebitCardKeyedType creditOrDebitCardKeyedType()
-        {
-            CreditOrDebitCardKeyedType ckt = new CreditOrDebitCardKeyedType();
-
-            ckt.CardholderName = TxtCardholderName.Text;
-            ckt.CardSecurityCode = TxtCardSecurityCode.Text;
-            //ckt.EncryptedPrimaryAccountNumber = "";
-            ckt.ExpirationDate = TxtExpirationDate.Text;
-            ckt.PrimaryAccountNumber = TxtPrimaryAccountNumber.Text;
-            //ckt.ThreeDSecure = new ThreeDSecureType();
-            //ckt.ThreeDSecure.AuthenticationValue = "";
-            //ckt.ThreeDSecure.eCommerceIndicator = "";
-            //ckt.ThreeDSecure.TransactionID = "";
-            //ckt.Token = new TokenType();
-            //ckt.Token.tokenId = "";
-            //ckt.Token.tokenValue = "";
-
-            return ckt;
-        }
-
-        private CardSwipedType cardSwipedType()
-        {
-            CardSwipedType st = new CardSwipedType();
-
-            st.Item = new TrackDataType();
-
-            if (ChkEncryptedData.Checked)
-            {
-                EncryptedData ed = new EncryptedData();
-                ed.encryptiontype = EncryptionType.DUKPT;
-                ed.key = TxtKeySerialNumber.Text;
-                ed.Value = TxtTrackData.Text;
-                st.Item.Item = ed;
-            }
-            else
-            {
-                st.Item.Item = TxtTrackData.Text;
-            }
-            st.ItemElementName = (ItemChoiceType)CboTrackChoice.SelectedItem;
-
-            return st;
-        }
-
-        #endregion objects used by instrument types
-
-        #endregion Payment Instruments
-
-        private BillPaymentPayeeType billPaymentPayeeType()
-        {
-            BillPaymentPayeeType bppt = new BillPaymentPayeeType();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                bppt.PayeeAccountNumber = "1234567890123456789012345"; //25 character string value to pass Account number Payee uses to identify the payer.	Conditional – PIN-less Debit Purchase Only
-                bppt.PayeeName = "John Denver"; //25 character string value used to pass Payee name related to an online bill payment using debit card	Conditional – PIN-less Debit Purchase Only
-                bppt.PayeePhoneNumber = "513-555-5555"; //25 character string value to pass Payee phone number related to an online bill payment using debit card. Example: 513-555-5555	Conditional – PIN-less Debit Purchase Only
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return bppt;
-        }
-
-        #region Request Objects
-        
-        private AuthorizeRequest authorizeRequest()
-        {
-            AuthorizeRequest a = new AuthorizeRequest();
-
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                Random r = new Random();
-                //a.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
-                //a.BillPaymentPayee.PayeeAccountNumber = "";
-                //a.BillPaymentPayee.PayeeName = "";
-                //a.BillPaymentPayee.PayeePhoneNumber = "";
-                a.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-                a.Merchant = merchantType();
-                //a.NetworkResponseCode = "";
-                a.PaymentType = (PaymentType)CboPaymentType.SelectedItem;//Mandatory
-                a.PaymentTypeSpecified = true;
-                a.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-                //a.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
-                a.TokenRequested = ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-                a.TokenRequestedSpecified = ChkTokenRequested.Checked;
-                a.TransactionAmount = new AmountType();
-                a.TransactionAmount.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-                a.TransactionAmount.currencySpecified = true;
-                a.TransactionAmount.Value = Convert.ToDecimal(TxtTransactionAmount.Text);
-                a.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-                a.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
-                int rInt = r.Next(1, 99999); //for ints
-                a.systemtraceid = rInt; //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
-                a.systemtraceidSpecified = true;
-                rInt = r.Next(1, 99999999);
-                a.merchantrefid = "PWS" + rInt.ToString(); //An optional attribute used by the merchant to identify each transaction. This can be no longer than 16 characters. If the merchant chooses not to use this field it is recommended that you populate this ID with the system-trace-id value.
-                
-                //Set the object for payment
-                a.Items = new object[1];
-                if(CboPaymentInstrument.Text == "Credit")
-                    a.Items[0] = creditInstrumentType();
-                else if (CboPaymentInstrument.Text == "Debit")
-                    a.Items[0] = debitInstrumentType();
-                else if (CboPaymentInstrument.Text == "Gift")
-                    a.Items[0] = giftInstrumentType();
-              
-            }
-            else 
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return a;
-        }
-
-        private PurchaseRequest purchaseRequest()
-        {
-            PurchaseRequest p = new PurchaseRequest();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                Random r = new Random();
-                p.Merchant = merchantType();
-                p.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
-                p.PaymentType = (PaymentType)CboPaymentType.SelectedItem;//Mandatory
-                p.PaymentTypeSpecified = true;
-                p.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-                p.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-                p.TransactionAmount = new AmountType();
-                p.TransactionAmount.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-                p.TransactionAmount.currencySpecified = true;
-                p.TransactionAmount.Value = Convert.ToDecimal(TxtTransactionAmount.Text);
-                p.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-                //p.TokenRequested = ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-                //p.TokenRequestedSpecified = ChkTokenRequested.Checked;
-                //a.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
-                int rInt = r.Next(1, 99999); //for ints
-                p.systemtraceid = rInt;
-                p.systemtraceidSpecified = true;
-                rInt = r.Next(1, 99999999);
-                p.merchantrefid = "PWS" + rInt.ToString();
-
-                //Set the object for payment
-                p.Items = new object[1];
-                if (CboPaymentInstrument.Text == "Credit")
-                    p.Items[0] = creditInstrumentType();
-                else if (CboPaymentInstrument.Text == "Debit")
-                    p.Items[0] = debitInstrumentType();
-                else if (CboPaymentInstrument.Text == "Gift")
-                    p.Items[0] = giftInstrumentType();
-
-                //CreditInstrumentType cit = new CreditInstrumentType();
-                //cit.CardKeyed = new CreditOrDebitCardKeyedType();
-                //cit.CardKeyed.PrimaryAccountNumber = TxtPrimaryAccountNumber.Text;
-                //cit.CardKeyed.ExpirationDate = TxtExpirationDate.Text;
-                //cit.CardType = CreditCardNetworkType.visa;
-                //cit.PartialApprovalCode = PartialIndicatorType.not_supported;
-                //cit.CardholderAddress = new AddressType();
-                //cit.CardholderAddress.AddressLine = "1234 Main Street";
-                //cit.CardholderAddress.City = "Mason";
-                //cit.CardholderAddress.State = StateCodeType.OH;
-                //cit.CardholderAddress.PostalCode = "45040";
-                //cit.CardholderAddress.CountryCode = ISO3166CountryCodeType.US;
-
-                //p.Items = new object[1];
-                //p.Items[0] = cit;
-
-                ItemsChoiceType3[] ict = new ItemsChoiceType3[1];
-                ict[0] = ItemsChoiceType3.Credit;
-                p.ItemsElementName = ict;
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return p;
-        }
-
-        private CaptureRequest captureRequest(ResponseDetails _rd)
-        {
-            CaptureRequest c = new CaptureRequest();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                Random ran = new Random();
-                c.Merchant = merchantType();
-                c.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
-                c.PaymentType = (PaymentType)CboPaymentType.SelectedItem;//Mandatory
-                c.PaymentTypeSpecified = true;
-                c.DraftLocatorId = "D" + ran.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-                c.ReferenceNumber = "R" + ran.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-                c.CaptureAmount = new AmountType();
-                c.CaptureAmount.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-                c.CaptureAmount.currencySpecified = true;
-                c.CaptureAmount.Value = Convert.ToDecimal(TxtTransactionAmount.Text);
-                c.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-                c.TokenRequested = ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-                c.TokenRequestedSpecified = ChkTokenRequested.Checked;
-                //a.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
-                int rInt = ran.Next(1, 99999); //for ints
-                c.systemtraceid = rInt;
-                c.systemtraceidSpecified = true;
-                rInt = ran.Next(1, 99999999);
-                c.merchantrefid = "PWS" + rInt.ToString();
-
-                //Set the object for payment
-                c.Items = new object[1];
-                if (CboPaymentInstrument.Text == "Credit")
-                    c.Items[0] = creditInstrumentType();
-                else if (CboPaymentInstrument.Text == "Debit")
-                    c.Items[0] = debitInstrumentType();
-                else if (CboPaymentInstrument.Text == "Gift")
-                    c.Items[0] = giftInstrumentType();
-
-                //Set the Capture specific values
-                AuthorizeResponse r = new AuthorizeResponse();
-                r = (AuthorizeResponse)_rd.Response;
-
-                c.AuthorizationCode = _rd.AuthorizationCode;
-                c.OriginalAmount = _rd.Amount;
-                AmountType a = new AmountType();
-                a.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-                a.currencySpecified = true;
-                a.Value = Convert.ToDecimal(TxtTransactionAmount.Text);
-                c.CaptureAmount = a;
-                c.OriginalReferenceNumber = r.ReferenceNumber;
-
-                ItemsChoiceType4[] ict = new ItemsChoiceType4[1];
-                ict[0] = ItemsChoiceType4.Credit;
-                c.ItemsElementName = ict;
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return c;
-        }
-
-        private AdjustRequest adjustRequest(ResponseDetails _rd)
-        {
-            AdjustRequest adj = new AdjustRequest();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                Random ran = new Random();
-                adj.AdjustedTotalAmount = new AmountType();
-                adj.AdjustedTotalAmount.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-                adj.AdjustedTotalAmount.currencySpecified = true;
-                adj.AdjustedTotalAmount.Value = Convert.ToDecimal(TxtTransactionAmount.Text); //The new amount, which is the original amount and the adjustment
-                //adj.AuthorizationCode = "";
-                //adj.BillPaymentPayee = new BillPaymentPayeeType();
-                //adj.ConvenienceFee = new AmountType();
-                adj.Credit = new CreditInstrumentType();
-                adj.Credit = creditInstrumentType();
-                adj.DraftLocatorId = "D" + ran.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-                adj.Merchant = merchantType();
-                adj.NetworkResponseCode = "";
-                adj.PaymentType = (PaymentType)CboPaymentType.SelectedItem;//Mandatory
-                adj.PaymentTypeSpecified = true;
-                //adj.PurchaseOrder = "";
-                adj.ReferenceNumber = "R" + ran.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-                adj.reportgroup = "";
-                int rInt = ran.Next(1, 99999); //for ints
-                adj.systemtraceid = rInt;
-                adj.systemtraceidSpecified = true;
-                rInt = ran.Next(1, 99999999);
-                adj.merchantrefid = "PWS" + rInt.ToString();
-                //adj.Tax = new TaxAmountType();
-                //adj.TipAmount = new AmountType();
-                adj.TokenRequested = ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-                adj.TokenRequestedSpecified = ChkTokenRequested.Checked;
-                adj.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-                adj.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory       
-
-                PurchaseResponse r = new PurchaseResponse();
-                r = (PurchaseResponse)_rd.Response;
-
-                adj = adjustRequest(null);
-                adj.AuthorizationCode = _rd.AuthorizationCode;
-                adj.OriginalAmount = new AmountType();
-                adj.OriginalAmount.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-                adj.OriginalAmount.currencySpecified = true;
-                adj.OriginalAmount.Value = _rd.Amount.Value;
-                adj.OriginalReferenceNumber = r.ReferenceNumber;
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return adj;
-        }
-
-        private RefundRequest refundRequest(Object _response)
-        {
-            RefundRequest rfnd = new RefundRequest();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                Random r = new Random();
-                rfnd.Merchant = merchantType();
-                rfnd.Merchant.Terminal = null;
-                rfnd.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
-                rfnd.PaymentType = (PaymentType)CboPaymentType.SelectedItem;//Mandatory
-                rfnd.PaymentTypeSpecified = true;
-                rfnd.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-                rfnd.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-                rfnd.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-                rfnd.TokenRequested = ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-                rfnd.TokenRequestedSpecified = ChkTokenRequested.Checked;
-                //a.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
-                int rInt = r.Next(1, 99999); //for ints
-                rfnd.systemtraceid = rInt;
-                rfnd.systemtraceidSpecified = true;
-                rInt = r.Next(1, 99999999);
-                rfnd.merchantrefid = "PWS" + rInt.ToString();
-
-                //Set the object for payment
-                rfnd.Items = new object[1];
-                if (CboPaymentInstrument.Text == "Credit")
-                    rfnd.Items[0] = creditInstrumentType();
-                else if (CboPaymentInstrument.Text == "Debit")
-                    rfnd.Items[0] = debitInstrumentType();
-                else if (CboPaymentInstrument.Text == "Gift")
-                    rfnd.Items[0] = giftInstrumentType();
-
-                //CreditInstrumentType cit = new CreditInstrumentType();
-                //cit.CardKeyed = new CreditOrDebitCardKeyedType();
-                //cit.CardKeyed.PrimaryAccountNumber = TxtPrimaryAccountNumber.Text;
-                //cit.CardKeyed.ExpirationDate = TxtExpirationDate.Text;
-                //cit.CardType = CreditCardNetworkType.visa;
-                //cit.PartialApprovalCode = PartialIndicatorType.not_supported;
-                //cit.CardholderAddress = new AddressType();
-                //cit.CardholderAddress.AddressLine = "1234 Main Street";
-                //cit.CardholderAddress.City = "Mason";
-                //cit.CardholderAddress.State = StateCodeType.OH;
-                //cit.CardholderAddress.PostalCode = "45040";
-                //cit.CardholderAddress.CountryCode = ISO3166CountryCodeType.US;
-
-                //rfnd.Items = new object[1];
-                //rfnd.Items[0] = cit;
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return rfnd;
-        }
-
-        private CancelRequest cancelRequest(ResponseDetails _rd)
-        {
-            CancelRequest can = new CancelRequest();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                Random ran = new Random();
-                //can.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
-                //can.BillPaymentPayee.PayeeAccountNumber = "";
-                //can.BillPaymentPayee.PayeeName = "";
-                //can.BillPaymentPayee.PayeePhoneNumber = "";
-                can.DraftLocatorId = "D" + ran.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-                can.Merchant = merchantType();
-                can.Merchant.Terminal = null;
-                can.PaymentType = (PaymentType)CboPaymentType.SelectedItem;//Mandatory
-                can.PaymentTypeSpecified = true;
-                can.ReferenceNumber = "R" + ran.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-                can.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-                can.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
-                can.TokenRequested = ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-                can.TokenRequestedSpecified = ChkTokenRequested.Checked;
-                int rInt = ran.Next(1, 99999); //for ints
-                can.systemtraceid = rInt;
-                can.systemtraceidSpecified = true;
-                rInt = ran.Next(1, 99999999);
-                can.merchantrefid = "PWS" + rInt.ToString();
-
-                //Set the object for payment
-                can.Items = new object[1];
-                if (CboPaymentInstrument.Text == "Credit")
-                    can.Items[0] = creditInstrumentType();
-                else if (CboPaymentInstrument.Text == "Debit")
-                    can.Items[0] = debitInstrumentType();
-                else if (CboPaymentInstrument.Text == "Gift")
-                    can.Items[0] = giftInstrumentType();
-                
-                //CreditInstrumentType cit = new CreditInstrumentType();
-                //cit.CardKeyed = new CreditOrDebitCardKeyedType();
-                //cit.CardKeyed.PrimaryAccountNumber = TxtPrimaryAccountNumber.Text;
-                //cit.CardKeyed.ExpirationDate = TxtExpirationDate.Text;
-                //cit.CardType = CreditCardNetworkType.visa;
-                //cit.PartialApprovalCode = PartialIndicatorType.not_supported;
-                //cit.CardholderAddress = new AddressType();
-                //cit.CardholderAddress.AddressLine = "1234 Main Street";
-                //cit.CardholderAddress.City = "Mason";
-                //cit.CardholderAddress.State = StateCodeType.OH;
-                //cit.CardholderAddress.PostalCode = "45040";
-                //cit.CardholderAddress.CountryCode = ISO3166CountryCodeType.US;
-
-                //can.Items = new object[1];
-                //can.Items[0] = cit;
-
-                PurchaseResponse r = new PurchaseResponse();
-                r = (PurchaseResponse)_rd.Response;
-
-                can.CancelType = (CancelTransactionType)CboTransactionType.SelectedItem;
-                can.OriginalAmount = _rd.Amount;
-                can.OriginalTransactionTimestamp = r.TransactionTimestamp;
-                can.OriginalTransactionTimestampSpecified = true;
-                can.OriginalSystemTraceId = r.systemtraceid;
-                can.OriginalSystemTraceIdSpecified = true;
-                can.OriginalReferenceNumber = r.ReferenceNumber;
-                // NEED TO ADD can.OriginalSequenceNumber = p.Merchant.Software.SequenceNumber;
-                can.OriginalAuthCode = _rd.AuthorizationCode;
-                can.NetworkResponseCode = r.NetworkResponseCode;
-                can.ReversalReason = (ReversalReasonType)CboReversalReason.SelectedItem;
-                can.ReversalReasonSpecified = true;
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return can;
-        }
-
-        private TokenizeRequest tokenizeRequest()
-        {
-            TokenizeRequest t = new TokenizeRequest();
-            if ((TransactionTypeType)CboTransactionType.SelectedItem == TransactionTypeType.ecommerce)
-            {
-                Random r = new Random();
-                //t.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
-                //t.BillPaymentPayee.PayeeAccountNumber = "";
-                //t.BillPaymentPayee.PayeeName = "";
-                //t.BillPaymentPayee.PayeePhoneNumber = "";
-                t.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-                t.Merchant = merchantType();
-                t.Merchant.Terminal = null;
-                t.PaymentType = (PaymentType)CboPaymentType.SelectedItem;//Mandatory
-                t.PaymentTypeSpecified = true;
-                t.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-                t.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-                t.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
-                t.TokenRequested = true;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-                t.TokenRequestedSpecified = true;
-                int rInt = r.Next(1, 99999); //for ints
-                t.systemtraceid = rInt;
-                t.systemtraceidSpecified = true;
-                rInt = r.Next(1, 99999999);
-                t.merchantrefid = "PWS" + rInt.ToString();
-
-                //Set the object for payment
-                t.Item = new object[1];
-                if (CboPaymentInstrument.Text == "Credit")
-                    t.Item = creditInstrumentType();
-                else if (CboPaymentInstrument.Text == "Debit")
-                    t.Item = debitInstrumentType();
-                else if (CboPaymentInstrument.Text == "Gift")
-                    t.Item = giftInstrumentType();
-            }
-            else
-            {
-                MessageBox.Show("Industry type is not defined.");
-            }
-
-            return t; 
-        }
-
-        #endregion Request Objects
-
-        #endregion PWS Objects
 
         #region API Operations
 
@@ -1373,8 +1023,22 @@ namespace CertSuiteTool
               Note: If the merchant does not receive a response for an Auth, then the merchant should perform a 
               reversal on the Auth transaction. Also there will not be any reversals in cancel and reversals on a reversal transaction.
             */
-            AuthorizeRequest a = authorizeRequest();
-            return ProcessResponse(PWSClient.Authorize(a));
+
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                return VDP_Helper.authorizeRequest(ref vdp);
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.authorizeRequest();
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
         }
 
         private ResponseDetails Capture(ResponseDetails _rd)
@@ -1382,38 +1046,88 @@ namespace CertSuiteTool
             /* Capture is used to schedule a prior authorization for settlement. 
              */
 
-            CaptureRequest c = captureRequest(_rd);
-            return ProcessResponse(PWSClient.Capture(c));
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                return VDP_Helper.captureRequest(_rd, ref vdp);
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.captureRequest(_rd);
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
+
         }
 
         private ResponseDetails Purchase()
         {
             /* Purchase is used to reserve funding for the transaction amount and requesting settlement on the merchant’s behalf.
              */
-            PurchaseRequest p = purchaseRequest();
-            return ProcessResponse(PWSClient.Purchase(p));
+
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                return VDP_Helper.purchaseRequest(ref vdp);                 
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.purchaseRequest();
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
+
         }
 
         private ResponseDetails Adjust(ResponseDetails _rd)
         {
             //Adjust is used to modify a previous transaction, prior to settlement. Credit card only. Litle Does not support this transaction.
 
-            AdjustRequest adj = adjustRequest(_rd);
-            return ProcessResponse(PWSClient.Adjust(adj)); 
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                return VDP_Helper.adjustRequest(_rd, ref vdp);                 
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.adjustRequest(_rd); 
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
         }
 
-        private ResponseDetails Refund(ResponseDetails _rd)
+        private ResponseDetails Refund()
         {
             /* Refund is used to transfer funds from the merchant back to the cardholder. 
              */
 
-            RefundRequest rfnd = refundRequest(null);
-            rfnd.RefundAmount = new AmountType();
-            rfnd.RefundAmount.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-            rfnd.RefundAmount.currencySpecified = true;
-            rfnd.RefundAmount.Value = 1.00M;
-
-            return ProcessResponse(PWSClient.Refund(rfnd));
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                return VDP_Helper.refundRequest(ref vdp);
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.refundRequest(); 
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
         }
 
         private ResponseDetails Cancel(ResponseDetails _rd)
@@ -1427,9 +1141,44 @@ namespace CertSuiteTool
                Note:   In case a response is not received (for a timeout), it is recommended that the merchant does a reversal 
                before resending the same request.
              */
-            
-            CancelRequest can = cancelRequest(_rd);
-            return ProcessResponse(PWSClient.Cancel(can));
+
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                return VDP_Helper.cancelRequest(_rd, ref vdp);
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.cancelRequest(_rd); 
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
+
+        }
+
+        private ResponseDetails Void(ResponseDetails _rd)
+        {
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                return VDP_Helper.voidRequest(_rd, ref vdp);
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("PWS uses the Cancel operation to void transactions. Please change your selection to Cancel to perform a full reversal type.");
+                return null;
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
+
         }
 
         private ResponseDetails CloseBatch()
@@ -1437,7 +1186,7 @@ namespace CertSuiteTool
             /*Close Batch is used to close out the transaction batch for the day. The close batch operation is 
               used primarily by businesses that need to manually start end of day processing, typically restaurants.
             */
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
             return null;
         }
 
@@ -1445,16 +1194,44 @@ namespace CertSuiteTool
         {
             /*Tokenize is used to return a token for a card so that it may be used in future transactions. 
              */
-            
-            TokenizeRequest tr = tokenizeRequest();
-            return ProcessResponse(PWSClient.Tokenize(tr));
+
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.tokenizeRequest(); 
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
+
         }
 
         private ResponseDetails Activate()
         {
             /*Activate is used to load an initial balance on a gift card or to create a Virtual Gift Card.
             */
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            /*Tokenize is used to return a token for a card so that it may be used in future transactions. 
+            */
+
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
@@ -1462,7 +1239,19 @@ namespace CertSuiteTool
         {
             /*Unload is used to remove the remaining balance on a gift card. Gift card only
             */
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
@@ -1470,7 +1259,19 @@ namespace CertSuiteTool
         {
             /*Reload is used to add an additional amount to a gift card. Gift card only.
             */
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
@@ -1478,7 +1279,19 @@ namespace CertSuiteTool
         {
             /*Close is used to finalize a gift card with no further transactions allowed.
             */
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
@@ -1486,7 +1299,19 @@ namespace CertSuiteTool
         {
             /*Balance Inquiry is used to retrieve the balance on a gift card or a prepaid credit card.
             */
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.balanceInquiryRequest(); 
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
@@ -1496,7 +1321,19 @@ namespace CertSuiteTool
               GIFT and CREDIT which are designated by setting the PaymentInstrumentType.
             */
 
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
@@ -1506,94 +1343,155 @@ namespace CertSuiteTool
             or summary of Returns and Sales and, details grouped by following transaction types for gift cards:
             */
 
-            MessageBox.Show("Can't seem to find the code thingy for this one");
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
         #endregion API Operations
 
-        #region Process Response
+        #region Links to Online Resources
 
-        private ResponseDetails ProcessResponse(Object _response)
+        private void lnkVDPOnlineDocumentation_Click(object sender, EventArgs e)
         {
-            string AuthorizationCode = "";
-
-            try
-            {
-                if (((TransactionResponseType)(_response)).ItemsElementName.Count() > 0)
-                {
-                    int idx = 0;
-                    while (idx < ((TransactionResponseType)(_response)).Items.Count())
-                    {
-                        if (((TransactionResponseType)(_response)).ItemsElementName[idx] == ItemsChoiceType1.AuthorizationCode)
-                            AuthorizationCode = ((TransactionResponseType)(_response)).Items[idx];
-                        idx++;
-                    }
-                }
-                //Add to CheckListBox
-                AmountType a = new AmountType();
-                a.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-                a.currencySpecified = true;
-                a.Value = Convert.ToDecimal(TxtTransactionAmount.Text);
-
-                ResponseDetails rd = new ResponseDetails(_response, a, AuthorizationCode);
-                ChkLstTransactionsProcessed.Items.Add(rd);
-
-                return rd;
-            }
-            catch
-            {
-                return null;
-            }
+            System.Diagnostics.Process.Start(@"https://apideveloper.vantiv.com/documentation");
+        }
+        private void LnkVDPForums_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://apideveloper.vantiv.com/forum");
+        }
+        private void LnkVDPGetHelp_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://apideveloper.vantiv.com/help");
+        }
+        private void LnkContactUs_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://apideveloper.vantiv.com/content/contact");
+        }
+        private void LnkNotSure_Click(object sender, EventArgs e)
+        {
+            //System.Diagnostics.Process.Start("");
+        }
+        private void LnkLicenseKey_Click(object sender, EventArgs e)
+        {
+            //System.Diagnostics.Process.Start("");
+        }
+        private void LnkVDPFeatures_Click_1(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://apideveloper.vantiv.com/docs/payment-web-services/getting-started/platform-feature-overview");
+        }
+        private void LnkVDPEndpointURL_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://apideveloper.vantiv.com/docs/payment-web-services/endpoint-reference");
+        }
+        private void LnkPWSUser_Click(object sender, EventArgs e)
+        {
+            //System.Diagnostics.Process.Start("");
+        }
+        private void LnkPWSPassword_Click(object sender, EventArgs e)
+        {
+            //System.Diagnostics.Process.Start("");
+        }
+        private void LnkPWSEndpointURL_Click(object sender, EventArgs e)
+        {
+            //System.Diagnostics.Process.Start("");
         }
 
-        public static string SerializeToString(object obj)
-        {
-            XmlSerializer serializer = new XmlSerializer(obj.GetType());
-            using (StringWriter writer = new StringWriter())
-            {
-                serializer.Serialize(writer, obj);
-                return writer.ToString();
-            }
-        }
-
-        #endregion Process Response
+        #endregion Links to Online Resources
 
     }
 
     public class ResponseDetails
     {
-        public Object Response;
+        /*The following class is used by both PWS and VDP as a way to demonstrate the data that may be saved in the database.
+         * The developer should be familiar with data needed to perform follow-on transaction and ensure at a minimum they have that 
+         * data in their database. They may also wish to record other meta-data that meets their application needs. 
+         */ 
+         /* *** PCI Considerations ***
+         * The developer also  needs to follow PCI data standards in terms of the data they save in their database. For example PCI 
+         * does not permit Track data nor CV data to be saved in any format in a database. It's the software companys responsiblity to 
+         * build a solution that follows PCI standards for more information please reference https://www.pcisecuritystandards.org/ 
+         * or an assesor for guidance.
+         */
+        //Common Meta Data
+        public string VantivInterface;
         public AmountType Amount;
         public string AuthorizationCode;
+        public string PaymentInstrumentType;
+        public string TxnRequestType;
+        //VDP Transaction Summary
+        public VDP_TransactionSummary VDP_TxnSummary;
+        //PWS Transaction Summary
+        public PWS_TransactionSummary PWS_TxnSummary;
 
-        public ResponseDetails(Object response, AmountType amount, string authorizationCode)
+        public ResponseDetails(string vantivInterface, AmountType amount, string authorizationCode, string paymentInstrumentType,
+                                string txnRequestType, VDP_TransactionSummary vDP_TxnSummary, PWS_TransactionSummary pWS_TxnSummary)
         {
-            Response = response;
+            VantivInterface = vantivInterface;
             Amount = amount;
             AuthorizationCode = authorizationCode;
+            PaymentInstrumentType = paymentInstrumentType;
+            TxnRequestType = txnRequestType;
+            VDP_TxnSummary = vDP_TxnSummary;
+            PWS_TxnSummary = pWS_TxnSummary;
         }
         public override string ToString()
         {// Generates the text shown in the List Checkbox
             try
             {
-                string info = "";
-                info = Amount.Value.ToString() + " " + (((TransactionResponseType)(Response)).GetType()).ToString().Replace("Response", "");
-                //((TransactionResponseType)(Response)).
+                string info = "[" + VantivInterface + "] " + PaymentInstrumentType + " ";
 
-                if (((TransactionResponseType)(Response)).Items != null && ((TransactionResponseType)(Response)).Items.Count() > 0)
-                {
-                    info += " (";
-                    int idx = 0;
-                    while (idx < ((TransactionResponseType)(Response)).Items.Count())
+                if (VDP_TxnSummary != null)
+                {//VDP transaction 
+                    if (VDP_TxnSummary.XMLResponse != null)
                     {
-                        info += ((TransactionResponseType)(Response)).ItemsElementName[idx] + ": " + ((TransactionResponseType)(Response)).Items[idx] + " ";
-                        idx++;
+                        info += Amount.Value.ToString() + " " + TxnRequestType + " (AuthorizationCode: " + AuthorizationCode + ")";
+                        info += " [" + DateTime.Now + "]";
+                        info += " RequestId: " + VDP_Helper.SELECT(VDP_TxnSummary.XMLResponse, "//RequestId");
                     }
-                    info += ") ";
-                }  
+                    else if (VDP_TxnSummary.JsonRequest != null)
+                        info += "TRANSACTION FAILURE " + TxnRequestType;
+                }
+                else if (PWS_TxnSummary != null)
+                {//PWS transaction 
+                    if (PWS_TxnSummary.Response != null)
+                    {
+                        info += Amount.Value.ToString() + " " + (((TransactionResponseType)(PWS_TxnSummary.Response)).GetType()).ToString().Replace("Response", "");
 
-                info += " [" + DateTime.Now + "]" + " RequestId: " + ((TransactionResponseType)(Response)).RequestId;
+                        if (((TransactionResponseType)(PWS_TxnSummary.Response)).Items != null && ((TransactionResponseType)(PWS_TxnSummary.Response)).Items.Count() > 0)
+                        {
+                            info += " (";
+                            int idx = 0;
+                            while (idx < ((TransactionResponseType)(PWS_TxnSummary.Response)).Items.Count())
+                            {
+                                info += ((TransactionResponseType)(PWS_TxnSummary.Response)).ItemsElementName[idx] + ": " + ((TransactionResponseType)(PWS_TxnSummary.Response)).Items[idx] + " ";
+                                if (((TransactionResponseType)(PWS_TxnSummary.Response)).TokenizationResult != null && ((TransactionResponseType)(PWS_TxnSummary.Response)).TokenizationResult.successful)
+                                    info += "TOKEN";
+                                idx++;
+                            }
+                            info += ") ";
+                            info += " [" + DateTime.Now + "]";
+                            info += " RequestId: " + ((TransactionResponseType)(PWS_TxnSummary.Response)).RequestId;
+                        }
+                    }
+                    else if (PWS_TxnSummary.PWSRequest != null)
+                        info += "TRANSACTION FAILURE " + PWS_TxnSummary.PWSRequest.GetType().ToString().Replace("Request", "");
+                }
+                else
+                { 
+                    info += "TRANSACTION FAILURE";
+                }
 
                 return info;
             }
@@ -1603,6 +1501,7 @@ namespace CertSuiteTool
 
         }
     }
+
     public class item
     {
         public string Name;
@@ -1621,23 +1520,23 @@ namespace CertSuiteTool
         }
     }
 
-    public class TestScenario
-    {
-        public string TestNumber;
-        public Transaction.Response TestResponse;
-        public Services.Response SvcResponse;
+    //public class TestScenario
+    //{
+    //    public string TestNumber;
+    //    public Transaction.Response TestResponse;
+    //    public Services.Response SvcResponse;
 
-        public TestScenario(string testNumber, Transaction.Response testResponse, Services.Response svcResponse)
-        {
-            TestNumber = testNumber;
-            TestResponse = testResponse;
-            SvcResponse = svcResponse;
-        }
-        public override string ToString()
-        {
-            // Generates the text shown in the combo box
-            return TestNumber;
-        }
-    }
+    //    public TestScenario(string testNumber, Transaction.Response testResponse, Services.Response svcResponse)
+    //    {
+    //        TestNumber = testNumber;
+    //        TestResponse = testResponse;
+    //        SvcResponse = svcResponse;
+    //    }
+    //    public override string ToString()
+    //    {
+    //        // Generates the text shown in the combo box
+    //        return TestNumber;
+    //    }
+    //}
 
 }

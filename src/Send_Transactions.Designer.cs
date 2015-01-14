@@ -28,9 +28,96 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Send_Transactions));
             this.TbControl = new System.Windows.Forms.TabControl();
+            this.TbAbout = new System.Windows.Forms.TabPage();
+            this.LnkNotSure = new System.Windows.Forms.LinkLabel();
+            this.cmdGo = new System.Windows.Forms.Button();
+            this.Grp_PWS = new System.Windows.Forms.GroupBox();
+            this.lnkPWSOnlineDocumentation = new System.Windows.Forms.LinkLabel();
+            this.label35 = new System.Windows.Forms.Label();
+            this.TxtUserName = new System.Windows.Forms.TextBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.txtPWSBaseEndpointURL = new System.Windows.Forms.TextBox();
+            this.TxtPassword = new System.Windows.Forms.TextBox();
+            this.label37 = new System.Windows.Forms.Label();
+            this.grp_VDP = new System.Windows.Forms.GroupBox();
+            this.LnkContactUs = new System.Windows.Forms.LinkLabel();
+            this.LnkVDPGetHelp = new System.Windows.Forms.LinkLabel();
+            this.LnkVDPForums = new System.Windows.Forms.LinkLabel();
+            this.LnkVDPFeatures = new System.Windows.Forms.LinkLabel();
+            this.lnkVDPOnlineDocumentation = new System.Windows.Forms.LinkLabel();
+            this.label15 = new System.Windows.Forms.Label();
+            this.LnkVDPEndpointURL = new System.Windows.Forms.LinkLabel();
+            this.label34 = new System.Windows.Forms.Label();
+            this.TxtLicenseKeyAPIKey = new System.Windows.Forms.TextBox();
+            this.LnkLicenseKey = new System.Windows.Forms.LinkLabel();
+            this.txtVDPBaseEndpointURL = new System.Windows.Forms.TextBox();
+            this.label40 = new System.Windows.Forms.Label();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.txtDisclaimer = new System.Windows.Forms.TextBox();
+            this.label38 = new System.Windows.Forms.Label();
+            this.PicVantiLogo = new System.Windows.Forms.PictureBox();
+            this.CboPWSorVDP = new System.Windows.Forms.ComboBox();
+            this.TbMerchantData = new System.Windows.Forms.TabPage();
+            this.GrpMerchantData = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.TxtCashierNumber = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.CboTestMerchantAccounts = new System.Windows.Forms.ComboBox();
+            this.TxtChainCode = new System.Windows.Forms.TextBox();
+            this.TxtStoreNumber = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.TxtClerkNumber = new System.Windows.Forms.TextBox();
+            this.TxtNetworkRouting = new System.Windows.Forms.TextBox();
+            this.TxtMID = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.TxtMerchantName = new System.Windows.Forms.TextBox();
+            this.TxtTID = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.TxtLaneNumber = new System.Windows.Forms.TextBox();
+            this.TxtDivisionNumber = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.CmdSendTransactions = new System.Windows.Forms.Button();
             this.TbTransactionData = new System.Windows.Forms.TabPage();
+            this.ChkExtractTokenFromResponse = new System.Windows.Forms.CheckBox();
+            this.GrpTerminalData = new System.Windows.Forms.GroupBox();
+            this.CboCardReaderType = new System.Windows.Forms.ComboBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.TxtLatitude = new System.Windows.Forms.TextBox();
+            this.label49 = new System.Windows.Forms.Label();
+            this.TxtLongitude = new System.Windows.Forms.TextBox();
+            this.label48 = new System.Windows.Forms.Label();
+            this.CboEntryMode = new System.Windows.Forms.ComboBox();
+            this.label47 = new System.Windows.Forms.Label();
+            this.CboHostAdjustment = new System.Windows.Forms.ComboBox();
+            this.label46 = new System.Windows.Forms.Label();
+            this.CboBalanceInquiry = new System.Windows.Forms.ComboBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.CboPinEntry = new System.Windows.Forms.ComboBox();
+            this.label44 = new System.Windows.Forms.Label();
+            this.CboCardInputCode = new System.Windows.Forms.ComboBox();
+            this.label50 = new System.Windows.Forms.Label();
+            this.CboTerminalEnvironmentalCode = new System.Windows.Forms.ComboBox();
+            this.label43 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.TxtTokenValue = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.TxtTokenId = new System.Windows.Forms.TextBox();
+            this.ChkUseToken = new System.Windows.Forms.CheckBox();
+            this.GrpCancel = new System.Windows.Forms.GroupBox();
+            this.TxtCancelReplacementAmount = new System.Windows.Forms.TextBox();
+            this.ChkCancelReplacementAmount = new System.Windows.Forms.CheckBox();
+            this.CboReversalReason = new System.Windows.Forms.ComboBox();
+            this.label24 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.ChkSetAddressInformation = new System.Windows.Forms.CheckBox();
             this.CboStateType = new System.Windows.Forms.ComboBox();
@@ -60,11 +147,6 @@
             this.label25 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.TxtTransactionAmount = new System.Windows.Forms.TextBox();
-            this.GrpCancel = new System.Windows.Forms.GroupBox();
-            this.CboReversalReason = new System.Windows.Forms.ComboBox();
-            this.label24 = new System.Windows.Forms.Label();
-            this.CboCancelType = new System.Windows.Forms.ComboBox();
-            this.label15 = new System.Windows.Forms.Label();
             this.ChkOnClickDisplayTxnMessage = new System.Windows.Forms.CheckBox();
             this.CmdClearTransactions = new System.Windows.Forms.Button();
             this.ChkLstTransactionsProcessed = new System.Windows.Forms.CheckedListBox();
@@ -80,6 +162,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.TxtCardholderName = new System.Windows.Forms.TextBox();
             this.GrpTrackData = new System.Windows.Forms.GroupBox();
+            this.CmdExampleTestVal = new System.Windows.Forms.Button();
             this.CboTrackChoice = new System.Windows.Forms.ComboBox();
             this.TxtTrackData = new System.Windows.Forms.TextBox();
             this.ChkEncryptedData = new System.Windows.Forms.CheckBox();
@@ -92,28 +175,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.CboTerminalDetail = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.TbMerchantData = new System.Windows.Forms.TabPage();
-            this.CboTestMerchantAccounts = new System.Windows.Forms.ComboBox();
-            this.TxtStoreNumber = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.TxtNetworkRouting = new System.Windows.Forms.TextBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.TxtMerchantName = new System.Windows.Forms.TextBox();
-            this.label21 = new System.Windows.Forms.Label();
-            this.TxtLaneNumber = new System.Windows.Forms.TextBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.TxtDivisionNumber = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.TxtTID = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.TxtMID = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.TxtClerkNumber = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.TxtChainCode = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.TxtCashierNumber = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker3 = new System.ComponentModel.BackgroundWorker();
@@ -123,33 +184,622 @@
             this.backgroundWorker7 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker8 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker9 = new System.ComponentModel.BackgroundWorker();
+            this.TmrHighlightChangedFields = new System.Windows.Forms.Timer(this.components);
             this.TbControl.SuspendLayout();
+            this.TbAbout.SuspendLayout();
+            this.Grp_PWS.SuspendLayout();
+            this.grp_VDP.SuspendLayout();
+            this.groupBox12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PicVantiLogo)).BeginInit();
+            this.TbMerchantData.SuspendLayout();
+            this.GrpMerchantData.SuspendLayout();
             this.TbTransactionData.SuspendLayout();
+            this.GrpTerminalData.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.GrpCancel.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.GrpCredit.SuspendLayout();
             this.GrpDebit.SuspendLayout();
             this.GrpGift.SuspendLayout();
-            this.GrpCancel.SuspendLayout();
             this.GrpKeyedData.SuspendLayout();
             this.GrpTrackData.SuspendLayout();
-            this.TbMerchantData.SuspendLayout();
             this.SuspendLayout();
             // 
             // TbControl
             // 
-            this.TbControl.Controls.Add(this.TbTransactionData);
+            this.TbControl.Controls.Add(this.TbAbout);
             this.TbControl.Controls.Add(this.TbMerchantData);
+            this.TbControl.Controls.Add(this.TbTransactionData);
             this.TbControl.Location = new System.Drawing.Point(12, 10);
             this.TbControl.Name = "TbControl";
             this.TbControl.SelectedIndex = 0;
             this.TbControl.Size = new System.Drawing.Size(799, 672);
             this.TbControl.TabIndex = 7;
             // 
+            // TbAbout
+            // 
+            this.TbAbout.Controls.Add(this.LnkNotSure);
+            this.TbAbout.Controls.Add(this.cmdGo);
+            this.TbAbout.Controls.Add(this.Grp_PWS);
+            this.TbAbout.Controls.Add(this.grp_VDP);
+            this.TbAbout.Controls.Add(this.label40);
+            this.TbAbout.Controls.Add(this.groupBox12);
+            this.TbAbout.Controls.Add(this.label38);
+            this.TbAbout.Controls.Add(this.PicVantiLogo);
+            this.TbAbout.Controls.Add(this.CboPWSorVDP);
+            this.TbAbout.Location = new System.Drawing.Point(4, 22);
+            this.TbAbout.Name = "TbAbout";
+            this.TbAbout.Size = new System.Drawing.Size(791, 646);
+            this.TbAbout.TabIndex = 4;
+            this.TbAbout.Text = "About";
+            this.TbAbout.UseVisualStyleBackColor = true;
+            // 
+            // LnkNotSure
+            // 
+            this.LnkNotSure.AutoSize = true;
+            this.LnkNotSure.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.LnkNotSure.Image = ((System.Drawing.Image)(resources.GetObject("LnkNotSure.Image")));
+            this.LnkNotSure.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.LnkNotSure.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.LnkNotSure.Location = new System.Drawing.Point(766, 140);
+            this.LnkNotSure.Margin = new System.Windows.Forms.Padding(0);
+            this.LnkNotSure.MinimumSize = new System.Drawing.Size(20, 20);
+            this.LnkNotSure.Name = "LnkNotSure";
+            this.LnkNotSure.Size = new System.Drawing.Size(20, 20);
+            this.LnkNotSure.TabIndex = 153;
+            this.LnkNotSure.Tag = "Learn more about \"Sign On\"";
+            this.LnkNotSure.Click += new System.EventHandler(this.LnkNotSure_Click);
+            // 
+            // cmdGo
+            // 
+            this.cmdGo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(209)))), ((int)(((byte)(5)))));
+            this.cmdGo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmdGo.Location = new System.Drawing.Point(480, 390);
+            this.cmdGo.Name = "cmdGo";
+            this.cmdGo.Size = new System.Drawing.Size(75, 23);
+            this.cmdGo.TabIndex = 152;
+            this.cmdGo.Text = "Go ->";
+            this.cmdGo.UseVisualStyleBackColor = false;
+            this.cmdGo.Click += new System.EventHandler(this.cmdGo_Click);
+            // 
+            // Grp_PWS
+            // 
+            this.Grp_PWS.Controls.Add(this.lnkPWSOnlineDocumentation);
+            this.Grp_PWS.Controls.Add(this.label35);
+            this.Grp_PWS.Controls.Add(this.TxtUserName);
+            this.Grp_PWS.Controls.Add(this.label42);
+            this.Grp_PWS.Controls.Add(this.label36);
+            this.Grp_PWS.Controls.Add(this.txtPWSBaseEndpointURL);
+            this.Grp_PWS.Controls.Add(this.TxtPassword);
+            this.Grp_PWS.Controls.Add(this.label37);
+            this.Grp_PWS.Enabled = false;
+            this.Grp_PWS.Location = new System.Drawing.Point(9, 275);
+            this.Grp_PWS.Name = "Grp_PWS";
+            this.Grp_PWS.Size = new System.Drawing.Size(546, 109);
+            this.Grp_PWS.TabIndex = 151;
+            this.Grp_PWS.TabStop = false;
+            this.Grp_PWS.Text = "Payment Web Services (PWS)";
+            // 
+            // lnkPWSOnlineDocumentation
+            // 
+            this.lnkPWSOnlineDocumentation.AutoSize = true;
+            this.lnkPWSOnlineDocumentation.Enabled = false;
+            this.lnkPWSOnlineDocumentation.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkPWSOnlineDocumentation.Location = new System.Drawing.Point(417, 16);
+            this.lnkPWSOnlineDocumentation.Name = "lnkPWSOnlineDocumentation";
+            this.lnkPWSOnlineDocumentation.Size = new System.Drawing.Size(112, 13);
+            this.lnkPWSOnlineDocumentation.TabIndex = 155;
+            this.lnkPWSOnlineDocumentation.TabStop = true;
+            this.lnkPWSOnlineDocumentation.Text = "Online Documentation";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(18, 16);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(60, 13);
+            this.label35.TabIndex = 5;
+            this.label35.Text = "User Name";
+            // 
+            // TxtUserName
+            // 
+            this.TxtUserName.Location = new System.Drawing.Point(153, 13);
+            this.TxtUserName.Name = "TxtUserName";
+            this.TxtUserName.Size = new System.Drawing.Size(121, 20);
+            this.TxtUserName.TabIndex = 6;
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(18, 68);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(101, 13);
+            this.label42.TabIndex = 106;
+            this.label42.Text = "Base Endpoint URL";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(18, 42);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(53, 13);
+            this.label36.TabIndex = 7;
+            this.label36.Text = "Password";
+            // 
+            // txtPWSBaseEndpointURL
+            // 
+            this.txtPWSBaseEndpointURL.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtPWSBaseEndpointURL.Location = new System.Drawing.Point(153, 65);
+            this.txtPWSBaseEndpointURL.Name = "txtPWSBaseEndpointURL";
+            this.txtPWSBaseEndpointURL.ReadOnly = true;
+            this.txtPWSBaseEndpointURL.Size = new System.Drawing.Size(238, 20);
+            this.txtPWSBaseEndpointURL.TabIndex = 5;
+            // 
+            // TxtPassword
+            // 
+            this.TxtPassword.Location = new System.Drawing.Point(153, 39);
+            this.TxtPassword.Name = "TxtPassword";
+            this.TxtPassword.Size = new System.Drawing.Size(121, 20);
+            this.TxtPassword.TabIndex = 8;
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label37.Location = new System.Drawing.Point(6, 88);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(310, 13);
+            this.label37.TabIndex = 9;
+            this.label37.Text = "Values are set in the config and loaded upon application start up";
+            // 
+            // grp_VDP
+            // 
+            this.grp_VDP.Controls.Add(this.LnkContactUs);
+            this.grp_VDP.Controls.Add(this.LnkVDPGetHelp);
+            this.grp_VDP.Controls.Add(this.LnkVDPForums);
+            this.grp_VDP.Controls.Add(this.LnkVDPFeatures);
+            this.grp_VDP.Controls.Add(this.lnkVDPOnlineDocumentation);
+            this.grp_VDP.Controls.Add(this.label15);
+            this.grp_VDP.Controls.Add(this.LnkVDPEndpointURL);
+            this.grp_VDP.Controls.Add(this.label34);
+            this.grp_VDP.Controls.Add(this.TxtLicenseKeyAPIKey);
+            this.grp_VDP.Controls.Add(this.LnkLicenseKey);
+            this.grp_VDP.Controls.Add(this.txtVDPBaseEndpointURL);
+            this.grp_VDP.Enabled = false;
+            this.grp_VDP.Location = new System.Drawing.Point(9, 169);
+            this.grp_VDP.Name = "grp_VDP";
+            this.grp_VDP.Size = new System.Drawing.Size(546, 100);
+            this.grp_VDP.TabIndex = 150;
+            this.grp_VDP.TabStop = false;
+            this.grp_VDP.Text = "Vantiv Developer Portal (VDP)";
+            // 
+            // LnkContactUs
+            // 
+            this.LnkContactUs.AutoSize = true;
+            this.LnkContactUs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LnkContactUs.Location = new System.Drawing.Point(417, 72);
+            this.LnkContactUs.Name = "LnkContactUs";
+            this.LnkContactUs.Size = new System.Drawing.Size(60, 13);
+            this.LnkContactUs.TabIndex = 159;
+            this.LnkContactUs.TabStop = true;
+            this.LnkContactUs.Text = "Contact Us";
+            this.LnkContactUs.Click += new System.EventHandler(this.LnkContactUs_Click);
+            // 
+            // LnkVDPGetHelp
+            // 
+            this.LnkVDPGetHelp.AutoSize = true;
+            this.LnkVDPGetHelp.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LnkVDPGetHelp.Location = new System.Drawing.Point(417, 58);
+            this.LnkVDPGetHelp.Name = "LnkVDPGetHelp";
+            this.LnkVDPGetHelp.Size = new System.Drawing.Size(49, 13);
+            this.LnkVDPGetHelp.TabIndex = 158;
+            this.LnkVDPGetHelp.TabStop = true;
+            this.LnkVDPGetHelp.Text = "Get Help";
+            this.LnkVDPGetHelp.Click += new System.EventHandler(this.LnkVDPGetHelp_Click);
+            // 
+            // LnkVDPForums
+            // 
+            this.LnkVDPForums.AutoSize = true;
+            this.LnkVDPForums.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LnkVDPForums.Location = new System.Drawing.Point(417, 44);
+            this.LnkVDPForums.Name = "LnkVDPForums";
+            this.LnkVDPForums.Size = new System.Drawing.Size(41, 13);
+            this.LnkVDPForums.TabIndex = 157;
+            this.LnkVDPForums.TabStop = true;
+            this.LnkVDPForums.Text = "Forums";
+            this.LnkVDPForums.Click += new System.EventHandler(this.LnkVDPForums_Click);
+            // 
+            // LnkVDPFeatures
+            // 
+            this.LnkVDPFeatures.AutoSize = true;
+            this.LnkVDPFeatures.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LnkVDPFeatures.Location = new System.Drawing.Point(417, 30);
+            this.LnkVDPFeatures.Name = "LnkVDPFeatures";
+            this.LnkVDPFeatures.Size = new System.Drawing.Size(48, 13);
+            this.LnkVDPFeatures.TabIndex = 156;
+            this.LnkVDPFeatures.TabStop = true;
+            this.LnkVDPFeatures.Text = "Features";
+            this.LnkVDPFeatures.Click += new System.EventHandler(this.LnkVDPFeatures_Click_1);
+            // 
+            // lnkVDPOnlineDocumentation
+            // 
+            this.lnkVDPOnlineDocumentation.AutoSize = true;
+            this.lnkVDPOnlineDocumentation.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkVDPOnlineDocumentation.Location = new System.Drawing.Point(417, 16);
+            this.lnkVDPOnlineDocumentation.Name = "lnkVDPOnlineDocumentation";
+            this.lnkVDPOnlineDocumentation.Size = new System.Drawing.Size(112, 13);
+            this.lnkVDPOnlineDocumentation.TabIndex = 154;
+            this.lnkVDPOnlineDocumentation.TabStop = true;
+            this.lnkVDPOnlineDocumentation.Text = "Online Documentation";
+            this.lnkVDPOnlineDocumentation.Click += new System.EventHandler(this.lnkVDPOnlineDocumentation_Click);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(18, 38);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(101, 13);
+            this.label15.TabIndex = 108;
+            this.label15.Text = "Base Endpoint URL";
+            // 
+            // LnkVDPEndpointURL
+            // 
+            this.LnkVDPEndpointURL.AutoSize = true;
+            this.LnkVDPEndpointURL.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.LnkVDPEndpointURL.Image = ((System.Drawing.Image)(resources.GetObject("LnkVDPEndpointURL.Image")));
+            this.LnkVDPEndpointURL.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.LnkVDPEndpointURL.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.LnkVDPEndpointURL.Location = new System.Drawing.Point(394, 35);
+            this.LnkVDPEndpointURL.Margin = new System.Windows.Forms.Padding(0);
+            this.LnkVDPEndpointURL.MinimumSize = new System.Drawing.Size(20, 20);
+            this.LnkVDPEndpointURL.Name = "LnkVDPEndpointURL";
+            this.LnkVDPEndpointURL.Size = new System.Drawing.Size(20, 20);
+            this.LnkVDPEndpointURL.TabIndex = 149;
+            this.LnkVDPEndpointURL.Tag = "Learn more about \"Sign On\"";
+            this.LnkVDPEndpointURL.Click += new System.EventHandler(this.LnkVDPEndpointURL_Click);
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(18, 16);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(56, 13);
+            this.label34.TabIndex = 3;
+            this.label34.Text = "License Id";
+            // 
+            // TxtLicenseKeyAPIKey
+            // 
+            this.TxtLicenseKeyAPIKey.Location = new System.Drawing.Point(153, 13);
+            this.TxtLicenseKeyAPIKey.Name = "TxtLicenseKeyAPIKey";
+            this.TxtLicenseKeyAPIKey.Size = new System.Drawing.Size(238, 20);
+            this.TxtLicenseKeyAPIKey.TabIndex = 4;
+            // 
+            // LnkLicenseKey
+            // 
+            this.LnkLicenseKey.AutoSize = true;
+            this.LnkLicenseKey.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.LnkLicenseKey.Image = ((System.Drawing.Image)(resources.GetObject("LnkLicenseKey.Image")));
+            this.LnkLicenseKey.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.LnkLicenseKey.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.LnkLicenseKey.Location = new System.Drawing.Point(394, 13);
+            this.LnkLicenseKey.Margin = new System.Windows.Forms.Padding(0);
+            this.LnkLicenseKey.MinimumSize = new System.Drawing.Size(20, 20);
+            this.LnkLicenseKey.Name = "LnkLicenseKey";
+            this.LnkLicenseKey.Size = new System.Drawing.Size(20, 20);
+            this.LnkLicenseKey.TabIndex = 146;
+            this.LnkLicenseKey.Tag = "Learn more about \"Sign On\"";
+            this.LnkLicenseKey.Click += new System.EventHandler(this.LnkLicenseKey_Click);
+            // 
+            // txtVDPBaseEndpointURL
+            // 
+            this.txtVDPBaseEndpointURL.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtVDPBaseEndpointURL.Location = new System.Drawing.Point(153, 35);
+            this.txtVDPBaseEndpointURL.Name = "txtVDPBaseEndpointURL";
+            this.txtVDPBaseEndpointURL.Size = new System.Drawing.Size(238, 20);
+            this.txtVDPBaseEndpointURL.TabIndex = 107;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label40.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label40.Location = new System.Drawing.Point(74, 140);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(696, 20);
+            this.label40.TabIndex = 148;
+            this.label40.Text = "Are you integrating to Payment Web Services (PWS) or Vantiv Developer Portal (VDP" +
+    ")? Not Sure?";
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.txtDisclaimer);
+            this.groupBox12.Location = new System.Drawing.Point(3, 475);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(784, 166);
+            this.groupBox12.TabIndex = 147;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "Disclaimer";
+            // 
+            // txtDisclaimer
+            // 
+            this.txtDisclaimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
+            this.txtDisclaimer.Location = new System.Drawing.Point(6, 19);
+            this.txtDisclaimer.Multiline = true;
+            this.txtDisclaimer.Name = "txtDisclaimer";
+            this.txtDisclaimer.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtDisclaimer.Size = new System.Drawing.Size(777, 141);
+            this.txtDisclaimer.TabIndex = 0;
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label38.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label38.Location = new System.Drawing.Point(3, 115);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(102, 24);
+            this.label38.TabIndex = 119;
+            this.label38.Text = "Let\'s Begin";
+            // 
+            // PicVantiLogo
+            // 
+            this.PicVantiLogo.ImageLocation = "";
+            this.PicVantiLogo.Location = new System.Drawing.Point(3, 3);
+            this.PicVantiLogo.Name = "PicVantiLogo";
+            this.PicVantiLogo.Size = new System.Drawing.Size(784, 109);
+            this.PicVantiLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PicVantiLogo.TabIndex = 10;
+            this.PicVantiLogo.TabStop = false;
+            // 
+            // CboPWSorVDP
+            // 
+            this.CboPWSorVDP.FormattingEnabled = true;
+            this.CboPWSorVDP.Items.AddRange(new object[] {
+            "VDP",
+            "PWS"});
+            this.CboPWSorVDP.Location = new System.Drawing.Point(9, 142);
+            this.CboPWSorVDP.Name = "CboPWSorVDP";
+            this.CboPWSorVDP.Size = new System.Drawing.Size(59, 21);
+            this.CboPWSorVDP.TabIndex = 1;
+            this.CboPWSorVDP.SelectedIndexChanged += new System.EventHandler(this.CboPWSorVDP_SelectedIndexChanged);
+            // 
+            // TbMerchantData
+            // 
+            this.TbMerchantData.Controls.Add(this.GrpMerchantData);
+            this.TbMerchantData.Controls.Add(this.CmdSendTransactions);
+            this.TbMerchantData.Location = new System.Drawing.Point(4, 22);
+            this.TbMerchantData.Name = "TbMerchantData";
+            this.TbMerchantData.Padding = new System.Windows.Forms.Padding(3);
+            this.TbMerchantData.Size = new System.Drawing.Size(791, 646);
+            this.TbMerchantData.TabIndex = 3;
+            this.TbMerchantData.Text = "Merchant Data";
+            this.TbMerchantData.UseVisualStyleBackColor = true;
+            // 
+            // GrpMerchantData
+            // 
+            this.GrpMerchantData.Controls.Add(this.label12);
+            this.GrpMerchantData.Controls.Add(this.label14);
+            this.GrpMerchantData.Controls.Add(this.TxtCashierNumber);
+            this.GrpMerchantData.Controls.Add(this.label16);
+            this.GrpMerchantData.Controls.Add(this.CboTestMerchantAccounts);
+            this.GrpMerchantData.Controls.Add(this.TxtChainCode);
+            this.GrpMerchantData.Controls.Add(this.TxtStoreNumber);
+            this.GrpMerchantData.Controls.Add(this.label17);
+            this.GrpMerchantData.Controls.Add(this.label23);
+            this.GrpMerchantData.Controls.Add(this.TxtClerkNumber);
+            this.GrpMerchantData.Controls.Add(this.TxtNetworkRouting);
+            this.GrpMerchantData.Controls.Add(this.TxtMID);
+            this.GrpMerchantData.Controls.Add(this.label22);
+            this.GrpMerchantData.Controls.Add(this.label13);
+            this.GrpMerchantData.Controls.Add(this.TxtMerchantName);
+            this.GrpMerchantData.Controls.Add(this.TxtTID);
+            this.GrpMerchantData.Controls.Add(this.label21);
+            this.GrpMerchantData.Controls.Add(this.label19);
+            this.GrpMerchantData.Controls.Add(this.TxtLaneNumber);
+            this.GrpMerchantData.Controls.Add(this.TxtDivisionNumber);
+            this.GrpMerchantData.Controls.Add(this.label20);
+            this.GrpMerchantData.Location = new System.Drawing.Point(6, 6);
+            this.GrpMerchantData.Name = "GrpMerchantData";
+            this.GrpMerchantData.Size = new System.Drawing.Size(580, 274);
+            this.GrpMerchantData.TabIndex = 156;
+            this.GrpMerchantData.TabStop = false;
+            this.GrpMerchantData.Text = "Merchant Data";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 16);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(93, 13);
+            this.label12.TabIndex = 22;
+            this.label12.Text = "Merchant Id (MID)";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 68);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(82, 13);
+            this.label14.TabIndex = 10;
+            this.label14.Text = "Cashier Number";
+            // 
+            // TxtCashierNumber
+            // 
+            this.TxtCashierNumber.Location = new System.Drawing.Point(115, 65);
+            this.TxtCashierNumber.Name = "TxtCashierNumber";
+            this.TxtCashierNumber.Size = new System.Drawing.Size(129, 20);
+            this.TxtCashierNumber.TabIndex = 11;
+            this.TxtCashierNumber.Text = "12345678";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 94);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(62, 13);
+            this.label16.TabIndex = 12;
+            this.label16.Text = "Chain Code";
+            // 
+            // CboTestMerchantAccounts
+            // 
+            this.CboTestMerchantAccounts.FormattingEnabled = true;
+            this.CboTestMerchantAccounts.Location = new System.Drawing.Point(251, 26);
+            this.CboTestMerchantAccounts.Name = "CboTestMerchantAccounts";
+            this.CboTestMerchantAccounts.Size = new System.Drawing.Size(322, 21);
+            this.CboTestMerchantAccounts.TabIndex = 36;
+            this.CboTestMerchantAccounts.SelectedIndexChanged += new System.EventHandler(this.CboTestMerchantAccounts_SelectedIndexChanged);
+            // 
+            // TxtChainCode
+            // 
+            this.TxtChainCode.Location = new System.Drawing.Point(115, 91);
+            this.TxtChainCode.Name = "TxtChainCode";
+            this.TxtChainCode.Size = new System.Drawing.Size(129, 20);
+            this.TxtChainCode.TabIndex = 13;
+            this.TxtChainCode.Text = "0J1122";
+            // 
+            // TxtStoreNumber
+            // 
+            this.TxtStoreNumber.Location = new System.Drawing.Point(115, 247);
+            this.TxtStoreNumber.Name = "TxtStoreNumber";
+            this.TxtStoreNumber.Size = new System.Drawing.Size(129, 20);
+            this.TxtStoreNumber.TabIndex = 35;
+            this.TxtStoreNumber.Text = "0001";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 120);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(71, 13);
+            this.label17.TabIndex = 14;
+            this.label17.Text = "Clerk Number";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(6, 250);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(72, 13);
+            this.label23.TabIndex = 34;
+            this.label23.Text = "Store Number";
+            // 
+            // TxtClerkNumber
+            // 
+            this.TxtClerkNumber.Location = new System.Drawing.Point(115, 117);
+            this.TxtClerkNumber.Name = "TxtClerkNumber";
+            this.TxtClerkNumber.Size = new System.Drawing.Size(129, 20);
+            this.TxtClerkNumber.TabIndex = 15;
+            this.TxtClerkNumber.Text = "09";
+            // 
+            // TxtNetworkRouting
+            // 
+            this.TxtNetworkRouting.Location = new System.Drawing.Point(115, 221);
+            this.TxtNetworkRouting.Name = "TxtNetworkRouting";
+            this.TxtNetworkRouting.Size = new System.Drawing.Size(129, 20);
+            this.TxtNetworkRouting.TabIndex = 33;
+            this.TxtNetworkRouting.Text = "2J";
+            // 
+            // TxtMID
+            // 
+            this.TxtMID.Location = new System.Drawing.Point(115, 13);
+            this.TxtMID.Name = "TxtMID";
+            this.TxtMID.Size = new System.Drawing.Size(130, 20);
+            this.TxtMID.TabIndex = 23;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(6, 224);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(87, 13);
+            this.label22.TabIndex = 32;
+            this.label22.Text = "Network Routing";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 42);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(86, 13);
+            this.label13.TabIndex = 24;
+            this.label13.Text = "Terminal Id (TID)";
+            // 
+            // TxtMerchantName
+            // 
+            this.TxtMerchantName.Location = new System.Drawing.Point(115, 195);
+            this.TxtMerchantName.Name = "TxtMerchantName";
+            this.TxtMerchantName.Size = new System.Drawing.Size(129, 20);
+            this.TxtMerchantName.TabIndex = 31;
+            this.TxtMerchantName.Text = "ACME Co";
+            // 
+            // TxtTID
+            // 
+            this.TxtTID.Location = new System.Drawing.Point(115, 39);
+            this.TxtTID.Name = "TxtTID";
+            this.TxtTID.Size = new System.Drawing.Size(130, 20);
+            this.TxtTID.TabIndex = 25;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 198);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(83, 13);
+            this.label21.TabIndex = 30;
+            this.label21.Text = "Merchant Name";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 146);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(84, 13);
+            this.label19.TabIndex = 26;
+            this.label19.Text = "Division Number";
+            // 
+            // TxtLaneNumber
+            // 
+            this.TxtLaneNumber.Location = new System.Drawing.Point(115, 169);
+            this.TxtLaneNumber.Name = "TxtLaneNumber";
+            this.TxtLaneNumber.Size = new System.Drawing.Size(129, 20);
+            this.TxtLaneNumber.TabIndex = 29;
+            this.TxtLaneNumber.Text = "42";
+            // 
+            // TxtDivisionNumber
+            // 
+            this.TxtDivisionNumber.Location = new System.Drawing.Point(115, 143);
+            this.TxtDivisionNumber.Name = "TxtDivisionNumber";
+            this.TxtDivisionNumber.Size = new System.Drawing.Size(129, 20);
+            this.TxtDivisionNumber.TabIndex = 27;
+            this.TxtDivisionNumber.Text = "001";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(6, 172);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(71, 13);
+            this.label20.TabIndex = 28;
+            this.label20.Text = "Lane Number";
+            // 
+            // CmdSendTransactions
+            // 
+            this.CmdSendTransactions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(209)))), ((int)(((byte)(5)))));
+            this.CmdSendTransactions.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CmdSendTransactions.Location = new System.Drawing.Point(511, 286);
+            this.CmdSendTransactions.Name = "CmdSendTransactions";
+            this.CmdSendTransactions.Size = new System.Drawing.Size(75, 23);
+            this.CmdSendTransactions.TabIndex = 153;
+            this.CmdSendTransactions.Text = "Next ->";
+            this.CmdSendTransactions.UseVisualStyleBackColor = false;
+            this.CmdSendTransactions.Click += new System.EventHandler(this.CmdSendTransactions_Click);
+            // 
             // TbTransactionData
             // 
+            this.TbTransactionData.Controls.Add(this.ChkExtractTokenFromResponse);
+            this.TbTransactionData.Controls.Add(this.GrpTerminalData);
             this.TbTransactionData.Controls.Add(this.groupBox1);
-            this.TbTransactionData.Controls.Add(this.GrpCancel);
             this.TbTransactionData.Controls.Add(this.ChkOnClickDisplayTxnMessage);
             this.TbTransactionData.Controls.Add(this.CmdClearTransactions);
             this.TbTransactionData.Controls.Add(this.ChkLstTransactionsProcessed);
@@ -173,8 +823,204 @@
             this.TbTransactionData.Text = "Transaction Data";
             this.TbTransactionData.UseVisualStyleBackColor = true;
             // 
+            // ChkExtractTokenFromResponse
+            // 
+            this.ChkExtractTokenFromResponse.AutoSize = true;
+            this.ChkExtractTokenFromResponse.Location = new System.Drawing.Point(328, 524);
+            this.ChkExtractTokenFromResponse.Name = "ChkExtractTokenFromResponse";
+            this.ChkExtractTokenFromResponse.Size = new System.Drawing.Size(167, 17);
+            this.ChkExtractTokenFromResponse.TabIndex = 159;
+            this.ChkExtractTokenFromResponse.Text = "Extract Token from Response";
+            this.ChkExtractTokenFromResponse.UseVisualStyleBackColor = true;
+            this.ChkExtractTokenFromResponse.CheckedChanged += new System.EventHandler(this.ChkExtractTokenFromResponse_CheckedChanged);
+            // 
+            // GrpTerminalData
+            // 
+            this.GrpTerminalData.Controls.Add(this.CboCardReaderType);
+            this.GrpTerminalData.Controls.Add(this.label41);
+            this.GrpTerminalData.Controls.Add(this.TxtLatitude);
+            this.GrpTerminalData.Controls.Add(this.label49);
+            this.GrpTerminalData.Controls.Add(this.TxtLongitude);
+            this.GrpTerminalData.Controls.Add(this.label48);
+            this.GrpTerminalData.Controls.Add(this.CboEntryMode);
+            this.GrpTerminalData.Controls.Add(this.label47);
+            this.GrpTerminalData.Controls.Add(this.CboHostAdjustment);
+            this.GrpTerminalData.Controls.Add(this.label46);
+            this.GrpTerminalData.Controls.Add(this.CboBalanceInquiry);
+            this.GrpTerminalData.Controls.Add(this.label45);
+            this.GrpTerminalData.Controls.Add(this.CboPinEntry);
+            this.GrpTerminalData.Controls.Add(this.label44);
+            this.GrpTerminalData.Controls.Add(this.CboCardInputCode);
+            this.GrpTerminalData.Controls.Add(this.label50);
+            this.GrpTerminalData.Controls.Add(this.CboTerminalEnvironmentalCode);
+            this.GrpTerminalData.Controls.Add(this.label43);
+            this.GrpTerminalData.Location = new System.Drawing.Point(280, 40);
+            this.GrpTerminalData.Name = "GrpTerminalData";
+            this.GrpTerminalData.Size = new System.Drawing.Size(504, 149);
+            this.GrpTerminalData.TabIndex = 158;
+            this.GrpTerminalData.TabStop = false;
+            this.GrpTerminalData.Text = "Terminal Data";
+            // 
+            // CboCardReaderType
+            // 
+            this.CboCardReaderType.FormattingEnabled = true;
+            this.CboCardReaderType.Location = new System.Drawing.Point(379, 41);
+            this.CboCardReaderType.Name = "CboCardReaderType";
+            this.CboCardReaderType.Size = new System.Drawing.Size(109, 21);
+            this.CboCardReaderType.TabIndex = 45;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(245, 44);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(128, 13);
+            this.label41.TabIndex = 44;
+            this.label41.Text = "Card Reader Type (PWS)";
+            // 
+            // TxtLatitude
+            // 
+            this.TxtLatitude.Enabled = false;
+            this.TxtLatitude.Location = new System.Drawing.Point(379, 92);
+            this.TxtLatitude.Name = "TxtLatitude";
+            this.TxtLatitude.Size = new System.Drawing.Size(112, 20);
+            this.TxtLatitude.TabIndex = 43;
+            this.TxtLatitude.Text = "-104.8592690";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(245, 95);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(87, 13);
+            this.label49.TabIndex = 42;
+            this.label49.Text = "Latitude  (mobile)";
+            // 
+            // TxtLongitude
+            // 
+            this.TxtLongitude.Enabled = false;
+            this.TxtLongitude.Location = new System.Drawing.Point(379, 66);
+            this.TxtLongitude.Name = "TxtLongitude";
+            this.TxtLongitude.Size = new System.Drawing.Size(112, 20);
+            this.TxtLongitude.TabIndex = 41;
+            this.TxtLongitude.Text = "39.5425970";
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(245, 69);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(93, 13);
+            this.label48.TabIndex = 40;
+            this.label48.Text = "Longitude (mobile)";
+            // 
+            // CboEntryMode
+            // 
+            this.CboEntryMode.FormattingEnabled = true;
+            this.CboEntryMode.Location = new System.Drawing.Point(109, 70);
+            this.CboEntryMode.Name = "CboEntryMode";
+            this.CboEntryMode.Size = new System.Drawing.Size(130, 21);
+            this.CboEntryMode.TabIndex = 39;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(6, 73);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(61, 13);
+            this.label47.TabIndex = 38;
+            this.label47.Text = "Entry Mode";
+            // 
+            // CboHostAdjustment
+            // 
+            this.CboHostAdjustment.FormattingEnabled = true;
+            this.CboHostAdjustment.Location = new System.Drawing.Point(109, 121);
+            this.CboHostAdjustment.Name = "CboHostAdjustment";
+            this.CboHostAdjustment.Size = new System.Drawing.Size(130, 21);
+            this.CboHostAdjustment.TabIndex = 37;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(6, 124);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(84, 13);
+            this.label46.TabIndex = 36;
+            this.label46.Text = "Host Adjustment";
+            // 
+            // CboBalanceInquiry
+            // 
+            this.CboBalanceInquiry.FormattingEnabled = true;
+            this.CboBalanceInquiry.Location = new System.Drawing.Point(109, 97);
+            this.CboBalanceInquiry.Name = "CboBalanceInquiry";
+            this.CboBalanceInquiry.Size = new System.Drawing.Size(130, 21);
+            this.CboBalanceInquiry.TabIndex = 35;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(6, 100);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(80, 13);
+            this.label45.TabIndex = 34;
+            this.label45.Text = "Balance Inquiry";
+            // 
+            // CboPinEntry
+            // 
+            this.CboPinEntry.FormattingEnabled = true;
+            this.CboPinEntry.Location = new System.Drawing.Point(379, 16);
+            this.CboPinEntry.Name = "CboPinEntry";
+            this.CboPinEntry.Size = new System.Drawing.Size(109, 21);
+            this.CboPinEntry.TabIndex = 33;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(245, 19);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(52, 13);
+            this.label44.TabIndex = 32;
+            this.label44.Text = "PIN Entry";
+            // 
+            // CboCardInputCode
+            // 
+            this.CboCardInputCode.FormattingEnabled = true;
+            this.CboCardInputCode.Location = new System.Drawing.Point(109, 43);
+            this.CboCardInputCode.Name = "CboCardInputCode";
+            this.CboCardInputCode.Size = new System.Drawing.Size(130, 21);
+            this.CboCardInputCode.TabIndex = 31;
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(6, 46);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(84, 13);
+            this.label50.TabIndex = 30;
+            this.label50.Text = "Card Input Code";
+            // 
+            // CboTerminalEnvironmentalCode
+            // 
+            this.CboTerminalEnvironmentalCode.BackColor = System.Drawing.SystemColors.Window;
+            this.CboTerminalEnvironmentalCode.FormattingEnabled = true;
+            this.CboTerminalEnvironmentalCode.Location = new System.Drawing.Point(109, 16);
+            this.CboTerminalEnvironmentalCode.Name = "CboTerminalEnvironmentalCode";
+            this.CboTerminalEnvironmentalCode.Size = new System.Drawing.Size(130, 21);
+            this.CboTerminalEnvironmentalCode.TabIndex = 29;
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(6, 19);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(97, 13);
+            this.label43.TabIndex = 28;
+            this.label43.Text = "Terminal Env Code";
+            // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.groupBox3);
+            this.groupBox1.Controls.Add(this.GrpCancel);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.CboPartialApprovalCode);
             this.groupBox1.Controls.Add(this.label26);
@@ -187,12 +1033,118 @@
             this.groupBox1.Controls.Add(this.label25);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.TxtTransactionAmount);
-            this.groupBox1.Location = new System.Drawing.Point(9, 270);
+            this.groupBox1.Location = new System.Drawing.Point(9, 266);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(775, 215);
+            this.groupBox1.Size = new System.Drawing.Size(775, 248);
             this.groupBox1.TabIndex = 43;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Payment Information";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label33);
+            this.groupBox3.Controls.Add(this.TxtTokenValue);
+            this.groupBox3.Controls.Add(this.label32);
+            this.groupBox3.Controls.Add(this.TxtTokenId);
+            this.groupBox3.Controls.Add(this.ChkUseToken);
+            this.groupBox3.Location = new System.Drawing.Point(271, 149);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(207, 89);
+            this.groupBox3.TabIndex = 47;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Token";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(9, 63);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(68, 13);
+            this.label33.TabIndex = 49;
+            this.label33.Text = "Token Value";
+            // 
+            // TxtTokenValue
+            // 
+            this.TxtTokenValue.Location = new System.Drawing.Point(79, 60);
+            this.TxtTokenValue.Name = "TxtTokenValue";
+            this.TxtTokenValue.Size = new System.Drawing.Size(114, 20);
+            this.TxtTokenValue.TabIndex = 50;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(9, 42);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(50, 13);
+            this.label32.TabIndex = 47;
+            this.label32.Text = "Token Id";
+            // 
+            // TxtTokenId
+            // 
+            this.TxtTokenId.Location = new System.Drawing.Point(79, 39);
+            this.TxtTokenId.Name = "TxtTokenId";
+            this.TxtTokenId.Size = new System.Drawing.Size(114, 20);
+            this.TxtTokenId.TabIndex = 48;
+            // 
+            // ChkUseToken
+            // 
+            this.ChkUseToken.AutoSize = true;
+            this.ChkUseToken.Location = new System.Drawing.Point(6, 19);
+            this.ChkUseToken.Name = "ChkUseToken";
+            this.ChkUseToken.Size = new System.Drawing.Size(79, 17);
+            this.ChkUseToken.TabIndex = 46;
+            this.ChkUseToken.Text = "Use Token";
+            this.ChkUseToken.UseVisualStyleBackColor = true;
+            this.ChkUseToken.CheckedChanged += new System.EventHandler(this.ChkUseToken_CheckedChanged);
+            // 
+            // GrpCancel
+            // 
+            this.GrpCancel.Controls.Add(this.TxtCancelReplacementAmount);
+            this.GrpCancel.Controls.Add(this.ChkCancelReplacementAmount);
+            this.GrpCancel.Controls.Add(this.CboReversalReason);
+            this.GrpCancel.Controls.Add(this.label24);
+            this.GrpCancel.Location = new System.Drawing.Point(271, 19);
+            this.GrpCancel.Name = "GrpCancel";
+            this.GrpCancel.Size = new System.Drawing.Size(280, 72);
+            this.GrpCancel.TabIndex = 39;
+            this.GrpCancel.TabStop = false;
+            this.GrpCancel.Text = "Cancel";
+            this.GrpCancel.Visible = false;
+            // 
+            // TxtCancelReplacementAmount
+            // 
+            this.TxtCancelReplacementAmount.Location = new System.Drawing.Point(145, 40);
+            this.TxtCancelReplacementAmount.Name = "TxtCancelReplacementAmount";
+            this.TxtCancelReplacementAmount.Size = new System.Drawing.Size(47, 20);
+            this.TxtCancelReplacementAmount.TabIndex = 40;
+            this.TxtCancelReplacementAmount.Text = "5.00";
+            // 
+            // ChkCancelReplacementAmount
+            // 
+            this.ChkCancelReplacementAmount.AutoSize = true;
+            this.ChkCancelReplacementAmount.Location = new System.Drawing.Point(9, 42);
+            this.ChkCancelReplacementAmount.Name = "ChkCancelReplacementAmount";
+            this.ChkCancelReplacementAmount.Size = new System.Drawing.Size(128, 17);
+            this.ChkCancelReplacementAmount.TabIndex = 30;
+            this.ChkCancelReplacementAmount.Text = "Replacement Amount";
+            this.ChkCancelReplacementAmount.UseVisualStyleBackColor = true;
+            // 
+            // CboReversalReason
+            // 
+            this.CboReversalReason.FormattingEnabled = true;
+            this.CboReversalReason.Location = new System.Drawing.Point(112, 13);
+            this.CboReversalReason.Name = "CboReversalReason";
+            this.CboReversalReason.Size = new System.Drawing.Size(162, 21);
+            this.CboReversalReason.TabIndex = 29;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(6, 16);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(89, 13);
+            this.label24.TabIndex = 28;
+            this.label24.Text = "Reversal Reason";
             // 
             // groupBox2
             // 
@@ -207,7 +1159,7 @@
             this.groupBox2.Controls.Add(this.label28);
             this.groupBox2.Controls.Add(this.label27);
             this.groupBox2.Controls.Add(this.TxtAddressLine);
-            this.groupBox2.Location = new System.Drawing.Point(554, 76);
+            this.groupBox2.Location = new System.Drawing.Point(554, 19);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(215, 133);
             this.groupBox2.TabIndex = 45;
@@ -326,7 +1278,7 @@
             "masterCard",
             "amex",
             "discover"});
-            this.CboPartialApprovalCode.Location = new System.Drawing.Point(124, 130);
+            this.CboPartialApprovalCode.Location = new System.Drawing.Point(120, 217);
             this.CboPartialApprovalCode.Name = "CboPartialApprovalCode";
             this.CboPartialApprovalCode.Size = new System.Drawing.Size(129, 21);
             this.CboPartialApprovalCode.TabIndex = 44;
@@ -334,7 +1286,7 @@
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(13, 133);
+            this.label26.Location = new System.Drawing.Point(9, 220);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(109, 13);
             this.label26.TabIndex = 43;
@@ -348,7 +1300,7 @@
             "masterCard",
             "amex",
             "discover"});
-            this.CboCurrencyCodeType.Location = new System.Drawing.Point(201, 76);
+            this.CboCurrencyCodeType.Location = new System.Drawing.Point(197, 163);
             this.CboCurrencyCodeType.Name = "CboCurrencyCodeType";
             this.CboCurrencyCodeType.Size = new System.Drawing.Size(52, 21);
             this.CboCurrencyCodeType.TabIndex = 6;
@@ -359,7 +1311,7 @@
             this.GrpCredit.Controls.Add(this.label3);
             this.GrpCredit.Location = new System.Drawing.Point(12, 19);
             this.GrpCredit.Name = "GrpCredit";
-            this.GrpCredit.Size = new System.Drawing.Size(253, 51);
+            this.GrpCredit.Size = new System.Drawing.Size(253, 38);
             this.GrpCredit.TabIndex = 8;
             this.GrpCredit.TabStop = false;
             this.GrpCredit.Text = "Credit";
@@ -389,7 +1341,7 @@
             // ChkTokenRequested
             // 
             this.ChkTokenRequested.AutoSize = true;
-            this.ChkTokenRequested.Location = new System.Drawing.Point(259, 79);
+            this.ChkTokenRequested.Location = new System.Drawing.Point(271, 130);
             this.ChkTokenRequested.Name = "ChkTokenRequested";
             this.ChkTokenRequested.Size = new System.Drawing.Size(112, 17);
             this.ChkTokenRequested.TabIndex = 42;
@@ -400,9 +1352,9 @@
             // 
             this.GrpDebit.Controls.Add(this.CboAccountType);
             this.GrpDebit.Controls.Add(this.label5);
-            this.GrpDebit.Location = new System.Drawing.Point(271, 19);
+            this.GrpDebit.Location = new System.Drawing.Point(12, 59);
             this.GrpDebit.Name = "GrpDebit";
-            this.GrpDebit.Size = new System.Drawing.Size(255, 51);
+            this.GrpDebit.Size = new System.Drawing.Size(253, 46);
             this.GrpDebit.TabIndex = 9;
             this.GrpDebit.TabStop = false;
             this.GrpDebit.Text = "Debit";
@@ -436,7 +1388,7 @@
             this.CboPaymentType.Items.AddRange(new object[] {
             "CardKeyed",
             "CardSwiped"});
-            this.CboPaymentType.Location = new System.Drawing.Point(124, 103);
+            this.CboPaymentType.Location = new System.Drawing.Point(120, 190);
             this.CboPaymentType.Name = "CboPaymentType";
             this.CboPaymentType.Size = new System.Drawing.Size(129, 21);
             this.CboPaymentType.TabIndex = 41;
@@ -445,9 +1397,9 @@
             // 
             this.GrpGift.Controls.Add(this.TxtGiftCardPin);
             this.GrpGift.Controls.Add(this.label11);
-            this.GrpGift.Location = new System.Drawing.Point(532, 19);
+            this.GrpGift.Location = new System.Drawing.Point(12, 106);
             this.GrpGift.Name = "GrpGift";
-            this.GrpGift.Size = new System.Drawing.Size(255, 51);
+            this.GrpGift.Size = new System.Drawing.Size(253, 45);
             this.GrpGift.TabIndex = 16;
             this.GrpGift.TabStop = false;
             this.GrpGift.Text = "Gift";
@@ -472,7 +1424,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(14, 106);
+            this.label25.Location = new System.Drawing.Point(10, 193);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(75, 13);
             this.label25.TabIndex = 40;
@@ -481,7 +1433,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(10, 79);
+            this.label7.Location = new System.Drawing.Point(6, 166);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(132, 13);
             this.label7.TabIndex = 37;
@@ -489,64 +1441,16 @@
             // 
             // TxtTransactionAmount
             // 
-            this.TxtTransactionAmount.Location = new System.Drawing.Point(148, 76);
+            this.TxtTransactionAmount.Location = new System.Drawing.Point(144, 163);
             this.TxtTransactionAmount.Name = "TxtTransactionAmount";
             this.TxtTransactionAmount.Size = new System.Drawing.Size(47, 20);
             this.TxtTransactionAmount.TabIndex = 38;
             this.TxtTransactionAmount.Text = "1.00";
             // 
-            // GrpCancel
-            // 
-            this.GrpCancel.Controls.Add(this.CboReversalReason);
-            this.GrpCancel.Controls.Add(this.label24);
-            this.GrpCancel.Controls.Add(this.CboCancelType);
-            this.GrpCancel.Controls.Add(this.label15);
-            this.GrpCancel.Location = new System.Drawing.Point(337, 8);
-            this.GrpCancel.Name = "GrpCancel";
-            this.GrpCancel.Size = new System.Drawing.Size(447, 78);
-            this.GrpCancel.TabIndex = 39;
-            this.GrpCancel.TabStop = false;
-            this.GrpCancel.Text = "Cancel";
-            this.GrpCancel.Visible = false;
-            // 
-            // CboReversalReason
-            // 
-            this.CboReversalReason.FormattingEnabled = true;
-            this.CboReversalReason.Location = new System.Drawing.Point(113, 46);
-            this.CboReversalReason.Name = "CboReversalReason";
-            this.CboReversalReason.Size = new System.Drawing.Size(328, 21);
-            this.CboReversalReason.TabIndex = 29;
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(7, 49);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(89, 13);
-            this.label24.TabIndex = 28;
-            this.label24.Text = "Reversal Reason";
-            // 
-            // CboCancelType
-            // 
-            this.CboCancelType.FormattingEnabled = true;
-            this.CboCancelType.Location = new System.Drawing.Point(113, 19);
-            this.CboCancelType.Name = "CboCancelType";
-            this.CboCancelType.Size = new System.Drawing.Size(138, 21);
-            this.CboCancelType.TabIndex = 27;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(7, 22);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(67, 13);
-            this.label15.TabIndex = 26;
-            this.label15.Text = "Cancel Type";
-            // 
             // ChkOnClickDisplayTxnMessage
             // 
             this.ChkOnClickDisplayTxnMessage.AutoSize = true;
-            this.ChkOnClickDisplayTxnMessage.Location = new System.Drawing.Point(84, 495);
+            this.ChkOnClickDisplayTxnMessage.Location = new System.Drawing.Point(133, 524);
             this.ChkOnClickDisplayTxnMessage.Name = "ChkOnClickDisplayTxnMessage";
             this.ChkOnClickDisplayTxnMessage.Size = new System.Drawing.Size(189, 17);
             this.ChkOnClickDisplayTxnMessage.TabIndex = 36;
@@ -555,13 +1459,14 @@
             // 
             // CmdClearTransactions
             // 
-            this.CmdClearTransactions.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CmdClearTransactions.Location = new System.Drawing.Point(9, 491);
+            this.CmdClearTransactions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(209)))), ((int)(((byte)(5)))));
+            this.CmdClearTransactions.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CmdClearTransactions.Location = new System.Drawing.Point(9, 520);
             this.CmdClearTransactions.Name = "CmdClearTransactions";
-            this.CmdClearTransactions.Size = new System.Drawing.Size(69, 21);
+            this.CmdClearTransactions.Size = new System.Drawing.Size(122, 21);
             this.CmdClearTransactions.TabIndex = 35;
-            this.CmdClearTransactions.Text = "Clear Txns";
-            this.CmdClearTransactions.UseVisualStyleBackColor = true;
+            this.CmdClearTransactions.Text = "Clear Transactions";
+            this.CmdClearTransactions.UseVisualStyleBackColor = false;
             this.CmdClearTransactions.Click += new System.EventHandler(this.CmdClearTransactions_Click);
             // 
             // ChkLstTransactionsProcessed
@@ -569,10 +1474,10 @@
             this.ChkLstTransactionsProcessed.FormattingEnabled = true;
             this.ChkLstTransactionsProcessed.HorizontalScrollbar = true;
             this.ChkLstTransactionsProcessed.IntegralHeight = false;
-            this.ChkLstTransactionsProcessed.Location = new System.Drawing.Point(9, 518);
+            this.ChkLstTransactionsProcessed.Location = new System.Drawing.Point(9, 547);
             this.ChkLstTransactionsProcessed.Name = "ChkLstTransactionsProcessed";
             this.ChkLstTransactionsProcessed.ScrollAlwaysVisible = true;
-            this.ChkLstTransactionsProcessed.Size = new System.Drawing.Size(775, 123);
+            this.ChkLstTransactionsProcessed.Size = new System.Drawing.Size(775, 94);
             this.ChkLstTransactionsProcessed.TabIndex = 32;
             this.ChkLstTransactionsProcessed.SelectedIndexChanged += new System.EventHandler(this.ChkLstTransactionsProcessed_SelectedIndexChanged);
             // 
@@ -587,12 +1492,14 @@
             // 
             // CmdSendTransaction
             // 
+            this.CmdSendTransaction.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(209)))), ((int)(((byte)(5)))));
+            this.CmdSendTransaction.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CmdSendTransaction.Location = new System.Drawing.Point(256, 8);
             this.CmdSendTransaction.Name = "CmdSendTransaction";
-            this.CmdSendTransaction.Size = new System.Drawing.Size(75, 23);
+            this.CmdSendTransaction.Size = new System.Drawing.Size(62, 23);
             this.CmdSendTransaction.TabIndex = 28;
-            this.CmdSendTransaction.Text = "Send Txn";
-            this.CmdSendTransaction.UseVisualStyleBackColor = true;
+            this.CmdSendTransaction.Text = "Send";
+            this.CmdSendTransaction.UseVisualStyleBackColor = false;
             this.CmdSendTransaction.Click += new System.EventHandler(this.CmdSendTransaction_Click);
             // 
             // GrpKeyedData
@@ -607,7 +1514,7 @@
             this.GrpKeyedData.Controls.Add(this.TxtCardholderName);
             this.GrpKeyedData.Location = new System.Drawing.Point(9, 146);
             this.GrpKeyedData.Name = "GrpKeyedData";
-            this.GrpKeyedData.Size = new System.Drawing.Size(296, 118);
+            this.GrpKeyedData.Size = new System.Drawing.Size(265, 118);
             this.GrpKeyedData.TabIndex = 27;
             this.GrpKeyedData.TabStop = false;
             this.GrpKeyedData.Text = "Keyed Data";
@@ -618,7 +1525,7 @@
             this.TxtPrimaryAccountNumber.Name = "TxtPrimaryAccountNumber";
             this.TxtPrimaryAccountNumber.Size = new System.Drawing.Size(114, 20);
             this.TxtPrimaryAccountNumber.TabIndex = 7;
-            this.TxtPrimaryAccountNumber.Text = "4445222299990007";
+            this.TxtPrimaryAccountNumber.Text = "5444009999222205";
             this.TxtPrimaryAccountNumber.TextChanged += new System.EventHandler(this.TxtPrimaryAccountNumber_TextChanged);
             // 
             // label6
@@ -682,35 +1589,42 @@
             // 
             // GrpTrackData
             // 
+            this.GrpTrackData.Controls.Add(this.CmdExampleTestVal);
             this.GrpTrackData.Controls.Add(this.CboTrackChoice);
             this.GrpTrackData.Controls.Add(this.TxtTrackData);
             this.GrpTrackData.Controls.Add(this.ChkEncryptedData);
             this.GrpTrackData.Controls.Add(this.TxtKeySerialNumber);
-            this.GrpTrackData.Location = new System.Drawing.Point(311, 146);
+            this.GrpTrackData.Location = new System.Drawing.Point(280, 194);
             this.GrpTrackData.Name = "GrpTrackData";
-            this.GrpTrackData.Size = new System.Drawing.Size(473, 118);
+            this.GrpTrackData.Size = new System.Drawing.Size(504, 70);
             this.GrpTrackData.TabIndex = 26;
             this.GrpTrackData.TabStop = false;
-            this.GrpTrackData.Text = "Track Data";
+            this.GrpTrackData.Text = "Track Data (Remove starting and ending sentinals as well as seperators)";
+            // 
+            // CmdExampleTestVal
+            // 
+            this.CmdExampleTestVal.Location = new System.Drawing.Point(418, 18);
+            this.CmdExampleTestVal.Name = "CmdExampleTestVal";
+            this.CmdExampleTestVal.Size = new System.Drawing.Size(73, 23);
+            this.CmdExampleTestVal.TabIndex = 24;
+            this.CmdExampleTestVal.Text = "Test Value";
+            this.CmdExampleTestVal.UseVisualStyleBackColor = true;
+            this.CmdExampleTestVal.Click += new System.EventHandler(this.CmdExampleTestVal_Click);
             // 
             // CboTrackChoice
             // 
             this.CboTrackChoice.FormattingEnabled = true;
-            this.CboTrackChoice.Items.AddRange(new object[] {
-            "visa",
-            "masterCard",
-            "amex",
-            "discover"});
             this.CboTrackChoice.Location = new System.Drawing.Point(6, 19);
             this.CboTrackChoice.Name = "CboTrackChoice";
-            this.CboTrackChoice.Size = new System.Drawing.Size(137, 21);
+            this.CboTrackChoice.Size = new System.Drawing.Size(71, 21);
             this.CboTrackChoice.TabIndex = 17;
+            this.CboTrackChoice.SelectedIndexChanged += new System.EventHandler(this.CboTrackChoice_SelectedIndexChanged);
             // 
             // TxtTrackData
             // 
-            this.TxtTrackData.Location = new System.Drawing.Point(149, 20);
+            this.TxtTrackData.Location = new System.Drawing.Point(83, 20);
             this.TxtTrackData.Name = "TxtTrackData";
-            this.TxtTrackData.Size = new System.Drawing.Size(318, 20);
+            this.TxtTrackData.Size = new System.Drawing.Size(329, 20);
             this.TxtTrackData.TabIndex = 11;
             // 
             // ChkEncryptedData
@@ -776,9 +1690,6 @@
             // CboCreditType
             // 
             this.CboCreditType.FormattingEnabled = true;
-            this.CboCreditType.Items.AddRange(new object[] {
-            "CardKeyed",
-            "CardSwiped"});
             this.CboCreditType.Location = new System.Drawing.Point(112, 118);
             this.CboCreditType.Name = "CboCreditType";
             this.CboCreditType.Size = new System.Drawing.Size(138, 21);
@@ -797,14 +1708,11 @@
             // CboTerminalDetail
             // 
             this.CboTerminalDetail.FormattingEnabled = true;
-            this.CboTerminalDetail.Items.AddRange(new object[] {
-            "Terminal",
-            "Software",
-            "Mobile"});
             this.CboTerminalDetail.Location = new System.Drawing.Point(112, 91);
             this.CboTerminalDetail.Name = "CboTerminalDetail";
             this.CboTerminalDetail.Size = new System.Drawing.Size(138, 21);
             this.CboTerminalDetail.TabIndex = 1;
+            this.CboTerminalDetail.SelectedIndexChanged += new System.EventHandler(this.CboTerminalDetail_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -815,230 +1723,42 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Terminal Detail";
             // 
-            // TbMerchantData
+            // TmrHighlightChangedFields
             // 
-            this.TbMerchantData.Controls.Add(this.CboTestMerchantAccounts);
-            this.TbMerchantData.Controls.Add(this.TxtStoreNumber);
-            this.TbMerchantData.Controls.Add(this.label23);
-            this.TbMerchantData.Controls.Add(this.TxtNetworkRouting);
-            this.TbMerchantData.Controls.Add(this.label22);
-            this.TbMerchantData.Controls.Add(this.TxtMerchantName);
-            this.TbMerchantData.Controls.Add(this.label21);
-            this.TbMerchantData.Controls.Add(this.TxtLaneNumber);
-            this.TbMerchantData.Controls.Add(this.label20);
-            this.TbMerchantData.Controls.Add(this.TxtDivisionNumber);
-            this.TbMerchantData.Controls.Add(this.label19);
-            this.TbMerchantData.Controls.Add(this.TxtTID);
-            this.TbMerchantData.Controls.Add(this.label13);
-            this.TbMerchantData.Controls.Add(this.TxtMID);
-            this.TbMerchantData.Controls.Add(this.label12);
-            this.TbMerchantData.Controls.Add(this.TxtClerkNumber);
-            this.TbMerchantData.Controls.Add(this.label17);
-            this.TbMerchantData.Controls.Add(this.TxtChainCode);
-            this.TbMerchantData.Controls.Add(this.label16);
-            this.TbMerchantData.Controls.Add(this.TxtCashierNumber);
-            this.TbMerchantData.Controls.Add(this.label14);
-            this.TbMerchantData.Location = new System.Drawing.Point(4, 22);
-            this.TbMerchantData.Name = "TbMerchantData";
-            this.TbMerchantData.Padding = new System.Windows.Forms.Padding(3);
-            this.TbMerchantData.Size = new System.Drawing.Size(791, 646);
-            this.TbMerchantData.TabIndex = 3;
-            this.TbMerchantData.Text = "Merchant Data";
-            this.TbMerchantData.UseVisualStyleBackColor = true;
+            this.TmrHighlightChangedFields.Interval = 5000;
             // 
-            // CboTestMerchantAccounts
-            // 
-            this.CboTestMerchantAccounts.FormattingEnabled = true;
-            this.CboTestMerchantAccounts.Location = new System.Drawing.Point(251, 24);
-            this.CboTestMerchantAccounts.Name = "CboTestMerchantAccounts";
-            this.CboTestMerchantAccounts.Size = new System.Drawing.Size(473, 21);
-            this.CboTestMerchantAccounts.TabIndex = 36;
-            this.CboTestMerchantAccounts.SelectedIndexChanged += new System.EventHandler(this.CboTestMerchantAccounts_SelectedIndexChanged);
-            // 
-            // TxtStoreNumber
-            // 
-            this.TxtStoreNumber.Location = new System.Drawing.Point(115, 245);
-            this.TxtStoreNumber.Name = "TxtStoreNumber";
-            this.TxtStoreNumber.Size = new System.Drawing.Size(129, 20);
-            this.TxtStoreNumber.TabIndex = 35;
-            this.TxtStoreNumber.Text = "00000001";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(6, 248);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(72, 13);
-            this.label23.TabIndex = 34;
-            this.label23.Text = "Store Number";
-            // 
-            // TxtNetworkRouting
-            // 
-            this.TxtNetworkRouting.Location = new System.Drawing.Point(115, 219);
-            this.TxtNetworkRouting.Name = "TxtNetworkRouting";
-            this.TxtNetworkRouting.Size = new System.Drawing.Size(129, 20);
-            this.TxtNetworkRouting.TabIndex = 33;
-            this.TxtNetworkRouting.Text = "QQ";
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(6, 222);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(87, 13);
-            this.label22.TabIndex = 32;
-            this.label22.Text = "Network Routing";
-            // 
-            // TxtMerchantName
-            // 
-            this.TxtMerchantName.Location = new System.Drawing.Point(115, 193);
-            this.TxtMerchantName.Name = "TxtMerchantName";
-            this.TxtMerchantName.Size = new System.Drawing.Size(129, 20);
-            this.TxtMerchantName.TabIndex = 31;
-            this.TxtMerchantName.Text = "ACME Co";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(6, 196);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(83, 13);
-            this.label21.TabIndex = 30;
-            this.label21.Text = "Merchant Name";
-            // 
-            // TxtLaneNumber
-            // 
-            this.TxtLaneNumber.Location = new System.Drawing.Point(115, 167);
-            this.TxtLaneNumber.Name = "TxtLaneNumber";
-            this.TxtLaneNumber.Size = new System.Drawing.Size(129, 20);
-            this.TxtLaneNumber.TabIndex = 29;
-            this.TxtLaneNumber.Text = "123";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(6, 170);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(71, 13);
-            this.label20.TabIndex = 28;
-            this.label20.Text = "Lane Number";
-            // 
-            // TxtDivisionNumber
-            // 
-            this.TxtDivisionNumber.Location = new System.Drawing.Point(115, 141);
-            this.TxtDivisionNumber.Name = "TxtDivisionNumber";
-            this.TxtDivisionNumber.Size = new System.Drawing.Size(129, 20);
-            this.TxtDivisionNumber.TabIndex = 27;
-            this.TxtDivisionNumber.Text = "001";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 144);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(84, 13);
-            this.label19.TabIndex = 26;
-            this.label19.Text = "Division Number";
-            // 
-            // TxtTID
-            // 
-            this.TxtTID.Location = new System.Drawing.Point(115, 37);
-            this.TxtTID.Name = "TxtTID";
-            this.TxtTID.Size = new System.Drawing.Size(130, 20);
-            this.TxtTID.TabIndex = 25;
-            this.TxtTID.Text = "002";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 40);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(86, 13);
-            this.label13.TabIndex = 24;
-            this.label13.Text = "Terminal Id (TID)";
-            // 
-            // TxtMID
-            // 
-            this.TxtMID.Location = new System.Drawing.Point(115, 11);
-            this.TxtMID.Name = "TxtMID";
-            this.TxtMID.Size = new System.Drawing.Size(130, 20);
-            this.TxtMID.TabIndex = 23;
-            this.TxtMID.Text = "4445000865113";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 14);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(93, 13);
-            this.label12.TabIndex = 22;
-            this.label12.Text = "Merchant Id (MID)";
-            // 
-            // TxtClerkNumber
-            // 
-            this.TxtClerkNumber.Location = new System.Drawing.Point(115, 115);
-            this.TxtClerkNumber.Name = "TxtClerkNumber";
-            this.TxtClerkNumber.Size = new System.Drawing.Size(129, 20);
-            this.TxtClerkNumber.TabIndex = 15;
-            this.TxtClerkNumber.Text = "70110";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 118);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(71, 13);
-            this.label17.TabIndex = 14;
-            this.label17.Text = "Clerk Number";
-            // 
-            // TxtChainCode
-            // 
-            this.TxtChainCode.Location = new System.Drawing.Point(115, 89);
-            this.TxtChainCode.Name = "TxtChainCode";
-            this.TxtChainCode.Size = new System.Drawing.Size(129, 20);
-            this.TxtChainCode.TabIndex = 13;
-            this.TxtChainCode.Text = "70110";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 92);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(62, 13);
-            this.label16.TabIndex = 12;
-            this.label16.Text = "Chain Code";
-            // 
-            // TxtCashierNumber
-            // 
-            this.TxtCashierNumber.Location = new System.Drawing.Point(115, 63);
-            this.TxtCashierNumber.Name = "TxtCashierNumber";
-            this.TxtCashierNumber.Size = new System.Drawing.Size(129, 20);
-            this.TxtCashierNumber.TabIndex = 11;
-            this.TxtCashierNumber.Text = "12345678";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(6, 66);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(82, 13);
-            this.label14.TabIndex = 10;
-            this.label14.Text = "Cashier Number";
-            // 
-            // TestPWS
+            // Send_Transactions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(815, 685);
             this.Controls.Add(this.TbControl);
-            this.Name = "TestPWS";
-            this.Text = "cSharp 6.0.7 Sample Application";
+            this.Name = "Send_Transactions";
+            this.Text = "cSharp v6 Sample Application";
             this.TbControl.ResumeLayout(false);
+            this.TbAbout.ResumeLayout(false);
+            this.TbAbout.PerformLayout();
+            this.Grp_PWS.ResumeLayout(false);
+            this.Grp_PWS.PerformLayout();
+            this.grp_VDP.ResumeLayout(false);
+            this.grp_VDP.PerformLayout();
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PicVantiLogo)).EndInit();
+            this.TbMerchantData.ResumeLayout(false);
+            this.GrpMerchantData.ResumeLayout(false);
+            this.GrpMerchantData.PerformLayout();
             this.TbTransactionData.ResumeLayout(false);
             this.TbTransactionData.PerformLayout();
+            this.GrpTerminalData.ResumeLayout(false);
+            this.GrpTerminalData.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.GrpCancel.ResumeLayout(false);
+            this.GrpCancel.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.GrpCredit.ResumeLayout(false);
@@ -1047,14 +1767,10 @@
             this.GrpDebit.PerformLayout();
             this.GrpGift.ResumeLayout(false);
             this.GrpGift.PerformLayout();
-            this.GrpCancel.ResumeLayout(false);
-            this.GrpCancel.PerformLayout();
             this.GrpKeyedData.ResumeLayout(false);
             this.GrpKeyedData.PerformLayout();
             this.GrpTrackData.ResumeLayout(false);
             this.GrpTrackData.PerformLayout();
-            this.TbMerchantData.ResumeLayout(false);
-            this.TbMerchantData.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1064,18 +1780,18 @@
         private System.Windows.Forms.TabControl TbControl;
         private System.Windows.Forms.TabPage TbTransactionData;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox CboTerminalDetail;
-        private System.Windows.Forms.ComboBox CboCreditType;
+        public System.Windows.Forms.ComboBox CboTerminalDetail;
+        public System.Windows.Forms.ComboBox CboCreditType;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox CboCardType;
+        public System.Windows.Forms.ComboBox CboCardType;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox CboPaymentInstrument;
+        public System.Windows.Forms.ComboBox CboPaymentInstrument;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox GrpDebit;
         private System.Windows.Forms.GroupBox GrpCredit;
-        private System.Windows.Forms.ComboBox CboAccountType;
+        public System.Windows.Forms.ComboBox CboAccountType;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox TxtPrimaryAccountNumber;
+        public System.Windows.Forms.TextBox TxtPrimaryAccountNumber;
         private System.Windows.Forms.Label label6;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
@@ -1086,75 +1802,135 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker7;
         private System.ComponentModel.BackgroundWorker backgroundWorker8;
         private System.ComponentModel.BackgroundWorker backgroundWorker9;
-        private System.Windows.Forms.TextBox TxtTrackData;
-        private System.Windows.Forms.TextBox TxtExpirationDate;
+        public System.Windows.Forms.TextBox TxtTrackData;
+        public System.Windows.Forms.TextBox TxtExpirationDate;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox TxtCardSecurityCode;
+        public System.Windows.Forms.TextBox TxtCardSecurityCode;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox TxtCardholderName;
+        public System.Windows.Forms.TextBox TxtCardholderName;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.GroupBox GrpGift;
-        private System.Windows.Forms.TextBox TxtGiftCardPin;
+        public System.Windows.Forms.TextBox TxtGiftCardPin;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox CboTrackChoice;
         private System.Windows.Forms.TabPage TbMerchantData;
-        private System.Windows.Forms.TextBox TxtCashierNumber;
+        public System.Windows.Forms.TextBox TxtCashierNumber;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox TxtChainCode;
+        public System.Windows.Forms.TextBox TxtChainCode;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox TxtClerkNumber;
+        public System.Windows.Forms.TextBox TxtClerkNumber;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.CheckBox ChkEncryptedData;
-        private System.Windows.Forms.TextBox TxtKeySerialNumber;
-        private System.Windows.Forms.TextBox TxtTID;
+        public System.Windows.Forms.CheckBox ChkEncryptedData;
+        public System.Windows.Forms.TextBox TxtKeySerialNumber;
+        public System.Windows.Forms.TextBox TxtTID;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox TxtMID;
+        public System.Windows.Forms.TextBox TxtMID;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.ComboBox CboTransactionType;
+        public System.Windows.Forms.ComboBox CboTransactionType;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.TextBox TxtDivisionNumber;
+        public System.Windows.Forms.TextBox TxtDivisionNumber;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.TextBox TxtLaneNumber;
+        public System.Windows.Forms.TextBox TxtLaneNumber;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.TextBox TxtMerchantName;
+        public System.Windows.Forms.TextBox TxtMerchantName;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.TextBox TxtNetworkRouting;
+        public System.Windows.Forms.TextBox TxtNetworkRouting;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.TextBox TxtStoreNumber;
+        public System.Windows.Forms.TextBox TxtStoreNumber;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.GroupBox GrpTrackData;
         private System.Windows.Forms.GroupBox GrpKeyedData;
         private System.Windows.Forms.ComboBox CboTestMerchantAccounts;
-        private System.Windows.Forms.ComboBox CboSendTransaction;
+        public System.Windows.Forms.ComboBox CboSendTransaction;
         private System.Windows.Forms.Button CmdSendTransaction;
         public System.Windows.Forms.CheckedListBox ChkLstTransactionsProcessed;
         private System.Windows.Forms.Button CmdClearTransactions;
         private System.Windows.Forms.CheckBox ChkOnClickDisplayTxnMessage;
-        private System.Windows.Forms.TextBox TxtTransactionAmount;
+        public System.Windows.Forms.TextBox TxtTransactionAmount;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox GrpCancel;
-        private System.Windows.Forms.ComboBox CboCancelType;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.ComboBox CboReversalReason;
+        public System.Windows.Forms.ComboBox CboReversalReason;
         private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.ComboBox CboPaymentType;
+        public System.Windows.Forms.ComboBox CboPaymentType;
         private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.CheckBox ChkTokenRequested;
+        public System.Windows.Forms.CheckBox ChkTokenRequested;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ComboBox CboCurrencyCodeType;
-        private System.Windows.Forms.ComboBox CboPartialApprovalCode;
+        public System.Windows.Forms.ComboBox CboCurrencyCodeType;
+        public System.Windows.Forms.ComboBox CboPartialApprovalCode;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ComboBox CboCountryCode;
+        public System.Windows.Forms.ComboBox CboCountryCode;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.TextBox TxtAddressLine;
+        public System.Windows.Forms.TextBox TxtAddressLine;
         private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.TextBox TxtCity;
-        private System.Windows.Forms.ComboBox CboStateType;
+        public System.Windows.Forms.TextBox TxtCity;
+        public System.Windows.Forms.ComboBox CboStateType;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.TextBox TxtPostalCode;
-        private System.Windows.Forms.CheckBox ChkSetAddressInformation;
+        public System.Windows.Forms.TextBox TxtPostalCode;
+        public System.Windows.Forms.CheckBox ChkSetAddressInformation;
+        public System.Windows.Forms.TextBox TxtCancelReplacementAmount;
+        public System.Windows.Forms.CheckBox ChkCancelReplacementAmount;
+        public System.Windows.Forms.CheckBox ChkUseToken;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label32;
+        public System.Windows.Forms.TextBox TxtTokenId;
+        private System.Windows.Forms.Label label33;
+        public System.Windows.Forms.TextBox TxtTokenValue;
+        private System.Windows.Forms.TabPage TbAbout;
+        public System.Windows.Forms.ComboBox CboPWSorVDP;
+        public System.Windows.Forms.TextBox TxtLicenseKeyAPIKey;
+        private System.Windows.Forms.Label label34;
+        public System.Windows.Forms.TextBox TxtUserName;
+        private System.Windows.Forms.Label label35;
+        public System.Windows.Forms.TextBox TxtPassword;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.PictureBox PicVantiLogo;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.LinkLabel LnkLicenseKey;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.TextBox txtDisclaimer;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.TextBox txtPWSBaseEndpointURL;
+        private System.Windows.Forms.Label label15;
+        public System.Windows.Forms.TextBox txtVDPBaseEndpointURL;
+        private System.Windows.Forms.GroupBox Grp_PWS;
+        private System.Windows.Forms.GroupBox grp_VDP;
+        private System.Windows.Forms.LinkLabel LnkVDPEndpointURL;
+        private System.Windows.Forms.Button cmdGo;
+        private System.Windows.Forms.LinkLabel LnkNotSure;
+        private System.Windows.Forms.Button CmdSendTransactions;
+        private System.Windows.Forms.LinkLabel lnkVDPOnlineDocumentation;
+        private System.Windows.Forms.LinkLabel lnkPWSOnlineDocumentation;
+        private System.Windows.Forms.LinkLabel LnkVDPFeatures;
+        private System.Windows.Forms.LinkLabel LnkVDPGetHelp;
+        private System.Windows.Forms.LinkLabel LnkVDPForums;
+        private System.Windows.Forms.LinkLabel LnkContactUs;
+        private System.Windows.Forms.GroupBox GrpMerchantData;
+        private System.Windows.Forms.GroupBox GrpTerminalData;
+        public System.Windows.Forms.ComboBox CboCardReaderType;
+        private System.Windows.Forms.Label label41;
+        public System.Windows.Forms.TextBox TxtLatitude;
+        private System.Windows.Forms.Label label49;
+        public System.Windows.Forms.TextBox TxtLongitude;
+        private System.Windows.Forms.Label label48;
+        public System.Windows.Forms.ComboBox CboEntryMode;
+        private System.Windows.Forms.Label label47;
+        public System.Windows.Forms.ComboBox CboHostAdjustment;
+        private System.Windows.Forms.Label label46;
+        public System.Windows.Forms.ComboBox CboBalanceInquiry;
+        private System.Windows.Forms.Label label45;
+        public System.Windows.Forms.ComboBox CboPinEntry;
+        private System.Windows.Forms.Label label44;
+        public System.Windows.Forms.ComboBox CboCardInputCode;
+        private System.Windows.Forms.Label label50;
+        public System.Windows.Forms.ComboBox CboTerminalEnvironmentalCode;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.Timer TmrHighlightChangedFields;
+        private System.Windows.Forms.CheckBox ChkExtractTokenFromResponse;
+        private System.Windows.Forms.Button CmdExampleTestVal;
+        public System.Windows.Forms.ComboBox CboTrackChoice;
     }
 }

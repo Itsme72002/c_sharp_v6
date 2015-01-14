@@ -2,8 +2,8 @@ Vantiv-Developer-Portal and Vantiv-Payment-Web-Services
 =======================================================
 *** IMPORTANT You will need to create a project at https://apideveloper.vantiv.com/ in order to get access to the sandbox and test your code
 
-Integration Guidelines available here: https://apideveloper.vantiv.com/docs/payment-web-services/implementation-guidelines
-Online developers guide: https://apideveloper.vantiv.com/documentation
+Integration Guidelines available here: https://apideveloper.vantiv.com/docs/payment-web-services/implementation-guidelines<br>
+Online developers guide: https://apideveloper.vantiv.com/documentation<br>
 
 The C# implementation of Vantiv-Developer-Portal sample code demonstrating how to integrate with both Vantiv-Developer-Portal as well as Vantiv-Payment-Web-Services
 - Contains a REST sample* for integrating to Vantiv-Developer-Portal v6.0.7

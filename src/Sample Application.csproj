@@ -8,8 +8,8 @@
     <ProjectGuid>{3047023C-5FA1-406E-A970-0903004E3AEF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CertSuiteTool</RootNamespace>
-    <AssemblyName>CertSuiteTool</AssemblyName>
+    <RootNamespace>SampleApplication</RootNamespace>
+    <AssemblyName>SampleApplication</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -90,8 +90,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper Class\PWS_Helper.cs" />
+    <Compile Include="Helper Class\VDP_Helper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebClass\VantivDeveloperPortal.cs" />
     <Compile Include="WebClass\PaymentPortTypeService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -121,35 +124,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Service References\Reporting\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
-    <Compile Include="Service References\Services\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
-    <Compile Include="Service References\TransactionReportingService\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
-    <Compile Include="Service References\Transaction\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="Send_Transactions.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Send_Transactions.Designer.cs">
       <DependentUpon>Send_Transactions.cs</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -184,29 +164,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\Reporting\CertSuiteTool.Reporting.Response.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\Reporting\express.wsdl" />
-    <None Include="Service References\Services\CertSuiteTool.Services.Response.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\Services\express.wsdl" />
-    <None Include="Service References\TransactionReportingService\item.wsdl" />
-    <None Include="Service References\TransactionReportingService\item.xsd" />
-    <None Include="Service References\TransactionReportingService\item1.wsdl" />
-    <None Include="Service References\TransactionReportingService\item1.xsd" />
-    <None Include="Service References\TransactionReportingService\item2.xsd" />
-    <None Include="Service References\TransactionReportingService\item3.xsd" />
-    <None Include="Service References\TransactionReportingService\item4.xsd" />
-    <None Include="Service References\TransactionReportingService\item5.xsd" />
-    <None Include="Service References\TransactionReportingService\item6.xsd" />
-    <None Include="Service References\TransactionReportingService\item7.xsd" />
-    <None Include="Service References\TransactionReportingService\item8.xsd" />
-    <None Include="Service References\TransactionReportingService\item9.xsd" />
-    <None Include="Service References\TransactionReportingService\TransactionReporting.wsdl" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Common.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -225,45 +182,6 @@
     <Content Include="Newtonsoft.Json.6.0.3\lib\portable-net40+sl4+wp7+win8\Newtonsoft.Json.xml" />
     <Content Include="Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll" />
     <Content Include="Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.xml" />
-    <None Include="Service References\Transaction\CertSuiteTool.Transaction.Response.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\Transaction\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Service References\Transaction\configuration.svcinfo" />
-    <None Include="Service References\Transaction\configuration91.svcinfo" />
-    <None Include="Service References\Transaction\express.disco" />
-    <None Include="Service References\Reporting\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Service References\Reporting\configuration.svcinfo" />
-    <None Include="Service References\Reporting\configuration91.svcinfo" />
-    <None Include="Service References\Reporting\express.disco" />
-    <None Include="Service References\Services\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Service References\Services\configuration.svcinfo" />
-    <None Include="Service References\Services\configuration91.svcinfo" />
-    <None Include="Service References\TransactionReportingService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Service References\TransactionReportingService\configuration.svcinfo" />
-    <None Include="Service References\TransactionReportingService\configuration91.svcinfo" />
-    <None Include="Service References\Transaction\express.wsdl" />
-    <None Include="Templates\Report on Certification [Date].xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\Reporting\" />
-    <WCFMetadataStorage Include="Service References\Services\" />
-    <WCFMetadataStorage Include="Service References\TransactionReportingService\" />
-    <WCFMetadataStorage Include="Service References\Transaction\" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
