@@ -200,11 +200,9 @@ namespace CertSuiteTool.Helper_Class
             if (target.CboCreditType.Text == "CardKeyed")
             {
                 git.CardKeyed = new GiftCardKeyedType();
-                git.CardKeyed.EncryptedPrimaryAccountNumber = new EncryptedData();
-                //git.CardKeyed.EncryptedPrimaryAccountNumber.encryptiontype = EncryptionType.DUKPT;
-                //git.CardKeyed.EncryptedPrimaryAccountNumber.key = "";
-                //git.CardKeyed.EncryptedPrimaryAccountNumber.Value = "";
-                git.CardKeyed.ExpirationDate = target.TxtExpirationDate.Text;
+
+                if (target.TxtExpirationDate.Text.Length > 0)
+                    git.CardKeyed.ExpirationDate = target.TxtExpirationDate.Text;
                 if (target.TxtGiftCardPin.Text.Length > 0)
                     git.CardKeyed.GiftCardPin = target.TxtGiftCardPin.Text;
                 git.CardKeyed.PrimaryAccountNumber = target.TxtPrimaryAccountNumber.Text;
@@ -214,20 +212,37 @@ namespace CertSuiteTool.Helper_Class
                 if (target.ChkUseToken.Checked)
                 {
                     git.CardKeyed.Token = new TokenType();
-                    git.CardKeyed.Token.tokenId = "";
-                    git.CardKeyed.Token.tokenValue = "";
+                    git.CardKeyed.Token.tokenId = target.TxtTokenId.Text;
+                    git.CardKeyed.Token.tokenValue = target.TxtTokenValue.Text;
+                    git.CardKeyed.PrimaryAccountNumber = null; //Per the schema if Token is set PAN should not be sent.
+                    git.CardKeyed.EncryptedPrimaryAccountNumber = null; //Per the schema if Token is set EncryptedPrimaryAccountNumber should not be sent.
                 }
-
             }
             else if (target.CboCreditType.Text == "CardSwiped")
             {
                 git.CardSwiped = new GiftCardSwipedType();
+
+                if (target.TxtGiftCardSecurityCode.Text.Length > 0)
+                    git.CardSwiped.CardSecurityCode = target.TxtGiftCardSecurityCode.Text; 
+                
                 if (target.TxtGiftCardPin.Text.Length > 0)
                     git.CardSwiped.GiftCardPin = target.TxtGiftCardPin.Text;
-                //git.CardSwiped.Item
-                //git.CardSwiped.ItemElementName = "";
-                if (target.TxtCardSecurityCode.Text.Length > 0)
-                    git.CardSwiped.CardSecurityCode = target.TxtCardSecurityCode.Text;
+
+                git.CardSwiped.Item = new TrackDataType();
+                if (target.ChkEncryptedData.Checked)
+                {
+                    EncryptedData ed = new EncryptedData();
+                    ed.encryptiontype = EncryptionType.DUKPT;
+                    ed.key = target.TxtKeySerialNumber.Text;
+                    ed.Value = target.TxtTrackData.Text;
+                    git.CardSwiped.Item.Item = ed;
+                }
+                else
+                {
+                    git.CardSwiped.Item.Item = target.TxtTrackData.Text;
+                }
+                git.CardSwiped.ItemElementName = (ItemChoiceType)target.CboTrackChoice.SelectedItem;
+
             }
 
             return git;
@@ -345,7 +360,7 @@ namespace CertSuiteTool.Helper_Class
             //a.NetworkResponseCode = "";
             a.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             a.PaymentTypeSpecified = true;
-            a.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //a.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             //a.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
             a.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
             a.TokenRequestedSpecified = target.ChkTokenRequested.Checked;
@@ -366,7 +381,10 @@ namespace CertSuiteTool.Helper_Class
             if (target.CboPaymentInstrument.Text == "Credit")
                 a.Items[0] = creditInstrumentType();
             else if (target.CboPaymentInstrument.Text == "Debit")
-                a.Items[0] = debitInstrumentType();
+            {
+                MessageBox.Show("Debit transactions do not use the Authorize transaction type. Please use Purchase instead.");
+                return null;
+            }
             else if (target.CboPaymentInstrument.Text == "Gift")
                 a.Items[0] = giftInstrumentType();
 
@@ -394,7 +412,7 @@ namespace CertSuiteTool.Helper_Class
             p.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             p.PaymentTypeSpecified = true;
             p.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-            p.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //p.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             p.TransactionAmount = new AmountType();
             p.TransactionAmount.currency = (ISO4217CurrencyCodeType)target.CboCurrencyCodeType.SelectedItem;
             p.TransactionAmount.currencySpecified = true;
@@ -403,41 +421,34 @@ namespace CertSuiteTool.Helper_Class
             //p.TokenRequested = ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
             //p.TokenRequestedSpecified = ChkTokenRequested.Checked;
             //a.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
+            
             int rInt = r.Next(1, 99999); //for ints
             p.systemtraceid = rInt;
             p.systemtraceidSpecified = true;
             rInt = r.Next(1, 99999999);
             p.merchantrefid = "PWS" + rInt.ToString();
-
+           
             //Set the object for payment
+            ItemsChoiceType3[] ict = new ItemsChoiceType3[1];
             p.Items = new object[1];
             if (target.CboPaymentInstrument.Text == "Credit")
+            {
                 p.Items[0] = creditInstrumentType();
+                ict[0] = ItemsChoiceType3.Credit;
+            }
             else if (target.CboPaymentInstrument.Text == "Debit")
+            {
                 p.Items[0] = debitInstrumentType();
+                ict[0] = ItemsChoiceType3.Debit;
+            }
             else if (target.CboPaymentInstrument.Text == "Gift")
+            {
                 p.Items[0] = giftInstrumentType();
-
-            //CreditInstrumentType cit = new CreditInstrumentType();
-            //cit.CardKeyed = new CreditOrDebitCardKeyedType();
-            //cit.CardKeyed.PrimaryAccountNumber = TxtPrimaryAccountNumber.Text;
-            //cit.CardKeyed.ExpirationDate = TxtExpirationDate.Text;
-            //cit.CardType = CreditCardNetworkType.visa;
-            //cit.PartialApprovalCode = PartialIndicatorType.not_supported;
-            //cit.CardholderAddress = new AddressType();
-            //cit.CardholderAddress.AddressLine = "1234 Main Street";
-            //cit.CardholderAddress.City = "Mason";
-            //cit.CardholderAddress.State = StateCodeType.OH;
-            //cit.CardholderAddress.PostalCode = "45040";
-            //cit.CardholderAddress.CountryCode = ISO3166CountryCodeType.US;
-
-            //p.Items = new object[1];
-            //p.Items[0] = cit;
-
-            ItemsChoiceType3[] ict = new ItemsChoiceType3[1];
-            ict[0] = ItemsChoiceType3.Credit;
+                ict[0] = ItemsChoiceType3.Gift;
+            }
+            
             p.ItemsElementName = ict;
-
+                        
             PWS_TransactionSummary ts = new PWS_TransactionSummary(null, null);
             try
             {
@@ -477,13 +488,24 @@ namespace CertSuiteTool.Helper_Class
             c.merchantrefid = "PWS" + rInt.ToString();
 
             //Set the object for payment
+            ItemsChoiceType4[] ict = new ItemsChoiceType4[1];
             c.Items = new object[1];
             if (target.CboPaymentInstrument.Text == "Credit")
+            {
                 c.Items[0] = creditInstrumentType();
+                ict[0] = ItemsChoiceType4.Credit;
+            }
             else if (target.CboPaymentInstrument.Text == "Debit")
-                c.Items[0] = debitInstrumentType();
+            {
+                MessageBox.Show("Debit transactions do not use the Authorize transaction type. Please use Purchase instead.");
+                return null;
+            }
             else if (target.CboPaymentInstrument.Text == "Gift")
+            {
                 c.Items[0] = giftInstrumentType();
+                ict[0] = ItemsChoiceType4.Gift;
+            }
+            c.ItemsElementName = ict;
 
             //Set the Capture specific values
             AuthorizeResponse r = new AuthorizeResponse();
@@ -497,10 +519,6 @@ namespace CertSuiteTool.Helper_Class
             a.Value = Convert.ToDecimal(target.TxtTransactionAmount.Text);
             c.CaptureAmount = a;
             c.OriginalReferenceNumber = r.ReferenceNumber;
-
-            ItemsChoiceType4[] ict = new ItemsChoiceType4[1];
-            ict[0] = ItemsChoiceType4.Credit;
-            c.ItemsElementName = ict;
 
             PWS_TransactionSummary ts = new PWS_TransactionSummary(null, null);
             try
@@ -580,7 +598,7 @@ namespace CertSuiteTool.Helper_Class
             rfnd.RefundAmount = new AmountType();
             rfnd.RefundAmount.currency = (ISO4217CurrencyCodeType)target.CboCurrencyCodeType.SelectedItem;
             rfnd.RefundAmount.currencySpecified = true;
-            rfnd.RefundAmount.Value = 1.00M;
+            rfnd.RefundAmount.Value = Convert.ToDecimal(target.TxtTransactionAmount.Text);
 
             Random r = new Random();
             rfnd.Merchant = merchantType();
@@ -589,7 +607,7 @@ namespace CertSuiteTool.Helper_Class
             rfnd.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             rfnd.PaymentTypeSpecified = true;
             rfnd.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-            rfnd.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //rfnd.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             rfnd.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
             rfnd.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
             rfnd.TokenRequestedSpecified = target.ChkTokenRequested.Checked;
@@ -608,22 +626,6 @@ namespace CertSuiteTool.Helper_Class
                 rfnd.Items[0] = debitInstrumentType();
             else if (target.CboPaymentInstrument.Text == "Gift")
                 rfnd.Items[0] = giftInstrumentType();
-
-            //CreditInstrumentType cit = new CreditInstrumentType();
-            //cit.CardKeyed = new CreditOrDebitCardKeyedType();
-            //cit.CardKeyed.PrimaryAccountNumber = TxtPrimaryAccountNumber.Text;
-            //cit.CardKeyed.ExpirationDate = TxtExpirationDate.Text;
-            //cit.CardType = CreditCardNetworkType.visa;
-            //cit.PartialApprovalCode = PartialIndicatorType.not_supported;
-            //cit.CardholderAddress = new AddressType();
-            //cit.CardholderAddress.AddressLine = "1234 Main Street";
-            //cit.CardholderAddress.City = "Mason";
-            //cit.CardholderAddress.State = StateCodeType.OH;
-            //cit.CardholderAddress.PostalCode = "45040";
-            //cit.CardholderAddress.CountryCode = ISO3166CountryCodeType.US;
-
-            //rfnd.Items = new object[1];
-            //rfnd.Items[0] = cit;
 
             PWS_TransactionSummary ts = new PWS_TransactionSummary(null, null);
             try
@@ -685,7 +687,7 @@ namespace CertSuiteTool.Helper_Class
             }
 
             //Check to see if this is a system or merchant cancel
-            if ((ReversalReasonType)target.CboReversalReason.SelectedItem == ReversalReasonType.TIME_OUT)
+            if (target.CboReversalReason.SelectedItem != null && (ReversalReasonType)target.CboReversalReason.SelectedItem == ReversalReasonType.TIME_OUT)
             {//System
                 can.CancelType = target.CancelTransactionTypeFromRequest(_rd.TxnRequestType);
                 can.OriginalAmount = _rd.Amount;
@@ -713,7 +715,8 @@ namespace CertSuiteTool.Helper_Class
                 // NEED TO ADD can.OriginalSequenceNumber = p.Merchant.Software.SequenceNumber;
                 can.OriginalAuthCode = _rd.AuthorizationCode;
                 can.NetworkResponseCode = ((TransactionResponseType)(_rd.PWS_TxnSummary.Response)).NetworkResponseCode;
-                can.ReversalReason = (ReversalReasonType)target.CboReversalReason.SelectedItem;
+                if(target.CboReversalReason.SelectedItem != null)
+                    can.ReversalReason = (ReversalReasonType)target.CboReversalReason.SelectedItem;
                 can.ReversalReasonSpecified = true;
             }
 
@@ -744,7 +747,7 @@ namespace CertSuiteTool.Helper_Class
             t.Merchant.Terminal = null;
             t.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             t.PaymentTypeSpecified = true;
-            t.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //t.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             t.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
             t.TransactionType = (TransactionTypeType)target.CboTransactionType.SelectedItem;//Mandatory
             t.TokenRequested = true;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
@@ -777,6 +780,50 @@ namespace CertSuiteTool.Helper_Class
             return ProcessResponse(ts);
         }
 
+        //Additional Gift transaction processing
+        public static ResponseDetails activateRequest()
+        {
+            ActivateRequest a = new ActivateRequest();
+
+            Random r = new Random();
+            a.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            a.Merchant = merchantType();
+            //a.NetworkResponseCode = "";
+            a.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            a.PaymentTypeSpecified = true;
+            //a.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //a.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            a.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            a.TokenRequestedSpecified = target.ChkTokenRequested.Checked;
+            a.TransactionAmount = new AmountType();
+            a.TransactionAmount.currency = (ISO4217CurrencyCodeType)target.CboCurrencyCodeType.SelectedItem;
+            a.TransactionAmount.currencySpecified = true;
+            a.TransactionAmount.Value = Convert.ToDecimal(target.TxtTransactionAmount.Text);
+            a.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            a.TransactionType = (TransactionTypeType)target.CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(1, 99999); //for ints
+            a.systemtraceid = rInt; //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            a.systemtraceidSpecified = true;
+            rInt = r.Next(1, 99999999);
+            a.merchantrefid = "PWS" + rInt.ToString(); //An optional attribute used by the merchant to identify each transaction. This can be no longer than 16 characters. If the merchant chooses not to use this field it is recommended that you populate this ID with the system-trace-id value.
+
+            //Set the object for payment
+            a.Item = giftInstrumentType();
+
+            PWS_TransactionSummary ts = new PWS_TransactionSummary(null, null);
+            try
+            {
+                ts = new PWS_TransactionSummary(a, target.PWSClient.Activate(a));
+            }
+            catch (Exception ex)
+            {
+                if (!CheckForFault(ex))
+                    MessageBox.Show(ex.Message);
+            }
+
+            return ProcessResponse(ts);
+        }
+
         public static ResponseDetails balanceInquiryRequest()
         {
             BalanceInquiryRequest b = new BalanceInquiryRequest();
@@ -787,7 +834,7 @@ namespace CertSuiteTool.Helper_Class
             //b.NetworkResponseCode = "";
             b.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             b.PaymentTypeSpecified = true;
-            b.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //b.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             //b.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
             b.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
             b.TokenRequestedSpecified = target.ChkTokenRequested.Checked;
@@ -818,6 +865,131 @@ namespace CertSuiteTool.Helper_Class
                 if (!CheckForFault(ex))
                     MessageBox.Show(ex.Message);
             }
+            return ProcessResponse(ts);
+        }
+
+        public static ResponseDetails reloadRequest()
+        {
+            ReloadRequest rl = new ReloadRequest();
+
+            Random r = new Random();
+            rl.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            rl.Merchant = merchantType();
+            //a.NetworkResponseCode = "";
+            rl.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            rl.PaymentTypeSpecified = true;
+            //rl.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //a.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            rl.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            rl.TokenRequestedSpecified = target.ChkTokenRequested.Checked;
+            rl.TransactionAmount = new AmountType();
+            rl.TransactionAmount.currency = (ISO4217CurrencyCodeType)target.CboCurrencyCodeType.SelectedItem;
+            rl.TransactionAmount.currencySpecified = true;
+            rl.TransactionAmount.Value = Convert.ToDecimal(target.TxtTransactionAmount.Text);
+            rl.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            rl.TransactionType = (TransactionTypeType)target.CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(1, 99999); //for ints
+            rl.systemtraceid = rInt; //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            rl.systemtraceidSpecified = true;
+            rInt = r.Next(1, 99999999);
+            rl.merchantrefid = "PWS" + rInt.ToString(); //An optional attribute used by the merchant to identify each transaction. This can be no longer than 16 characters. If the merchant chooses not to use this field it is recommended that you populate this ID with the system-trace-id value.
+
+            //Set the object for payment
+            rl.Gift = giftInstrumentType();
+
+            PWS_TransactionSummary ts = new PWS_TransactionSummary(null, null);
+            try
+            {
+                ts = new PWS_TransactionSummary(rl, target.PWSClient.Reload(rl));
+            }
+            catch (Exception ex)
+            {
+                if (!CheckForFault(ex))
+                    MessageBox.Show(ex.Message);
+            }
+
+            return ProcessResponse(ts);
+        }
+
+        public static ResponseDetails unloadRequest()
+        {
+            UnloadRequest ul = new UnloadRequest();
+
+            Random r = new Random();
+            ul.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            ul.Merchant = merchantType();
+            //a.NetworkResponseCode = "";
+            ul.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            ul.PaymentTypeSpecified = true;
+            //ul.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //a.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            ul.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            ul.TokenRequestedSpecified = target.ChkTokenRequested.Checked;
+            ul.TransactionAmount = new AmountType();
+            ul.TransactionAmount.currency = (ISO4217CurrencyCodeType)target.CboCurrencyCodeType.SelectedItem;
+            ul.TransactionAmount.currencySpecified = true;
+            ul.TransactionAmount.Value = Convert.ToDecimal(target.TxtTransactionAmount.Text);
+            ul.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            ul.TransactionType = (TransactionTypeType)target.CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(1, 99999); //for ints
+            ul.systemtraceid = rInt; //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            ul.systemtraceidSpecified = true;
+            rInt = r.Next(1, 99999999);
+            ul.merchantrefid = "PWS" + rInt.ToString(); //An optional attribute used by the merchant to identify each transaction. This can be no longer than 16 characters. If the merchant chooses not to use this field it is recommended that you populate this ID with the system-trace-id value.
+
+            //Set the object for payment
+            ul.Gift = giftInstrumentType();
+
+            PWS_TransactionSummary ts = new PWS_TransactionSummary(null, null);
+            try
+            {
+                ts = new PWS_TransactionSummary(ul, target.PWSClient.Unload(ul));
+            }
+            catch (Exception ex)
+            {
+                if (!CheckForFault(ex))
+                    MessageBox.Show(ex.Message);
+            }
+
+            return ProcessResponse(ts);
+        }
+
+        public static ResponseDetails closeRequest()
+        {
+            CloseRequest cl = new CloseRequest();
+
+            Random r = new Random();
+            cl.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            cl.Merchant = merchantType();
+            //a.NetworkResponseCode = "";
+            cl.PaymentType = (PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            cl.PaymentTypeSpecified = true;
+            //cl.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //a.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            cl.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            cl.TokenRequestedSpecified = target.ChkTokenRequested.Checked;
+            cl.TransactionTimestamp = DateTime.Now; //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            cl.TransactionType = (TransactionTypeType)target.CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(1, 99999); //for ints
+            cl.systemtraceid = rInt; //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            cl.systemtraceidSpecified = true;
+            rInt = r.Next(1, 99999999);
+            cl.merchantrefid = "PWS" + rInt.ToString(); //An optional attribute used by the merchant to identify each transaction. This can be no longer than 16 characters. If the merchant chooses not to use this field it is recommended that you populate this ID with the system-trace-id value.
+
+            //Set the object for payment
+            cl.Gift = giftInstrumentType();
+
+            PWS_TransactionSummary ts = new PWS_TransactionSummary(null, null);
+            try
+            {
+                ts = new PWS_TransactionSummary(cl, target.PWSClient.Close(cl));
+            }
+            catch (Exception ex)
+            {
+                if (!CheckForFault(ex))
+                    MessageBox.Show(ex.Message);
+            }
+
             return ProcessResponse(ts);
         }
 
@@ -1095,18 +1267,36 @@ namespace CertSuiteTool.Helper_Class
 
         private static bool CheckForFault(Exception _ex)
         {
-            if (((System.ServiceModel.FaultException<com.vantiv.types.payment.transactions.v6.RequestValidationFault>)(_ex)) != null)
+            string info = "";
+            #region RequestValidationFault
+            try
             {
-                string info = "";
-                foreach (XmlNode f in ((System.ServiceModel.FaultException<com.vantiv.types.payment.transactions.v6.RequestValidationFault>)(_ex)).Detail.Nodes)
+                if (((System.ServiceModel.FaultException<com.vantiv.types.payment.transactions.v6.RequestValidationFault>)(_ex)) != null)
                 {
-                    info += f.InnerXml + "\r\n";
+                    foreach (XmlNode f in ((System.ServiceModel.FaultException<com.vantiv.types.payment.transactions.v6.RequestValidationFault>)(_ex)).Detail.Nodes)
+                    {
+                        info += f.InnerXml + "\r\n";
+                    }
+                    MessageBox.Show(info);
+                    return true;
                 }
-                MessageBox.Show(info);
-                return true;
             }
-            else
-                return false;
+            catch{ }
+            #endregion RequestValidationFault
+
+            #region System.ServiceModel.FaultException
+            try
+            {
+                if (((System.ServiceModel.FaultException)(_ex)) != null)
+                {
+                    MessageBox.Show(_ex.Message);
+                    return true;
+                }
+            }
+            catch { }
+            #endregion System.ServiceModel.FaultException
+
+            return false;
         }
 
         #endregion Process Response

@@ -26,7 +26,6 @@ namespace CertSuiteTool_VDP
 {
     public partial class VantivDeveloperPortal
     {
-        public Credentials credentials;
         public Merchant merchant;
         public Terminal terminal;
         public Transaction transaction;
@@ -35,11 +34,8 @@ namespace CertSuiteTool_VDP
         private string UserName;//The following will be replaced for VDP once License is working
         private string Password;//The following will be replaced for VDP once License is working
 
-        public VantivDeveloperPortal(string userName, string password) 
+        public VantivDeveloperPortal() 
         {
-		    credentials = new Credentials();
-            credentials.AccountID = userName;
-            credentials.Password = password;
 		    merchant = new Merchant();
 		    terminal = new Terminal();
 		    transaction = new Transaction();
@@ -50,41 +46,7 @@ namespace CertSuiteTool_VDP
     }
 
     #region Additional Classes
-
-
-    public class Credentials
-    {//Online Documentation: http://dev-vantiv.devportal.apigee.com/docs/payment-web-services/api-element-dictionary/rest-credentials-definition
         
-        // Required
-        private String accountID;
-        private String password;
-
-        public string AccountID
-        {
-            get
-            {
-                return this.accountID;
-            }
-            set
-            {
-                this.accountID = value;
-            }
-        }
-
-        public string Password
-        {
-            get
-            {
-                return this.password;
-            }
-            set
-            {
-                this.password = value;
-            }
-        }
-
-    }
-
     public class Merchant
     {//Online Documentation: http://dev-vantiv.devportal.apigee.com/docs/payment-web-services/api-element-dictionary/rest-merchant-definition
 
@@ -202,13 +164,13 @@ namespace CertSuiteTool_VDP
         
         // Required
         private String terminalID;
-        private EntryModeType entryMode;
+        private EntryModeType entryMode;// I DON'T SEE THIS IN THE ONLINE
         // Optional
         private String iPv4Address;
         private String iPv6Address;
         private TerminalClassificationType terminalEnvironmentCode;
         private CardInputCode cardInputCode;
-        private String cardReader; // I DON'T SEE THIS IN THE ONLINE
+        //private String cardReader; // I DON'T SEE THIS IN THE ONLINE
         private PinEntryType pinEntry;
         private bool balanceInquiry;
         private DeviceType deviceType;
@@ -288,17 +250,17 @@ namespace CertSuiteTool_VDP
             }
         }
 
-        public String CardReader
-        {
-            get
-            {
-                return this.cardReader;
-            }
-            set
-            {
-                this.cardReader = value;
-            }
-        }
+        //public String CardReader
+        //{
+        //    get
+        //    {
+        //        return this.cardReader;
+        //    }
+        //    set
+        //    {
+        //        this.cardReader = value;
+        //    }
+        //}
 
         public PinEntryType PinEntry
         {
@@ -859,7 +821,7 @@ namespace CertSuiteTool_VDP
     public class Card
     {//Online Documentation: http://dev-vantiv.devportal.apigee.com/docs/payment-web-services/api-element-dictionary/rest-card-definition
 
-        private CreditCardNetworkType cardType;
+        private Nullable<CreditCardNetworkType> cardType;
         private String cardNumber;
         private String expirationMonth;
         private String expirationYear;
@@ -877,7 +839,7 @@ namespace CertSuiteTool_VDP
         private String cardholderName;
         private Nullable<AccountType> accountType;
 
-        public CreditCardNetworkType CardType
+        public Nullable<CreditCardNetworkType> CardType
         {
             get
             {
@@ -1021,7 +983,7 @@ namespace CertSuiteTool_VDP
             }
         }
 
-        public String TokenID
+        public String TokenId
         {
             get
             {

@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Send_Transactions));
             this.TbControl = new System.Windows.Forms.TabControl();
             this.TbAbout = new System.Windows.Forms.TabPage();
+            this.LnkSampleCode = new System.Windows.Forms.LinkLabel();
             this.LnkNotSure = new System.Windows.Forms.LinkLabel();
             this.cmdGo = new System.Windows.Forms.Button();
             this.Grp_PWS = new System.Windows.Forms.GroupBox();
@@ -86,7 +87,8 @@
             this.label20 = new System.Windows.Forms.Label();
             this.CmdSendTransactions = new System.Windows.Forms.Button();
             this.TbTransactionData = new System.Windows.Forms.TabPage();
-            this.ChkExtractTokenFromResponse = new System.Windows.Forms.CheckBox();
+            this.label58 = new System.Windows.Forms.Label();
+            this.TxtRequestId = new System.Windows.Forms.TextBox();
             this.GrpTerminalData = new System.Windows.Forms.GroupBox();
             this.CboCardReaderType = new System.Windows.Forms.ComboBox();
             this.label41 = new System.Windows.Forms.Label();
@@ -107,6 +109,8 @@
             this.CboTerminalEnvironmentalCode = new System.Windows.Forms.ComboBox();
             this.label43 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label56 = new System.Windows.Forms.Label();
+            this.TxtTransactionTipAmount = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label33 = new System.Windows.Forms.Label();
             this.TxtTokenValue = new System.Windows.Forms.TextBox();
@@ -142,6 +146,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.CboPaymentType = new System.Windows.Forms.ComboBox();
             this.GrpGift = new System.Windows.Forms.GroupBox();
+            this.TxtGiftCardSecurityCode = new System.Windows.Forms.TextBox();
+            this.label57 = new System.Windows.Forms.Label();
             this.TxtGiftCardPin = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
@@ -214,11 +220,12 @@
             this.TbControl.Location = new System.Drawing.Point(12, 10);
             this.TbControl.Name = "TbControl";
             this.TbControl.SelectedIndex = 0;
-            this.TbControl.Size = new System.Drawing.Size(799, 672);
+            this.TbControl.Size = new System.Drawing.Size(799, 712);
             this.TbControl.TabIndex = 7;
             // 
             // TbAbout
             // 
+            this.TbAbout.Controls.Add(this.LnkSampleCode);
             this.TbAbout.Controls.Add(this.LnkNotSure);
             this.TbAbout.Controls.Add(this.cmdGo);
             this.TbAbout.Controls.Add(this.Grp_PWS);
@@ -230,10 +237,22 @@
             this.TbAbout.Controls.Add(this.CboPWSorVDP);
             this.TbAbout.Location = new System.Drawing.Point(4, 22);
             this.TbAbout.Name = "TbAbout";
-            this.TbAbout.Size = new System.Drawing.Size(791, 646);
+            this.TbAbout.Size = new System.Drawing.Size(791, 686);
             this.TbAbout.TabIndex = 4;
             this.TbAbout.Text = "About";
             this.TbAbout.UseVisualStyleBackColor = true;
+            // 
+            // LnkSampleCode
+            // 
+            this.LnkSampleCode.AutoSize = true;
+            this.LnkSampleCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LnkSampleCode.Location = new System.Drawing.Point(716, 169);
+            this.LnkSampleCode.Name = "LnkSampleCode";
+            this.LnkSampleCode.Size = new System.Drawing.Size(70, 13);
+            this.LnkSampleCode.TabIndex = 160;
+            this.LnkSampleCode.TabStop = true;
+            this.LnkSampleCode.Text = "Sample Code";
+            this.LnkSampleCode.Click += new System.EventHandler(this.LnkSampleCode_Click);
             // 
             // LnkNotSure
             // 
@@ -274,7 +293,7 @@
             this.Grp_PWS.Controls.Add(this.TxtPassword);
             this.Grp_PWS.Controls.Add(this.label37);
             this.Grp_PWS.Enabled = false;
-            this.Grp_PWS.Location = new System.Drawing.Point(9, 275);
+            this.Grp_PWS.Location = new System.Drawing.Point(9, 265);
             this.Grp_PWS.Name = "Grp_PWS";
             this.Grp_PWS.Size = new System.Drawing.Size(546, 109);
             this.Grp_PWS.TabIndex = 151;
@@ -332,7 +351,6 @@
             this.txtPWSBaseEndpointURL.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtPWSBaseEndpointURL.Location = new System.Drawing.Point(153, 65);
             this.txtPWSBaseEndpointURL.Name = "txtPWSBaseEndpointURL";
-            this.txtPWSBaseEndpointURL.ReadOnly = true;
             this.txtPWSBaseEndpointURL.Size = new System.Drawing.Size(238, 20);
             this.txtPWSBaseEndpointURL.TabIndex = 5;
             // 
@@ -369,7 +387,7 @@
             this.grp_VDP.Enabled = false;
             this.grp_VDP.Location = new System.Drawing.Point(9, 169);
             this.grp_VDP.Name = "grp_VDP";
-            this.grp_VDP.Size = new System.Drawing.Size(546, 100);
+            this.grp_VDP.Size = new System.Drawing.Size(546, 90);
             this.grp_VDP.TabIndex = 150;
             this.grp_VDP.TabStop = false;
             this.grp_VDP.Text = "Vantiv Developer Portal (VDP)";
@@ -571,7 +589,7 @@
             this.TbMerchantData.Location = new System.Drawing.Point(4, 22);
             this.TbMerchantData.Name = "TbMerchantData";
             this.TbMerchantData.Padding = new System.Windows.Forms.Padding(3);
-            this.TbMerchantData.Size = new System.Drawing.Size(791, 646);
+            this.TbMerchantData.Size = new System.Drawing.Size(791, 686);
             this.TbMerchantData.TabIndex = 3;
             this.TbMerchantData.Text = "Merchant Data";
             this.TbMerchantData.UseVisualStyleBackColor = true;
@@ -797,7 +815,8 @@
             // 
             // TbTransactionData
             // 
-            this.TbTransactionData.Controls.Add(this.ChkExtractTokenFromResponse);
+            this.TbTransactionData.Controls.Add(this.label58);
+            this.TbTransactionData.Controls.Add(this.TxtRequestId);
             this.TbTransactionData.Controls.Add(this.GrpTerminalData);
             this.TbTransactionData.Controls.Add(this.groupBox1);
             this.TbTransactionData.Controls.Add(this.ChkOnClickDisplayTxnMessage);
@@ -818,21 +837,26 @@
             this.TbTransactionData.Location = new System.Drawing.Point(4, 22);
             this.TbTransactionData.Name = "TbTransactionData";
             this.TbTransactionData.Padding = new System.Windows.Forms.Padding(3);
-            this.TbTransactionData.Size = new System.Drawing.Size(791, 646);
+            this.TbTransactionData.Size = new System.Drawing.Size(791, 686);
             this.TbTransactionData.TabIndex = 2;
             this.TbTransactionData.Text = "Transaction Data";
             this.TbTransactionData.UseVisualStyleBackColor = true;
             // 
-            // ChkExtractTokenFromResponse
+            // label58
             // 
-            this.ChkExtractTokenFromResponse.AutoSize = true;
-            this.ChkExtractTokenFromResponse.Location = new System.Drawing.Point(328, 524);
-            this.ChkExtractTokenFromResponse.Name = "ChkExtractTokenFromResponse";
-            this.ChkExtractTokenFromResponse.Size = new System.Drawing.Size(167, 17);
-            this.ChkExtractTokenFromResponse.TabIndex = 159;
-            this.ChkExtractTokenFromResponse.Text = "Extract Token from Response";
-            this.ChkExtractTokenFromResponse.UseVisualStyleBackColor = true;
-            this.ChkExtractTokenFromResponse.CheckedChanged += new System.EventHandler(this.ChkExtractTokenFromResponse_CheckedChanged);
+            this.label58.AutoSize = true;
+            this.label58.Location = new System.Drawing.Point(542, 572);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(59, 13);
+            this.label58.TabIndex = 161;
+            this.label58.Text = "Request Id";
+            // 
+            // TxtRequestId
+            // 
+            this.TxtRequestId.Location = new System.Drawing.Point(607, 569);
+            this.TxtRequestId.Name = "TxtRequestId";
+            this.TxtRequestId.Size = new System.Drawing.Size(177, 20);
+            this.TxtRequestId.TabIndex = 160;
             // 
             // GrpTerminalData
             // 
@@ -1019,6 +1043,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label56);
+            this.groupBox1.Controls.Add(this.TxtTransactionTipAmount);
             this.groupBox1.Controls.Add(this.groupBox3);
             this.groupBox1.Controls.Add(this.GrpCancel);
             this.groupBox1.Controls.Add(this.groupBox2);
@@ -1035,10 +1061,26 @@
             this.groupBox1.Controls.Add(this.TxtTransactionAmount);
             this.groupBox1.Location = new System.Drawing.Point(9, 266);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(775, 248);
+            this.groupBox1.Size = new System.Drawing.Size(775, 293);
             this.groupBox1.TabIndex = 43;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Payment Information";
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(10, 215);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(91, 13);
+            this.label56.TabIndex = 49;
+            this.label56.Text = "Tip Amount (0.00)";
+            // 
+            // TxtTransactionTipAmount
+            // 
+            this.TxtTransactionTipAmount.Location = new System.Drawing.Point(148, 215);
+            this.TxtTransactionTipAmount.Name = "TxtTransactionTipAmount";
+            this.TxtTransactionTipAmount.Size = new System.Drawing.Size(47, 20);
+            this.TxtTransactionTipAmount.TabIndex = 50;
             // 
             // groupBox3
             // 
@@ -1278,7 +1320,7 @@
             "masterCard",
             "amex",
             "discover"});
-            this.CboPartialApprovalCode.Location = new System.Drawing.Point(120, 217);
+            this.CboPartialApprovalCode.Location = new System.Drawing.Point(124, 264);
             this.CboPartialApprovalCode.Name = "CboPartialApprovalCode";
             this.CboPartialApprovalCode.Size = new System.Drawing.Size(129, 21);
             this.CboPartialApprovalCode.TabIndex = 44;
@@ -1286,7 +1328,7 @@
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(9, 220);
+            this.label26.Location = new System.Drawing.Point(10, 269);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(109, 13);
             this.label26.TabIndex = 43;
@@ -1300,7 +1342,7 @@
             "masterCard",
             "amex",
             "discover"});
-            this.CboCurrencyCodeType.Location = new System.Drawing.Point(197, 163);
+            this.CboCurrencyCodeType.Location = new System.Drawing.Point(201, 191);
             this.CboCurrencyCodeType.Name = "CboCurrencyCodeType";
             this.CboCurrencyCodeType.Size = new System.Drawing.Size(52, 21);
             this.CboCurrencyCodeType.TabIndex = 6;
@@ -1388,21 +1430,39 @@
             this.CboPaymentType.Items.AddRange(new object[] {
             "CardKeyed",
             "CardSwiped"});
-            this.CboPaymentType.Location = new System.Drawing.Point(120, 190);
+            this.CboPaymentType.Location = new System.Drawing.Point(124, 239);
             this.CboPaymentType.Name = "CboPaymentType";
             this.CboPaymentType.Size = new System.Drawing.Size(129, 21);
             this.CboPaymentType.TabIndex = 41;
             // 
             // GrpGift
             // 
+            this.GrpGift.Controls.Add(this.TxtGiftCardSecurityCode);
+            this.GrpGift.Controls.Add(this.label57);
             this.GrpGift.Controls.Add(this.TxtGiftCardPin);
             this.GrpGift.Controls.Add(this.label11);
             this.GrpGift.Location = new System.Drawing.Point(12, 106);
             this.GrpGift.Name = "GrpGift";
-            this.GrpGift.Size = new System.Drawing.Size(253, 45);
+            this.GrpGift.Size = new System.Drawing.Size(253, 79);
             this.GrpGift.TabIndex = 16;
             this.GrpGift.TabStop = false;
             this.GrpGift.Text = "Gift";
+            // 
+            // TxtGiftCardSecurityCode
+            // 
+            this.TxtGiftCardSecurityCode.Location = new System.Drawing.Point(136, 43);
+            this.TxtGiftCardSecurityCode.Name = "TxtGiftCardSecurityCode";
+            this.TxtGiftCardSecurityCode.Size = new System.Drawing.Size(59, 20);
+            this.TxtGiftCardSecurityCode.TabIndex = 19;
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(6, 46);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(117, 13);
+            this.label57.TabIndex = 18;
+            this.label57.Text = "Gift Card Security Code";
             // 
             // TxtGiftCardPin
             // 
@@ -1410,7 +1470,6 @@
             this.TxtGiftCardPin.Name = "TxtGiftCardPin";
             this.TxtGiftCardPin.Size = new System.Drawing.Size(59, 20);
             this.TxtGiftCardPin.TabIndex = 17;
-            this.TxtGiftCardPin.Text = "111";
             // 
             // label11
             // 
@@ -1424,7 +1483,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(10, 193);
+            this.label25.Location = new System.Drawing.Point(10, 242);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(75, 13);
             this.label25.TabIndex = 40;
@@ -1433,7 +1492,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 166);
+            this.label7.Location = new System.Drawing.Point(10, 194);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(132, 13);
             this.label7.TabIndex = 37;
@@ -1441,7 +1500,7 @@
             // 
             // TxtTransactionAmount
             // 
-            this.TxtTransactionAmount.Location = new System.Drawing.Point(144, 163);
+            this.TxtTransactionAmount.Location = new System.Drawing.Point(148, 191);
             this.TxtTransactionAmount.Name = "TxtTransactionAmount";
             this.TxtTransactionAmount.Size = new System.Drawing.Size(47, 20);
             this.TxtTransactionAmount.TabIndex = 38;
@@ -1450,7 +1509,7 @@
             // ChkOnClickDisplayTxnMessage
             // 
             this.ChkOnClickDisplayTxnMessage.AutoSize = true;
-            this.ChkOnClickDisplayTxnMessage.Location = new System.Drawing.Point(133, 524);
+            this.ChkOnClickDisplayTxnMessage.Location = new System.Drawing.Point(133, 569);
             this.ChkOnClickDisplayTxnMessage.Name = "ChkOnClickDisplayTxnMessage";
             this.ChkOnClickDisplayTxnMessage.Size = new System.Drawing.Size(189, 17);
             this.ChkOnClickDisplayTxnMessage.TabIndex = 36;
@@ -1461,7 +1520,7 @@
             // 
             this.CmdClearTransactions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(209)))), ((int)(((byte)(5)))));
             this.CmdClearTransactions.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CmdClearTransactions.Location = new System.Drawing.Point(9, 520);
+            this.CmdClearTransactions.Location = new System.Drawing.Point(9, 565);
             this.CmdClearTransactions.Name = "CmdClearTransactions";
             this.CmdClearTransactions.Size = new System.Drawing.Size(122, 21);
             this.CmdClearTransactions.TabIndex = 35;
@@ -1474,7 +1533,7 @@
             this.ChkLstTransactionsProcessed.FormattingEnabled = true;
             this.ChkLstTransactionsProcessed.HorizontalScrollbar = true;
             this.ChkLstTransactionsProcessed.IntegralHeight = false;
-            this.ChkLstTransactionsProcessed.Location = new System.Drawing.Point(9, 547);
+            this.ChkLstTransactionsProcessed.Location = new System.Drawing.Point(9, 592);
             this.ChkLstTransactionsProcessed.Name = "ChkLstTransactionsProcessed";
             this.ChkLstTransactionsProcessed.ScrollAlwaysVisible = true;
             this.ChkLstTransactionsProcessed.Size = new System.Drawing.Size(775, 94);
@@ -1732,7 +1791,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(815, 685);
+            this.ClientSize = new System.Drawing.Size(815, 734);
             this.Controls.Add(this.TbControl);
             this.Name = "Send_Transactions";
             this.Text = "cSharp v6 Sample Application";
@@ -1929,8 +1988,14 @@
         public System.Windows.Forms.ComboBox CboTerminalEnvironmentalCode;
         private System.Windows.Forms.Label label43;
         private System.Windows.Forms.Timer TmrHighlightChangedFields;
-        private System.Windows.Forms.CheckBox ChkExtractTokenFromResponse;
         private System.Windows.Forms.Button CmdExampleTestVal;
         public System.Windows.Forms.ComboBox CboTrackChoice;
+        private System.Windows.Forms.Label label56;
+        public System.Windows.Forms.TextBox TxtTransactionTipAmount;
+        private System.Windows.Forms.LinkLabel LnkSampleCode;
+        public System.Windows.Forms.TextBox TxtGiftCardSecurityCode;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.TextBox TxtRequestId;
     }
 }

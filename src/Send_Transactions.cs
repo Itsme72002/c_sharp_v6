@@ -112,6 +112,9 @@ namespace CertSuiteTool
                                 + "and the Vantiv Privacy Notice (http://www.vantiv.com/Privacy-Notice).";
 
             //Set Defaults
+            CboPaymentInstrument.Text = "";
+            CboTerminalDetail.Text = "";//set defult
+
             CboCreditType.Items.Add("CardKeyed");
             CboCreditType.Items.Add("CardSwiped");
             CboCreditType.Text = "";
@@ -217,7 +220,7 @@ namespace CertSuiteTool
 
             CboSendTransaction.Items.Add(new item("Authorize", "Authorize"));// (Authorization) (AVSOnly 0.00)
             CboSendTransaction.Items.Add(new item("Capture", "Capture"));// (AuthorizationCompletion)
-            CboSendTransaction.Items.Add(new item("Purchase", "Purchase"));// (Sale) (Voice Auth)
+            CboSendTransaction.Items.Add(new item("Purchase aka Sale", "Purchase"));// (Sale) (Voice Auth)
             CboSendTransaction.Items.Add(new item("Adjust", "Adjust"));
             CboSendTransaction.Items.Add(new item("Refund", "Refund"));//(Return)
             CboSendTransaction.Items.Add(new item("Cancel", "Cancel"));
@@ -273,6 +276,11 @@ namespace CertSuiteTool
         {
             try
             {
+                if (CboSendTransaction.Text.Length < 1)
+                {
+                    MessageBox.Show("Please select a message type to send");
+                    return;
+                }
                 string test = ((item)(CboSendTransaction.SelectedItem)).Value;
 
                 if (test == "Authorize")
@@ -325,25 +333,25 @@ namespace CertSuiteTool
                 }
                 if (test == "Refund")
                 {
-                    if (ChkLstTransactionsProcessed.CheckedItems.Count < 1) { MessageBox.Show("Please select 'Authorize' transaction(s) to process"); return; }
-                    //First verify if all transactions selected are "Authorize" transactions
-                    List<ResponseDetails> txnsToProcess = new List<ResponseDetails>();
-                    foreach (object itemChecked in ChkLstTransactionsProcessed.CheckedItems)
-                    {
-                        //((TransactionResponseType)(_response))
-                        if (((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize")
-                        {
-                            MessageBox.Show("All selected messages must be of type Authorize");
-                            Cursor = Cursors.Default;
-                            return;
-                        }
-                        txnsToProcess.Add(((ResponseDetails)(itemChecked)));
-                    }
-                    //Now process each Authorize message selected
-                    foreach (ResponseDetails _RD in txnsToProcess)
-                    {
-                        Refund();
-                    }
+                    //if (ChkLstTransactionsProcessed.CheckedItems.Count < 1 && CboPaymentInstrument.Text == "Credit") { MessageBox.Show("Please select a transaction(s) to process"); return; }
+                    ////First verify if all transactions selected are "Authorize" transactions
+                    //List<ResponseDetails> txnsToProcess = new List<ResponseDetails>();
+                    //foreach (object itemChecked in ChkLstTransactionsProcessed.CheckedItems)
+                    //{
+                    //    //((TransactionResponseType)(_response))
+                    //    if (((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize")
+                    //    {
+                    //        MessageBox.Show("All selected messages must be of type Authorize");
+                    //        Cursor = Cursors.Default;
+                    //        return;
+                    //    }
+                    //    txnsToProcess.Add(((ResponseDetails)(itemChecked)));
+                    //}
+                    ////Now process each Authorize message selected
+                    //foreach (ResponseDetails _RD in txnsToProcess)
+                    //{
+                        Return();
+                    //}
                 }
                 if (test == "Cancel")
                 {
@@ -362,6 +370,7 @@ namespace CertSuiteTool
                             && ((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize"
                             && ((ResponseDetails)(itemChecked)).TxnRequestType != "Capture"
                             && ((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Sale"
                             && ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"))
                         {
                             MessageBox.Show("Invalid message type for Credit - cancel");
@@ -371,7 +380,7 @@ namespace CertSuiteTool
                         //Debit
                         if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Debit" &&
                             (((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
-                            | ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"))
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"))
                         {
                             MessageBox.Show("Invalid message type for Debit - cancel");
                             Cursor = Cursors.Default;
@@ -380,13 +389,14 @@ namespace CertSuiteTool
                         //Gift
                         if (((ResponseDetails)(itemChecked)).PaymentInstrumentType == "Gift" &&
                             (((ResponseDetails)(itemChecked)).TxnRequestType != "Activate"
-                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize"
-                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Capture"
-                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Close"
-                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
-                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"
-                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Reload"
-                            |((ResponseDetails)(itemChecked)).TxnRequestType != "Unload"))
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Authorize"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Capture"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Close"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Purchase"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Sale"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Refund"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Reload"
+                            && ((ResponseDetails)(itemChecked)).TxnRequestType != "Unload"))
                         {
                             MessageBox.Show("Invalid message type for Gift - cancel");
                             Cursor = Cursors.Default;
@@ -513,59 +523,7 @@ namespace CertSuiteTool
 
         private void CmdExampleTestVal_Click(object sender, EventArgs e)
         {
-            //In general the industry preference for processing transactions is Track2 followed by Track1 followed by Keyed
-            if (CboCardType.Text == "visa")
-            {
-                if (CboTrackChoice.Text == "Track2")
-                {
-                    TxtTrackData.Text = "4445222299990007=17121010000023700000";
-                    CboEntryMode.SelectedItem = EntryModeType.track2;
-                }
-                else if (CboTrackChoice.Text == "Track1")
-                {
-                    TxtTrackData.Text = "B4445222299990007^TESTCARD/TEST^171210100000000000237000000";
-                    CboEntryMode.SelectedItem = EntryModeType.track1;
-                }
-            }
-            else if (CboCardType.Text == "masterCard")
-            {
-                if (CboTrackChoice.Text == "Track2")
-                {
-                    TxtTrackData.Text = "5444009999222205=14121010000071700";
-                    CboEntryMode.SelectedItem = EntryModeType.track2;
-                }
-                else if (CboTrackChoice.Text == "Track1")
-                {
-                    TxtTrackData.Text = "B5444009999222205^TEST-VOID/TEST^141210100000000000000071700";
-                    CboEntryMode.SelectedItem = EntryModeType.track1;
-                }
-            }
-            else if (CboCardType.Text == "amex")
-            {
-                if (CboTrackChoice.Text == "Track2")
-                {
-                    TxtTrackData.Text = "341111597242000=17121010000000000000";
-                    CboEntryMode.SelectedItem = EntryModeType.track2;
-                }
-                else if (CboTrackChoice.Text == "Track1")
-                {
-                    TxtTrackData.Text = "B341111597242000^ISO/AMEX TEST             ^1712101000000000000000000000000";
-                    CboEntryMode.SelectedItem = EntryModeType.track1;
-                }
-            }
-            else if (CboCardType.Text == "discover")
-            {
-                if (CboTrackChoice.Text == "Track2")
-                {
-                    TxtTrackData.Text = "6011000990911111=19121010000000000000";
-                    CboEntryMode.SelectedItem = EntryModeType.track2;
-                }
-                else if (CboTrackChoice.Text == "Track1")
-                {
-                    TxtTrackData.Text = "B6011000990911111^TESTCARD/DISCOVER^1912101000000000000000000000000";
-                    CboEntryMode.SelectedItem = EntryModeType.track1;
-                }
-            }
+            SetTestTrackData();
         }
 
         private void ChkEncryptedData_CheckedChanged(object sender, EventArgs e)
@@ -585,8 +543,36 @@ namespace CertSuiteTool
             if (rd.PWS_TxnSummary != null && rd.PWS_TxnSummary.Response != null)
                 MessageBox.Show(PWS_Helper.ExtractDetailsFromResponse(rd));
             if (rd.VDP_TxnSummary != null && rd.VDP_TxnSummary.XMLResponse != null)
+            {
                 MessageBox.Show("REQUEST\r\n" + rd.VDP_TxnSummary.JsonRequest + "\r\n\r\nRESPONSE\r\n" + rd.VDP_TxnSummary.JsonResponse);
+                ExtractAdditionalMetaDataFromTxn(rd);
+            }
 
+        }
+
+        private void ExtractAdditionalMetaDataFromTxn(ResponseDetails _rd)
+        {
+            //Clear out boxes we hope to extract meta data
+            TxtRequestId.Text = "";
+            TxtTokenId.Text = "";
+            TxtTokenValue.Text = "";
+
+            //Attempt to extract a RequestId
+            try
+            {
+                TxtRequestId.Text = VDP_Helper.SELECT(_rd.VDP_TxnSummary.XMLResponse, "//RequestId");
+            }
+            catch{}
+            //Attempt to extract Token Information
+            try
+            {
+                if (ChkUseToken.Checked)
+                {
+                    TxtTokenId.Text = VDP_Helper.SELECT(_rd.VDP_TxnSummary.XMLResponse, "//tokenId");
+                    TxtTokenValue.Text = VDP_Helper.SELECT(_rd.VDP_TxnSummary.XMLResponse, "//tokenValue");
+                }
+            }
+            catch { }
         }
 
         private void ChkUseToken_CheckedChanged(object sender, EventArgs e)
@@ -600,23 +586,6 @@ namespace CertSuiteTool
                     TxtPrimaryAccountNumber.Text = "";
                     ChkTokenRequested.Checked = false;
                     CboCreditType.SelectedItem = "CardKeyed";
-                }
-            }
-        }
-
-        private void ChkExtractTokenFromResponse_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ChkExtractTokenFromResponse.Checked)
-            {
-                if (ChkLstTransactionsProcessed.CheckedItems.Count == 1)
-                {
-                    MessageBox.Show("Need code example here 1-5-2015");
-                    //TxtTokenId.Text = trt.TokenizationResult.tokenType.tokenId;
-                    //TxtTokenValue.Text = trt.TokenizationResult.tokenType.tokenValue;
-                }
-                else
-                {
-                    MessageBox.Show("Please select only one transaction use use token data");
                 }
             }
         }
@@ -687,7 +656,8 @@ namespace CertSuiteTool
                 CboBalanceInquiry.BackColor = Color.FromArgb(255, 255, 255);
                 CboHostAdjustment.BackColor = Color.FromArgb(255, 255, 255);
                 CboPinEntry.BackColor = Color.FromArgb(255, 255, 255);
-                CboCardReaderType.BackColor = Color.FromArgb(255, 255, 255);                
+                CboCardReaderType.BackColor = Color.FromArgb(255, 255, 255);
+                TxtTrackData.BackColor = Color.FromArgb(255, 255, 255);   
             }
             catch (Exception ex)
             {
@@ -732,7 +702,7 @@ namespace CertSuiteTool
                 {
                     if (CboCreditType.Text == "CardKeyed")
                     {//Set Terminal settings to common values for Keyed
-                        CboTerminalEnvironmentalCode.SelectedItem = TerminalClassificationType.unattended_self_service;
+                        CboTerminalEnvironmentalCode.SelectedItem = TerminalClassificationType.electronic_cash_register;
                         CboTerminalEnvironmentalCode.BackColor = Color.FromArgb(252, 209, 5);
 
                         CboCardInputCode.SelectedItem = CardInputCode.ManualKeyed;
@@ -762,7 +732,7 @@ namespace CertSuiteTool
                     }
                     else if (CboCreditType.Text == "CardSwiped")
                     {//Set Terminal settings to common values for Swiped
-                        CboTerminalEnvironmentalCode.SelectedItem = TerminalClassificationType.unattended_self_service;
+                        CboTerminalEnvironmentalCode.SelectedItem = TerminalClassificationType.electronic_cash_register;
                         CboTerminalEnvironmentalCode.BackColor = Color.FromArgb(252, 209, 5);
 
                         CboCardInputCode.SelectedItem = CardInputCode.MagstripeRead;
@@ -791,6 +761,9 @@ namespace CertSuiteTool
                         //Set up common values based on keyed versus swiped
                         TxtCardSecurityCode.Text = "";
                         ChkSetAddressInformation.Checked = false;
+
+                        TxtTrackData.BackColor = Color.FromArgb(252, 209, 5);
+                        SetTestTrackData();
                     }
                     StarteTimer();
                 }
@@ -845,7 +818,7 @@ namespace CertSuiteTool
 
         private void CboSendTransaction_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (CboSendTransaction.Text == "Cancel")
+            if (CboSendTransaction.Text == "Cancel (Reversal)" | CboSendTransaction.Text == "Cancel")
                 GrpCancel.Visible = true;
             else
                 GrpCancel.Visible = false;
@@ -873,12 +846,59 @@ namespace CertSuiteTool
             //TxtPassword.Enabled = false;
             grp_VDP.Enabled = false;
             Grp_PWS.Enabled = false;
+            CboSendTransaction.SelectedIndex = -1;
 
             if (CboPWSorVDP.Text == "VDP")
                 grp_VDP.Enabled = true;
             else if (CboPWSorVDP.Text == "PWS")
             {
                 Grp_PWS.Enabled = true;
+            }
+            SetSendTransactionValues();//Set the appropriate values based on API
+        }
+
+        private void SetSendTransactionValues()
+        {
+            CboSendTransaction.Items.Clear();
+
+            //Although most transaction type names are the same, some are slightly different. The following changes the name to make things easier.
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                CboSendTransaction.Items.Add(new item("Authorization", "Authorize"));// (Authorization) (AVSOnly 0.00)
+                CboSendTransaction.Items.Add(new item("AuthorizationCompletion", "Capture"));// (AuthorizationCompletion)
+                CboSendTransaction.Items.Add(new item("Sale", "Purchase"));// (Sale) (Voice Auth)
+                CboSendTransaction.Items.Add(new item("Adjust", "Adjust"));
+                CboSendTransaction.Items.Add(new item("Return", "Refund"));//(Return)
+                CboSendTransaction.Items.Add(new item("Cancel (Reversal)", "Cancel"));
+                CboSendTransaction.Items.Add(new item("Void", "Void"));
+                CboSendTransaction.Items.Add(new item("Close Batch", "CloseBatch"));
+                //CboSendTransaction.Items.Add(new item("Tokenize", "Tokenize"));
+                CboSendTransaction.Items.Add(new item("Activate (Gift)", "Activate"));
+                CboSendTransaction.Items.Add(new item("Balance Inquiry (Gift)", "BalanceInquiry"));
+                CboSendTransaction.Items.Add(new item("Batch Balance", "BatchBalance"));
+                CboSendTransaction.Items.Add(new item("Reload (Gift)", "Reload"));
+                CboSendTransaction.Items.Add(new item("Unload (Gift)", "Unload"));
+                CboSendTransaction.Items.Add(new item("Close (Gift)", "Close"));
+                //CboSendTransaction.Items.Add(new item("Update Card", "UpdateCard"));
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                CboSendTransaction.Items.Add(new item("Authorize", "Authorize"));// (Authorization) (AVSOnly 0.00)
+                CboSendTransaction.Items.Add(new item("Capture", "Capture"));// (AuthorizationCompletion)
+                CboSendTransaction.Items.Add(new item("Purchase", "Purchase"));// (Sale) (Voice Auth)
+                CboSendTransaction.Items.Add(new item("Adjust", "Adjust"));
+                CboSendTransaction.Items.Add(new item("Refund", "Refund"));//(Return)
+                CboSendTransaction.Items.Add(new item("Cancel", "Cancel"));
+                //CboSendTransaction.Items.Add(new item("Void (VDP only)", "Void"));
+                CboSendTransaction.Items.Add(new item("Close Batch", "CloseBatch"));
+                CboSendTransaction.Items.Add(new item("Tokenize", "Tokenize"));
+                CboSendTransaction.Items.Add(new item("Activate (Gift)", "Activate"));
+                CboSendTransaction.Items.Add(new item("Balance Inquiry (Gift)", "BalanceInquiry"));
+                CboSendTransaction.Items.Add(new item("Batch Balance (Gift)", "BatchBalance"));
+                CboSendTransaction.Items.Add(new item("Reload (Gift)", "Reload"));
+                CboSendTransaction.Items.Add(new item("Unload (Gift)", "Unload"));
+                CboSendTransaction.Items.Add(new item("Close (Gift)", "Close"));
+                //CboSendTransaction.Items.Add(new item("Update Card", "UpdateCard"));
             }
         }
 
@@ -928,7 +948,7 @@ namespace CertSuiteTool
             CancelTransactionType ctt = new CancelTransactionType();
             if (_TxnRequestType == "AuthorizeRequest" | _TxnRequestType == "Authorize")
                 return CancelTransactionType.authorize;
-            if (_TxnRequestType == "CaptureRequest" | _TxnRequestType == "Capture")
+            if (_TxnRequestType == "CaptureRequest" | _TxnRequestType == "Capture" | _TxnRequestType == "AuthorizationCompletion")
                 return CancelTransactionType.capture;
             if (_TxnRequestType == "PurchaseRequest" | _TxnRequestType == "Purchase" | _TxnRequestType == "Sale")
                 return CancelTransactionType.purchase;
@@ -936,7 +956,7 @@ namespace CertSuiteTool
             //    return CancelTransactionType.purchase_cashback;
             if (_TxnRequestType == "AdjustRequest" | _TxnRequestType == "Adjust")
                 return CancelTransactionType.adjust;
-            if (_TxnRequestType == "RefundRequest" | _TxnRequestType == "Refund")
+            if (_TxnRequestType == "RefundRequest" | _TxnRequestType == "Refund" | _TxnRequestType == "Return")
                 return CancelTransactionType.refund;
             if (_TxnRequestType == "ActivateRequest" | _TxnRequestType == "Activate")
                 return CancelTransactionType.activate;
@@ -1013,6 +1033,63 @@ namespace CertSuiteTool
             return result;
         }
 
+        public void SetTestTrackData()
+        {
+            //In general the industry preference for processing transactions is Track2 followed by Track1 followed by Keyed
+            if (CboCardType.Text == "visa")
+            {
+                if (CboTrackChoice.Text == "Track2")
+                {
+                    TxtTrackData.Text = "4445222299990007=17121010000023700000";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
+                }
+                else if (CboTrackChoice.Text == "Track1")
+                {
+                    TxtTrackData.Text = "B4445222299990007^TESTCARD/TEST^171210100000000000237000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
+                }
+            }
+            else if (CboCardType.Text == "masterCard")
+            {
+                if (CboTrackChoice.Text == "Track2")
+                {
+                    TxtTrackData.Text = "5444009999222205=14121010000071700";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
+                }
+                else if (CboTrackChoice.Text == "Track1")
+                {
+                    TxtTrackData.Text = "B5444009999222205^TEST-VOID/TEST^141210100000000000000071700";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
+                }
+            }
+            else if (CboCardType.Text == "amex")
+            {
+                if (CboTrackChoice.Text == "Track2")
+                {
+                    TxtTrackData.Text = "341111597242000=17121010000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
+                }
+                else if (CboTrackChoice.Text == "Track1")
+                {
+                    TxtTrackData.Text = "B341111597242000^ISO/AMEX TEST             ^1712101000000000000000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
+                }
+            }
+            else if (CboCardType.Text == "discover")
+            {
+                if (CboTrackChoice.Text == "Track2")
+                {
+                    TxtTrackData.Text = "6011000990911111=19121010000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track2;
+                }
+                else if (CboTrackChoice.Text == "Track1")
+                {
+                    TxtTrackData.Text = "B6011000990911111^TESTCARD/DISCOVER^1912101000000000000000000000000";
+                    CboEntryMode.SelectedItem = EntryModeType.track1;
+                }
+            }
+        }
+
         #endregion Page Methods
 
         #region API Operations
@@ -1026,8 +1103,8 @@ namespace CertSuiteTool
 
             if (CboPWSorVDP.Text == "VDP")
             {
-                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
-                return VDP_Helper.authorizeRequest(ref vdp);
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.authorizationRequest(ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
@@ -1048,8 +1125,8 @@ namespace CertSuiteTool
 
             if (CboPWSorVDP.Text == "VDP")
             {
-                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
-                return VDP_Helper.captureRequest(_rd, ref vdp);
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.authorizationCompletionRequest(_rd, ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
@@ -1071,8 +1148,8 @@ namespace CertSuiteTool
 
             if (CboPWSorVDP.Text == "VDP")
             {
-                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
-                return VDP_Helper.purchaseRequest(ref vdp);                 
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.saleRequest(ref vdp);                 
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
@@ -1093,7 +1170,7 @@ namespace CertSuiteTool
 
             if (CboPWSorVDP.Text == "VDP")
             {
-                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
                 return VDP_Helper.adjustRequest(_rd, ref vdp);                 
             }
             else if (CboPWSorVDP.Text == "PWS")
@@ -1108,15 +1185,15 @@ namespace CertSuiteTool
             return null;
         }
 
-        private ResponseDetails Refund()
+        private ResponseDetails Return()
         {
-            /* Refund is used to transfer funds from the merchant back to the cardholder. 
+            /* Return aka Refund is used to transfer funds from the merchant back to the cardholder. 
              */
 
             if (CboPWSorVDP.Text == "VDP")
             {
-                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
-                return VDP_Helper.refundRequest(ref vdp);
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.returnRequest(ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
@@ -1144,8 +1221,8 @@ namespace CertSuiteTool
 
             if (CboPWSorVDP.Text == "VDP")
             {
-                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
-                return VDP_Helper.cancelRequest(_rd, ref vdp);
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.reversalRequest(_rd, ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
@@ -1164,7 +1241,7 @@ namespace CertSuiteTool
         {
             if (CboPWSorVDP.Text == "VDP")
             {
-                VantivDeveloperPortal vdp = new VantivDeveloperPortal(TxtUserName.Text, TxtPassword.Text);
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
                 return VDP_Helper.voidRequest(_rd, ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
@@ -1186,7 +1263,22 @@ namespace CertSuiteTool
             /*Close Batch is used to close out the transaction batch for the day. The close batch operation is 
               used primarily by businesses that need to manually start end of day processing, typically restaurants.
             */
-            MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.batchClose(ref vdp);
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                return null;
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
             return null;
         }
 
@@ -1221,31 +1313,12 @@ namespace CertSuiteTool
 
             if (CboPWSorVDP.Text == "VDP")
             {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.activateRequest(ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
-            }
-            else
-            {
-                MessageBox.Show("Please select an integration path before proceeding");
-                TbControl.SelectedTab = TbAbout;
-            }
-            return null;
-        }
-
-        private ResponseDetails Unload()
-        {
-            /*Unload is used to remove the remaining balance on a gift card. Gift card only
-            */
-            if (CboPWSorVDP.Text == "VDP")
-            {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
-            }
-            else if (CboPWSorVDP.Text == "PWS")
-            {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                return PWS_Helper.activateRequest();
             }
             else
             {
@@ -1261,11 +1334,33 @@ namespace CertSuiteTool
             */
             if (CboPWSorVDP.Text == "VDP")
             {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.reloadRequest(ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                return PWS_Helper.reloadRequest();
+            }
+            else
+            {
+                MessageBox.Show("Please select an integration path before proceeding");
+                TbControl.SelectedTab = TbAbout;
+            }
+            return null;
+        }
+
+        private ResponseDetails Unload()
+        {
+            /*Unload is used to remove the remaining balance on a gift card. Gift card only
+            */
+            if (CboPWSorVDP.Text == "VDP")
+            {
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.unloadRequest(ref vdp);
+            }
+            else if (CboPWSorVDP.Text == "PWS")
+            {
+                return PWS_Helper.unloadRequest();
             }
             else
             {
@@ -1281,11 +1376,12 @@ namespace CertSuiteTool
             */
             if (CboPWSorVDP.Text == "VDP")
             {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.closeRequest(ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                return PWS_Helper.closeRequest();
             }
             else
             {
@@ -1301,7 +1397,8 @@ namespace CertSuiteTool
             */
             if (CboPWSorVDP.Text == "VDP")
             {
-                MessageBox.Show("Sample code is currently not available. Please contact your solution consultant for help.");
+                VantivDeveloperPortal vdp = new VantivDeveloperPortal();
+                return VDP_Helper.balanceInquiryRequest(ref vdp);
             }
             else if (CboPWSorVDP.Text == "PWS")
             {
@@ -1406,6 +1503,10 @@ namespace CertSuiteTool
         private void LnkPWSEndpointURL_Click(object sender, EventArgs e)
         {
             //System.Diagnostics.Process.Start("");
+        }
+        private void LnkSampleCode_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(@"https://github.com/vantiv");
         }
 
         #endregion Links to Online Resources

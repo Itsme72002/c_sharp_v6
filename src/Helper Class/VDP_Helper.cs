@@ -37,26 +37,35 @@ namespace CertSuiteTool.Helper_Class
         private static Send_Transactions target;
 
         #region Vantiv Developer Portal (VDP) endpoints
-        //Domain URI
-        //private static string urlDomainVDP;
         //Credit
-        private static string urlSale;
-        private static string urlForce;
-        private static string urlAVSOnly;
-        private static string urlAuthorization;
-        private static string urlAuthorizationCompletion;
-        private static string urlAdjustment;
-        private static string urlReturn;
-        private static string urlCredit;
-        private static string urlVoid;
-        private static string urlReversal;
-        private static string urlBatchClose;
+        private static string urlCredit_Sale;
+        private static string urlCredit_Authorization;
+        private static string urlCredit_AuthorizationCompletion;
+        private static string urlCredit_Adjustment;
+        private static string urlCredit_Return;
+        private static string urlCredit_Reversal;
+        private static string urlCredit_Credit;
+        private static string urlCredit_Void;
+        private static string urlCredit_BatchClose;
         //Debit
-        private static string urlDebitSale;
-        private static string urlDebitReversal;
-        private static string urlDebitReturn;
-        private static string urlDebitPinlessSale;
-        private static string urlDebitPinlessReturn;
+        private static string urlDebit_Sale;
+        private static string urlDebit_Reversal;
+        private static string urlDebit_Return;
+        private static string urlDebit_PinlessSale;
+        private static string urlDebit_PinlessReturn;
+        //Gift
+        private static string urlGift_Activation;
+        private static string urlGift_BalanceInquiry;
+        private static string urlGift_BatchBalance;
+        private static string urlGift_Reload;
+        private static string urlGift_Unload;
+        private static string urlGift_Close;
+        private static string urlGift_Authorization;
+        private static string urlGift_AuthorizationCompletion;
+        private static string urlGift_Sale;
+        private static string urlGift_Reversal;
+        private static string urlGift_Return;
+
         //Reports
         private static string urlTransactionQuery;
         //Services
@@ -70,24 +79,38 @@ namespace CertSuiteTool.Helper_Class
             target = _myForm;//Setup access to the form fields
             //urlDomainVDP = target.txtVDPBaseEndpointURL.Text;
             //Credit
-            urlSale = "/v1/credit/sale?sp=1";
-            urlForce = "/v1/credit/force?sp=1";
-            //urlAVSOnly = "/v1/credit/avsonly?sp=1"; //Use an Authorize transaction with "0.00"
-            urlAuthorization = "/v1/credit/authorization?sp=1";
-            urlAuthorizationCompletion = "/v1/credit/authorizationcompletion?sp=1";
-            urlAdjustment = "/v1/credit/adjustment?sp=1";
-            urlReturn = "/v1/credit/return?sp=1";
-            urlCredit = "/v1/credit/credit?sp=1";
-            urlVoid = "/v1/credit/void?sp=1";
-            urlReversal = "/v1/credit/reversal?sp=1";
+            urlCredit_Sale = "/v1/credit/sale?sp=1";
+            urlCredit_Authorization = "/v1/credit/authorization?sp=1";
+            urlCredit_AuthorizationCompletion = "/v1/credit/authorizationcompletion?sp=1";
+            urlCredit_Adjustment = "/v1/credit/adjustment?sp=1";
+            urlCredit_Return = "/v1/credit/return?sp=1";
+            urlCredit_Reversal = "/v1/credit/reversal?sp=1";
+            urlCredit_Credit = "/v1/credit/credit?sp=1";
+            urlCredit_Void = "/v1/credit/void?sp=1";
+            
             //Settlement
-            urlBatchClose = "/v1/credit/batchclose?sp=1";
+            urlCredit_BatchClose = "/v1/credit/batchclose?sp=1";
+
             //Debit
-            urlDebitSale = "/v1/debit/sale?sp=1";
-            urlDebitReversal = "/v1/debit/reversal?sp=1";
-            urlDebitReturn = "/v1/debit/return?sp=1";
-            urlDebitPinlessSale = "/v1/debit/pinlesssale?sp=1";
-            urlDebitPinlessReturn = "/v1/debit/pinlessreturn?sp=1";
+            urlDebit_Sale = "/v1/debit/sale?sp=1";
+            urlDebit_Reversal = "/v1/debit/reversal?sp=1";
+            urlDebit_Return = "/v1/debit/return?sp=1";
+            urlDebit_PinlessSale = "/v1/debit/pinlesssale?sp=1";
+            urlDebit_PinlessReturn = "/v1/debit/pinlessreturn?sp=1";
+
+            //Gift
+            urlGift_Activation = "/v1/gift/activation?sp=1";
+            urlGift_BalanceInquiry = "/v1/gift/balanceinquiry?sp=1";
+            urlGift_BatchBalance = "/v1/gift/batchbalance?sp=1";
+            urlGift_Reload = "/v1/gift/reload?sp=1";
+            urlGift_Unload = "/v1/gift/unload?sp=1";
+            urlGift_Close = "/v1/gift/close?sp=1";
+            urlGift_Authorization = "/v1/gift/authorization?sp=1";
+            urlGift_AuthorizationCompletion = "/v1/gift/authorizationcompletion?sp=1";
+            urlGift_Sale = "/v1/gift/sale?sp=1";
+            urlGift_Reversal = "/v1/gift/reversal?sp=1";
+            urlGift_Return = "/v1/gift/return?sp=1";
+
             //Reports
             urlTransactionQuery = "/v1/reports/transactionquery?sp=1";
             //Services
@@ -170,13 +193,13 @@ namespace CertSuiteTool.Helper_Class
                 vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;
             if (target.TxtCardSecurityCode.Text.Length > 0)
                 vdp.card.CVV = target.TxtCardSecurityCode.Text;
-            vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
-            
+           
             if (target.CboCreditType.Text == "CardKeyed")
             {
-                vdp.card.CardNumber = target.TxtPrimaryAccountNumber.Text;
+                if(target.TxtPrimaryAccountNumber.Text.Length > 0)
+                    vdp.card.CardNumber = target.TxtPrimaryAccountNumber.Text;
                 DateTime dt = Convert.ToDateTime(target.TxtExpirationDate.Text);
-                vdp.card.ExpirationMonth = dt.Month.ToString();
+                vdp.card.ExpirationMonth = dt.Month.ToString("D2");
                 vdp.card.ExpirationYear = dt.Year.ToString();
             }
             else if (target.CboCreditType.Text == "CardSwiped")
@@ -199,7 +222,7 @@ namespace CertSuiteTool.Helper_Class
             }
             if (target.ChkUseToken.Checked)
             {
-                vdp.card.TokenID = target.TxtTokenId.Text;
+                vdp.card.TokenId = target.TxtTokenId.Text;
                 vdp.card.TokenValue = target.TxtTokenValue.Text;
                 vdp.card.CardNumber = null; //Per the schema if Token is set PAN should not be sent.
                 vdp.card.CVV = null; //In the case of a tokenized transaction CV data would not be available as CV codes cannot be stored in a database in any form per PCI.
@@ -225,7 +248,71 @@ namespace CertSuiteTool.Helper_Class
 
         #region Transaction Processing
 
-        public static ResponseDetails authorizeRequest(ref VantivDeveloperPortal vdp)
+        //Credit transaction processing
+        public static ResponseDetails saleRequest(ref VantivDeveloperPortal vdp)
+        {
+
+            Random r = new Random();
+            merchantType(ref vdp);
+            vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
+            vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
+            //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
+            vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            vdp.transaction.TransactionAmount = target.TxtTransactionAmount.Text;
+            vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
+                vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            if (target.CboPartialApprovalCode.Text.Length > 0)
+                vdp.transaction.PartialApprovalCode = (CertSuiteTool_VDP.PartialIndicatorType)target.CboPartialApprovalCode.SelectedItem;
+            //vdp.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
+            int rInt = r.Next(100000, 999999); //for ints
+            vdp.transaction.SystemTraceID = rInt.ToString(); //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            vdp.transaction.TransactionID = rInt.ToString(); //This 6-character numeric string is used to uniquely identify a transaction within a 24-hour period. The Transaction Id is also referred to as a STAN (System Trace Audit Number). In the case of Debit Refund scenarios, the OriginalSequenceNumber should match the TransactionID of the original/cancel transactions. Required.
+            rInt = r.Next(1, 99999999);
+
+            InstrumentType(ref vdp); //Set base values
+            string url = "";//set the proper endpoint based on instrument type
+
+            //set additional instrument values based on payment instrument
+            if (target.CboPaymentInstrument.Text == "Credit")
+            {
+                url = urlCredit_Sale;//In this case Credit Sale
+
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Debit")
+            {
+                url = urlDebit_Sale;//In this case Debit Sale
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Gift")
+            {
+                url = urlGift_Sale;//In this case Gift Sale
+            }
+
+            string jsonRequest = "";
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + url, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            XmlDocument xmlResponse = convertToXML(jsonResponse);
+            VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
+            return ProcessResponse(ts);
+
+            //return ProcessResponse(convertToXML(CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlSale, "POST", convertToJson(vdp))), vdp);
+        }
+
+        public static ResponseDetails authorizationRequest(ref VantivDeveloperPortal vdp)
         {
             Random r = new Random();
             vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
@@ -234,7 +321,7 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
             //vdp.transaction.NetworkResponseCode = "";
             vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
-            vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             //vdp.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
             if(!target.ChkUseToken.Checked)//When using a token a token should not be requested.
                 vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
@@ -249,9 +336,16 @@ namespace CertSuiteTool.Helper_Class
             rInt = r.Next(1, 99999999);
 
             InstrumentType(ref vdp); //Set base values
+            string url = "";//set the proper endpoint based on instrument type
+
             //set additional instrument values based on payment instrument
             if (target.CboPaymentInstrument.Text == "Credit")
             {
+                url = urlCredit_Authorization;//In this case Credit Sale
+
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -260,26 +354,23 @@ namespace CertSuiteTool.Helper_Class
             }
             else if (target.CboPaymentInstrument.Text == "Debit")
             {
-                if (target.CboCreditType.Text == "CardKeyed")
-                {
-                    if (target.TxtCardholderName.Text.Length > 0)
-                        vdp.card.CardholderName = target.TxtCardholderName.Text;
-                }
+                MessageBox.Show("Debit transactions do not use the Authorize transaction type. Please use Sale instead.");
+                return null;
             }
             else if (target.CboPaymentInstrument.Text == "Gift")
             {
-
+                url = urlGift_Authorization;//In this case Credit Sale
             }
 
             string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlAuthorization, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + url, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
             XmlDocument xmlResponse = convertToXML(jsonResponse);
             VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
             return ProcessResponse(ts);
 
         }
 
-        public static ResponseDetails captureRequest(ResponseDetails _rd, ref VantivDeveloperPortal vdp)
+        public static ResponseDetails authorizationCompletionRequest(ResponseDetails _rd, ref VantivDeveloperPortal vdp)
         {
             Random ran = new Random();
             merchantType(ref vdp);
@@ -288,7 +379,7 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
             vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             vdp.transaction.DraftLocatorId = "D" + ran.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-            vdp.transaction.ReferenceNumber = "R" + ran.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.transaction.ReferenceNumber = "R" + ran.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             vdp.transaction.CaptureAmount = target.TxtTransactionAmount.Text;
             vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
             if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
@@ -300,9 +391,16 @@ namespace CertSuiteTool.Helper_Class
             rInt = ran.Next(1, 99999999);
 
             InstrumentType(ref vdp); //Set base values
+            string url = "";//set the proper endpoint based on instrument type
+
             //set additional instrument values based on payment instrument
             if (target.CboPaymentInstrument.Text == "Credit")
             {
+                url = urlCredit_AuthorizationCompletion;//In this case Credit Sale
+
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -311,15 +409,12 @@ namespace CertSuiteTool.Helper_Class
             }
             else if (target.CboPaymentInstrument.Text == "Debit")
             {
-                if (target.CboCreditType.Text == "CardKeyed")
-                {
-                    if (target.TxtCardholderName.Text.Length > 0)
-                        vdp.card.CardholderName = target.TxtCardholderName.Text;
-                }
+                MessageBox.Show("Debit transactions do not use the Authorize transaction type. Please use Sale instead.");
+                return null;
             }
             else if (target.CboPaymentInstrument.Text == "Gift")
             {
-
+                url = urlGift_AuthorizationCompletion;//In this case Credit Sale
             }
 
             //Set the Capture specific values
@@ -329,7 +424,7 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.OriginalReferenceNumber = SELECT(_rd.VDP_TxnSummary.XMLResponse, "//ReferenceNumber");
 
             string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlAuthorizationCompletion, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + url, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
             XmlDocument xmlResponse = convertToXML(jsonResponse);
             VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
             return ProcessResponse(ts);
@@ -337,68 +432,9 @@ namespace CertSuiteTool.Helper_Class
             //return ProcessResponse(convertToXML(CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlAuthorizationCompletion, "POST", convertToJson(vdp))), vdp);
         }
 
-        public static ResponseDetails purchaseRequest(ref VantivDeveloperPortal vdp)
-        {
-
-            Random r = new Random();
-            merchantType(ref vdp);
-            vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
-            vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
-            //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
-            vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
-            vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-            vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
-            vdp.transaction.TransactionAmount = target.TxtTransactionAmount.Text;
-            vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
-            if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
-                vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
-            if (target.CboPartialApprovalCode.Text.Length > 0)
-                vdp.transaction.PartialApprovalCode = (CertSuiteTool_VDP.PartialIndicatorType)target.CboPartialApprovalCode.SelectedItem;
-            //vdp.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
-            int rInt = r.Next(100000, 999999); //for ints
-            vdp.transaction.SystemTraceID = rInt.ToString(); //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
-            vdp.transaction.TransactionID = rInt.ToString(); //This 6-character numeric string is used to uniquely identify a transaction within a 24-hour period. The Transaction Id is also referred to as a STAN (System Trace Audit Number). In the case of Debit Refund scenarios, the OriginalSequenceNumber should match the TransactionID of the original/cancel transactions. Required.
-            rInt = r.Next(1, 99999999);
-
-            InstrumentType(ref vdp); //Set base values
-            //set additional instrument values based on payment instrument
-            if (target.CboPaymentInstrument.Text == "Credit")
-            {
-                if (target.CboCreditType.Text == "CardKeyed")
-                {
-                    if (target.TxtCardholderName.Text.Length > 0)
-                        vdp.card.CardholderName = target.TxtCardholderName.Text;
-                }
-            }
-            else if (target.CboPaymentInstrument.Text == "Debit")
-            {
-                if (target.CboCreditType.Text == "CardKeyed")
-                {
-                    if (target.TxtCardholderName.Text.Length > 0)
-                        vdp.card.CardholderName = target.TxtCardholderName.Text;
-                }
-            }
-            else if (target.CboPaymentInstrument.Text == "Gift")
-            {
-
-            }
-
-            string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlSale, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
-            XmlDocument xmlResponse = convertToXML(jsonResponse);
-            VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
-            return ProcessResponse(ts);
-
-            //return ProcessResponse(convertToXML(CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlSale, "POST", convertToJson(vdp))), vdp);
-        }
-
         public static ResponseDetails adjustRequest(ResponseDetails _rd, ref VantivDeveloperPortal vdp)
         {
-
             Random ran = new Random();
-            //vdp.transaction.TransactionAmount.AdjustedTotalAmount = new AmountType();
-            //vdp.AdjustedTotalAmount.currency = (ISO4217CurrencyCodeType)CboCurrencyCodeType.SelectedItem;
-            //vdp.AdjustedTotalAmount.currencySpecified = true;
             vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
             vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
             vdp.transaction.AdjustedTotalAmount = target.TxtTransactionAmount.Text; //The new amount, which is the original amount and the adjustment
@@ -410,6 +446,9 @@ namespace CertSuiteTool.Helper_Class
             //set additional instrument values based on payment instrument
             if (target.CboPaymentInstrument.Text == "Credit")
             {
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -422,7 +461,7 @@ namespace CertSuiteTool.Helper_Class
             //vdp.NetworkResponseCode = "";
             vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             //vdp.PurchaseOrder = "";
-            vdp.transaction.ReferenceNumber = "R" + ran.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.transaction.ReferenceNumber = "R" + ran.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             //vdp.reportgroup = "";
             int rInt = ran.Next(100000, 999999); //for ints
             vdp.transaction.SystemTraceID = rInt.ToString();
@@ -439,9 +478,8 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.OriginalAuthorizedAmount = _rd.Amount.Value.ToString();
             vdp.transaction.OriginalReferenceNumber = SELECT(_rd.VDP_TxnSummary.XMLResponse, "//ReferenceNumber");
 
-
             string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlAdjustment, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlCredit_Adjustment, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
             XmlDocument xmlResponse = convertToXML(jsonResponse);
             VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
             return ProcessResponse(ts);
@@ -449,9 +487,8 @@ namespace CertSuiteTool.Helper_Class
             //return ProcessResponse(convertToXML(CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlAdjustment, "POST", convertToJson(vdp))), vdp);
         }
 
-        public static ResponseDetails refundRequest(ref VantivDeveloperPortal vdp)
+        public static ResponseDetails returnRequest(ref VantivDeveloperPortal vdp)
         {
-
             Random r = new Random();
             merchantType(ref vdp);
             vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
@@ -460,7 +497,7 @@ namespace CertSuiteTool.Helper_Class
             //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
             vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
             vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
-            vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
             if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
                 vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
@@ -472,9 +509,16 @@ namespace CertSuiteTool.Helper_Class
             rInt = r.Next(1, 99999999);
 
             InstrumentType(ref vdp); //Set base values
+            string url = "";//set the proper endpoint based on instrument type
+
             //set additional instrument values based on payment instrument
             if (target.CboPaymentInstrument.Text == "Credit")
             {
+                url = urlCredit_Return;//In this case Credit Sale
+
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -483,6 +527,8 @@ namespace CertSuiteTool.Helper_Class
             }
             else if (target.CboPaymentInstrument.Text == "Debit")
             {
+                url = urlDebit_Return;//In this case Credit Sale
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -491,11 +537,11 @@ namespace CertSuiteTool.Helper_Class
             }
             else if (target.CboPaymentInstrument.Text == "Gift")
             {
-
+                url = urlGift_Return;//In this case Credit Sale
             }
 
             string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlReturn, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + url, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
             XmlDocument xmlResponse = convertToXML(jsonResponse);
             VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
             return ProcessResponse(ts);
@@ -503,7 +549,7 @@ namespace CertSuiteTool.Helper_Class
             //return ProcessResponse(convertToXML(CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlReturn, "POST", convertToJson(vdp))), vdp);
         }
 
-        public static ResponseDetails cancelRequest(ResponseDetails _rd, ref VantivDeveloperPortal vdp)
+        public static ResponseDetails reversalRequest(ResponseDetails _rd, ref VantivDeveloperPortal vdp)
         {
             Random r = new Random();
             //vdp.BillPaymentPayee = billPaymentPayeeType(); //For PIN-less Debit : Bill payment payee details contain values about the payee including payee name, phone and account number payee uses to identify the payer.
@@ -516,7 +562,7 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
             //vdp.Merchant.Terminal = null;
             vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
-            vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
             //vdp.TransactionType = ((TransactionRequestType)(_rd.TxnRequest)).TransactionType;//Mandatory
             if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
@@ -527,9 +573,16 @@ namespace CertSuiteTool.Helper_Class
             rInt = r.Next(1, 99999999);
 
             InstrumentType(ref vdp); //Set base values
+            string url = "";//set the proper endpoint based on instrument type
+
             //set additional instrument values based on payment instrument
             if (target.CboPaymentInstrument.Text == "Credit")
             {
+                url = urlCredit_Reversal;//In this case Credit Sale
+
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -538,6 +591,8 @@ namespace CertSuiteTool.Helper_Class
             }
             else if (target.CboPaymentInstrument.Text == "Debit")
             {
+                url = urlDebit_Reversal;//In this case Credit Sale
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -546,7 +601,7 @@ namespace CertSuiteTool.Helper_Class
             }
             else if (target.CboPaymentInstrument.Text == "Gift")
             {
-
+                url = urlGift_Reversal;//In this case Credit Sale
             }
             if (target.ChkCancelReplacementAmount.Checked)
             {
@@ -555,7 +610,7 @@ namespace CertSuiteTool.Helper_Class
             }
 
             //Check to see if this is a system or merchant cancel
-            if ((ReversalReasonType)target.CboReversalReason.SelectedItem == ReversalReasonType.TIME_OUT)
+            if (target.CboReversalReason.SelectedItem != null && (ReversalReasonType)target.CboReversalReason.SelectedItem == ReversalReasonType.TIME_OUT)
             {//System
                 vdp.transaction.CancelType = (CertSuiteTool_VDP.CancelTransactionType)target.CancelTransactionTypeFromRequest(_rd.TxnRequestType);
                 vdp.transaction.OriginalAuthorizedAmount = _rd.Amount.Value.ToString();
@@ -578,11 +633,12 @@ namespace CertSuiteTool.Helper_Class
                 // NEED TO ADD can.OriginalSequenceNumber = p.Merchant.Software.SequenceNumber;
                 vdp.transaction.OriginalAuthCode = _rd.AuthorizationCode;
                 vdp.transaction.NetworkResponseCode = SELECT(_rd.VDP_TxnSummary.XMLResponse, "//NetworkResponseCode");
-                vdp.transaction.ReversalReason = (CertSuiteTool_VDP.ReversalReasonType)target.CboReversalReason.SelectedItem;
+                if(target.CboReversalReason.SelectedItem != null)
+                    vdp.transaction.ReversalReason = (CertSuiteTool_VDP.ReversalReasonType)target.CboReversalReason.SelectedItem;
             }
 
             string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlReversal, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + url, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
             XmlDocument xmlResponse = convertToXML(jsonResponse);
             VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
             return ProcessResponse(ts);
@@ -600,7 +656,7 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
             //vdp.Merchant.Terminal = null;
             vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
-            vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
             vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
             //vdp.TransactionType = ((TransactionRequestType)(_rd.TxnRequest)).TransactionType;//Mandatory
             if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
@@ -614,6 +670,9 @@ namespace CertSuiteTool.Helper_Class
             //set additional instrument values based on payment instrument
             if (target.CboPaymentInstrument.Text == "Credit")
             {
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
                 if (target.CboCreditType.Text == "CardKeyed")
                 {
                     if (target.TxtCardholderName.Text.Length > 0)
@@ -651,7 +710,7 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.ReversalReason = CertSuiteTool_VDP.ReversalReasonType.CUSTOMER_CANCELED_TRANSACTION;
 
             string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlVoid, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlCredit_Void, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
             XmlDocument xmlResponse = convertToXML(jsonResponse);
             VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
             return ProcessResponse(ts);            
@@ -673,7 +732,281 @@ namespace CertSuiteTool.Helper_Class
             vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
 
             string jsonRequest = "";
-            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlBatchClose, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlCredit_BatchClose, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            XmlDocument xmlResponse = convertToXML(jsonResponse);
+            VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
+            return ProcessResponse(ts);
+        }
+
+        //Additional Gift transaction processing
+        public static ResponseDetails activateRequest(ref VantivDeveloperPortal vdp)
+        {
+            Random r = new Random();
+            vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            merchantType(ref vdp);
+            vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
+            vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
+            //vdp.transaction.NetworkResponseCode = "";
+            vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
+                vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            if(target.TxtTransactionAmount.Text.Length > 0)
+                vdp.transaction.TransactionAmount = target.TxtTransactionAmount.Text;
+            vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+           //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(100000, 999999); //for ints
+            vdp.transaction.SystemTraceID = rInt.ToString(); //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            vdp.transaction.TransactionID = rInt.ToString(); //This 6-character numeric string is used to uniquely identify a transaction within a 24-hour period. The Transaction Id is also referred to as a STAN (System Trace Audit Number). In the case of Debit Refund scenarios, the OriginalSequenceNumber should match the TransactionID of the original/cancel transactions. Required.
+            rInt = r.Next(1, 99999999);
+
+            InstrumentType(ref vdp); //Set base values
+            //set additional instrument values based on payment instrument
+            if (target.CboPaymentInstrument.Text == "Credit")
+            {
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Debit")
+            {
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Gift")
+            {
+
+            }
+
+            string jsonRequest = "";
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlGift_Activation, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            XmlDocument xmlResponse = convertToXML(jsonResponse);
+            VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
+            return ProcessResponse(ts);
+
+        }
+
+        public static ResponseDetails balanceInquiryRequest(ref VantivDeveloperPortal vdp)
+        {
+            Random r = new Random();
+            vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            merchantType(ref vdp);
+            vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
+            vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
+            //vdp.transaction.NetworkResponseCode = "";
+            vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
+                vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(100000, 999999); //for ints
+            vdp.transaction.SystemTraceID = rInt.ToString(); //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            vdp.transaction.TransactionID = rInt.ToString(); //This 6-character numeric string is used to uniquely identify a transaction within a 24-hour period. The Transaction Id is also referred to as a STAN (System Trace Audit Number). In the case of Debit Refund scenarios, the OriginalSequenceNumber should match the TransactionID of the original/cancel transactions. Required.
+            rInt = r.Next(1, 99999999);
+
+            InstrumentType(ref vdp); //Set base values
+            //set additional instrument values based on payment instrument
+            if (target.CboPaymentInstrument.Text == "Credit")
+            {
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Debit")
+            {
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Gift")
+            {
+
+            }
+
+            string jsonRequest = "";
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlGift_BalanceInquiry, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            XmlDocument xmlResponse = convertToXML(jsonResponse);
+            VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
+            return ProcessResponse(ts);
+
+        }
+
+        public static ResponseDetails reloadRequest(ref VantivDeveloperPortal vdp)
+        {
+            Random r = new Random();
+            vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            merchantType(ref vdp);
+            vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
+            vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
+            //vdp.transaction.NetworkResponseCode = "";
+            vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
+                vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            vdp.transaction.TransactionAmount = target.TxtTransactionAmount.Text;
+            vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(100000, 999999); //for ints
+            vdp.transaction.SystemTraceID = rInt.ToString(); //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            vdp.transaction.TransactionID = rInt.ToString(); //This 6-character numeric string is used to uniquely identify a transaction within a 24-hour period. The Transaction Id is also referred to as a STAN (System Trace Audit Number). In the case of Debit Refund scenarios, the OriginalSequenceNumber should match the TransactionID of the original/cancel transactions. Required.
+            rInt = r.Next(1, 99999999);
+
+            InstrumentType(ref vdp); //Set base values
+            //set additional instrument values based on payment instrument
+            if (target.CboPaymentInstrument.Text == "Credit")
+            {
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Debit")
+            {
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Gift")
+            {
+
+            }
+
+            string jsonRequest = "";
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlGift_Reload, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            XmlDocument xmlResponse = convertToXML(jsonResponse);
+            VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
+            return ProcessResponse(ts);
+
+        }
+
+        public static ResponseDetails unloadRequest(ref VantivDeveloperPortal vdp)
+        {
+            Random r = new Random();
+            vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            merchantType(ref vdp);
+            vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
+            vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
+            //vdp.transaction.NetworkResponseCode = "";
+            vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
+                vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            vdp.transaction.TransactionAmount = target.TxtTransactionAmount.Text;
+            vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(100000, 999999); //for ints
+            vdp.transaction.SystemTraceID = rInt.ToString(); //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            vdp.transaction.TransactionID = rInt.ToString(); //This 6-character numeric string is used to uniquely identify a transaction within a 24-hour period. The Transaction Id is also referred to as a STAN (System Trace Audit Number). In the case of Debit Refund scenarios, the OriginalSequenceNumber should match the TransactionID of the original/cancel transactions. Required.
+            rInt = r.Next(1, 99999999);
+
+            InstrumentType(ref vdp); //Set base values
+            //set additional instrument values based on payment instrument
+            if (target.CboPaymentInstrument.Text == "Credit")
+            {
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Debit")
+            {
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Gift")
+            {
+
+            }
+
+            string jsonRequest = "";
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlGift_Unload, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
+            XmlDocument xmlResponse = convertToXML(jsonResponse);
+            VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
+            return ProcessResponse(ts);
+
+        }
+
+        public static ResponseDetails closeRequest(ref VantivDeveloperPortal vdp)
+        {
+            Random r = new Random();
+            vdp.transaction.DraftLocatorId = "D" + r.Next(1, 99999999).ToString(); //11 character value.  This field can be used to pass whatever discretionary data the merchant wants to pass.  Examples include employee ID number, invoice numbers, any internal value they use to track transactions.	Optional – only passes thru to reporting on Visa and MasterCard transactions.
+            merchantType(ref vdp);
+            vdp.transaction.MarketCode = (MarketCode)target.CboTransactionType.SelectedItem;
+            vdp.transaction.ClerkNumber = target.TxtClerkNumber.Text;
+            //vdp.transaction.NetworkResponseCode = "";
+            vdp.transaction.PaymentType = (CertSuiteTool_VDP.PaymentType)target.CboPaymentType.SelectedItem;//Mandatory
+            //vdp.transaction.ReferenceNumber = "R" + r.Next(1, 99999).ToString(); //6 digit value which uniquely identifies the transaction.	Optional
+            //vdp.reportgroup = ""; //An optional (required for Litle) attribute used by the merchant to map each transaction to a reporting category.  This can be no longer than 25 characters. 
+            if (!target.ChkUseToken.Checked)//When using a token a token should not be requested.
+                vdp.transaction.TokenRequested = target.ChkTokenRequested.Checked;//Boolean value (true, false) to determine if token is returned for the card. The default value is false.	Optional
+            vdp.transaction.TransactionTimestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"); //The time of this transaction. Use yyyy-MM- ddThh:mm:ss-SS:SS – Should be in merchants local time zone. Mandatory – should be in merchant’s local time zone.
+            //vdp.TransactionType = (TransactionTypeType)CboTransactionType.SelectedItem;//Mandatory
+            int rInt = r.Next(100000, 999999); //for ints
+            vdp.transaction.SystemTraceID = rInt.ToString(); //A conditional ID used to track each transaction. This must be an integer. Required for Raft and Tandem, optional for Litle? Required for Litle on CancelRequest.
+            vdp.transaction.TransactionID = rInt.ToString(); //This 6-character numeric string is used to uniquely identify a transaction within a 24-hour period. The Transaction Id is also referred to as a STAN (System Trace Audit Number). In the case of Debit Refund scenarios, the OriginalSequenceNumber should match the TransactionID of the original/cancel transactions. Required.
+            rInt = r.Next(1, 99999999);
+
+            InstrumentType(ref vdp); //Set base values
+            //set additional instrument values based on payment instrument
+            if (target.CboPaymentInstrument.Text == "Credit")
+            {
+                //CardType is only used in the case of Credit. Debit and Gift do not use CardType.
+                vdp.card.CardType = (CertSuiteTool_VDP.CreditCardNetworkType)target.CboCardType.SelectedItem;
+
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Debit")
+            {
+                if (target.CboCreditType.Text == "CardKeyed")
+                {
+                    if (target.TxtCardholderName.Text.Length > 0)
+                        vdp.card.CardholderName = target.TxtCardholderName.Text;
+                }
+            }
+            else if (target.CboPaymentInstrument.Text == "Gift")
+            {
+
+            }
+
+            string jsonRequest = "";
+            string jsonResponse = CreateRequest_Json(target.txtVDPBaseEndpointURL.Text + urlGift_Close, Header_licenseid(), "POST", convertToJson(vdp), ref jsonRequest);
             XmlDocument xmlResponse = convertToXML(jsonResponse);
             VDP_TransactionSummary ts = new VDP_TransactionSummary(vdp, xmlResponse, jsonRequest, jsonResponse);
             return ProcessResponse(ts);
@@ -747,11 +1080,6 @@ namespace CertSuiteTool.Helper_Class
 
             string json = "{";
 
-            if (_vdp.credentials != null)
-            {
-                json += "\"credentials\":";
-                json += Newtonsoft.Json.JsonConvert.SerializeObject(_vdp.credentials, jss) + ",";
-            }
             if (_vdp.merchant != null)
             {
                 json += "\"merchant\":";
@@ -873,7 +1201,7 @@ namespace CertSuiteTool.Helper_Class
             }
             catch (Exception e)
             {
-                return e.Message;
+               return e.Message;
             }
         }
 
